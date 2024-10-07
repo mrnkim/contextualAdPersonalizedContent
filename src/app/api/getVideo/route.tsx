@@ -4,23 +4,24 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const videoId = searchParams.get("videoId");
 
-  const apiKey = process.env.TWELVELABS_API_KEY;
-  const indexId = process.env.TWELVELABS_INDEX_ID;
+  const API_KEY = process.env.TWELVELABS_API_KEY;
+  const INDEX_ID = process.env.TWELVELABS_INDEX_ID;
+  const TWELVELABS_API_BASE_URL = process.env.TWELVELABS_API_BASE_URL;
 
-  if (!apiKey || !indexId) {
+  if (!API_KEY || !INDEX_ID) {
     return NextResponse.json(
       { error: "API key or Index ID is not set" },
       { status: 500 }
     );
   }
 
-  const url = `https://api.twelvelabs.io/v1.2/indexes/${indexId}/videos/${videoId}`;
+  const url = `${TWELVELABS_API_BASE_URL}/indexes/${INDEX_ID}/videos/${videoId}`;
 
   const options = {
     method: "GET",
     headers: {
       "Content-Type": "multipart/form-data",
-      "x-api-key": `${apiKey}`,
+      "x-api-key": `${API_KEY}`,
     },
   };
 

@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
-  const apiKey = process.env.TWELVELABS_API_KEY;
-  const indexId = process.env.TWELVELABS_INDEX_ID;
+  const API_KEY = process.env.TWELVELABS_API_KEY;
+  const INDEDX_ID = process.env.TWELVELABS_INDEX_ID;
+  const TWELVELABS_API_BASE_URL = process.env.TWELVELABS_API_BASE_URL;
 
-  if (!apiKey || !indexId) {
+  if (!API_KEY || !INDEDX_ID) {
     return NextResponse.json(
       { error: "API key or Index ID is not set" },
       { status: 500 }
@@ -14,13 +15,13 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const page = searchParams.get("page") || 1;
 
-  const url = `https://api.twelvelabs.io/v1.2/indexes/${indexId}/videos?page_limit=9&page=${page}`;
+  const url = `${TWELVELABS_API_BASE_URL}/indexes/${INDEDX_ID}/videos?page_limit=9&page=${page}`;
 
   const options = {
     method: "GET",
     headers: {
       "Content-Type": "multipart/form-data",
-      "x-api-key": `${apiKey}`,
+      "x-api-key": `${API_KEY}`,
     },
   };
 

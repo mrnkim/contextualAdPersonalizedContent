@@ -71,7 +71,7 @@ const Video: React.FC<VideoProps> = ({ video }) => {
   }
 
   return (
-    <div className="w-full md:w-1/3 px-2 mb-2">
+    <div>
       <div className="relative p-1">
         <div
           className="w-full h-40 relative overflow-hidden rounded cursor-pointer"
