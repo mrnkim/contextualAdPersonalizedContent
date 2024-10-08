@@ -35,13 +35,14 @@ function FootageSummary({ videoId }: FootageSummaryProps) {
   });
 
   const formatCustomTexts = (data: string) => {
-    const sections = data.split('\n\n');
+    const sections = ["Event Type", "Main Content", "Emotional Tone"];
     return sections.map((section, index) => {
-      const [label, ...contentParts] = section.split(':');
-      const content = contentParts.join(':').trim();
+      const regex = new RegExp(`${section}:\\s*(.+?)(?=\\n(?:Event Type|Main Content|Emotional Tone):|$)`, 's');
+      const match = data.match(regex);
+      const content = match ? match[1].trim() : '';
       return (
         <div key={index} className="mb-6">
-          <h3 className="font-bold text-lg mb-2">{label}</h3>
+          <h3 className="font-bold text-lg mb-2">{section}</h3>
           <p>{content}</p>
         </div>
       );
