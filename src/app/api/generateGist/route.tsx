@@ -2,10 +2,10 @@ import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
     const API_KEY = process.env.TWELVELABS_API_KEY;
-    const INDEDX_ID = process.env.TWELVELABS_INDEX_ID;
+    const FOOTAGE_INDEDX_ID = process.env.TWELVELABS_FOOTAGE_INDEX_ID;
     const TWELVELABS_API_BASE_URL = process.env.TWELVELABS_API_BASE_URL;
 
-    if (!API_KEY || !INDEDX_ID) {
+    if (!API_KEY || !FOOTAGE_INDEDX_ID) {
       return NextResponse.json(
         { error: "API key or Index ID is not set" },
         { status: 500 }

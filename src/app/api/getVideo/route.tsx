@@ -5,17 +5,17 @@ export async function GET(req: Request) {
   const videoId = searchParams.get("videoId");
 
   const API_KEY = process.env.TWELVELABS_API_KEY;
-  const INDEX_ID = process.env.TWELVELABS_INDEX_ID;
+  const FOOTAGE_INDEX_ID = process.env.TWELVELABS_FOOTAGE_INDEX_ID;
   const TWELVELABS_API_BASE_URL = process.env.TWELVELABS_API_BASE_URL;
 
-  if (!API_KEY || !INDEX_ID) {
+  if (!API_KEY || !FOOTAGE_INDEX_ID) {
     return NextResponse.json(
       { error: "API key or Index ID is not set" },
       { status: 500 }
     );
   }
 
-  const url = `${TWELVELABS_API_BASE_URL}/indexes/${INDEX_ID}/videos/${videoId}`;
+  const url = `${TWELVELABS_API_BASE_URL}/indexes/${FOOTAGE_INDEX_ID}/videos/${videoId}`;
 
   const options = {
     method: "GET",
