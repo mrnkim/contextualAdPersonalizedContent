@@ -1,21 +1,28 @@
 import { NextResponse } from "next/server";
 
+const API_KEY = process.env.TWELVELABS_API_KEY;
+const TWELVELABS_API_BASE_URL = process.env.TWELVELABS_API_BASE_URL;
+
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const videoId = searchParams.get("videoId");
+  const indexId = searchParams.get("indexId");
 
-  const API_KEY = process.env.TWELVELABS_API_KEY;
-  const FOOTAGE_INDEX_ID = process.env.TWELVELABS_FOOTAGE_INDEX_ID;
-  const TWELVELABS_API_BASE_URL = process.env.TWELVELABS_API_BASE_URL;
-
-  if (!API_KEY || !FOOTAGE_INDEX_ID) {
+  if (!indexId) {
     return NextResponse.json(
-      { error: "API key or Index ID is not set" },
-      { status: 500 }
+      { error: "indexId is required" },
+      { status: 400 }
     );
   }
 
-  const url = `${TWELVELABS_API_BASE_URL}/indexes/${FOOTAGE_INDEX_ID}/videos/${videoId}`;
+  if (!videoId) {
+    return NextResponse.json(
+      { error: "videoId is required" },
+      { status: 400 }
+    );
+  }
+
+   const url = `${TWELVELABS_API_BASE_URL}/indexes/${indexId}/videos/${videoId}`;
 
   const options = {
     method: "GET",

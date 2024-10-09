@@ -1,21 +1,28 @@
 import { NextResponse } from "next/server";
 
-export async function GET(req: Request) {
-  const API_KEY = process.env.TWELVELABS_API_KEY;
-  const FOOTAGE_INDEX_ID = process.env.TWELVELABS_FOOTAGE_INDEX_ID;
-  const TWELVELABS_API_BASE_URL = process.env.TWELVELABS_API_BASE_URL;
+const API_KEY = process.env.TWELVELABS_API_KEY;
+const TWELVELABS_API_BASE_URL = process.env.TWELVELABS_API_BASE_URL;
 
-  if (!API_KEY || !FOOTAGE_INDEX_ID) {
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const page = searchParams.get("page");
+  const indexId = searchParams.get("indexId");
+
+  if (!indexId) {
     return NextResponse.json(
-      { error: "API key or Index ID is not set" },
-      { status: 500 }
+      { error: "indexId is required" },
+      { status: 400 }
     );
   }
 
-  const { searchParams } = new URL(req.url);
-  const page = searchParams.get("page") || 1;
+  if (!page) {
+    return NextResponse.json(
+      { error: "page is required" },
+      { status: 400 }
+    );
+  }
 
-  const url = `${TWELVELABS_API_BASE_URL}/indexes/${FOOTAGE_INDEX_ID}/videos?page_limit=9&page=${page}`;
+  const url = `${TWELVELABS_API_BASE_URL}/indexes/${indexId}/videos?page=${page}`;
 
   const options = {
     method: "GET",

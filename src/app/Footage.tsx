@@ -9,48 +9,83 @@ import Button from './Button'
 import FootageSummary from './FootageSummary';
 
 function Footage() {
-   /** Fetches videos for the speficied page */
-   const fetchVideos = async (page: number) => {
-    const response = await fetch(`/api/getVideos?page=${page}`);
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-    return response.json();
-  };
+	const [footageIndexId, setFootageIndexId] = useState<string | null>(null);
 
-   const [isAnalyzeClicked, setIsAnalyzeClicked] = useState(false);
+	// Fetch the footage index ID
+	const {
+		error: indexIdError,
+		isLoading: isIndexIdLoading,
+	} = useQuery({
+		queryKey: ["footageIndexId"],
+		queryFn: async () => {
+			const response = await fetch('/api/getFootageIndexId');
+			if (!response.ok) {
+				throw new Error("Failed to fetch footage index ID");
+			}
+			const data = await response.json();
+			setFootageIndexId(data.footageIndexId);
+			return data;
+		},
+	});
 
-   /** Queries the videos data for the specified page using React Query */
-   const {
-    data: videosData,
-    error: videosError,
-    isLoading: isVideosLoading,
-    isFetching: isVideosFetching,
-  } = useQuery({
-    queryKey: ["videos", 1],
-    queryFn: () => fetchVideos(1),
-  });
+	/** Fetches videos for the specified page */
+	const fetchVideos = async (page: number, footageIndexId: string) => {
+		if (!footageIndexId) {
+			throw new Error("Footage index ID is required");
+		}
+		const response = await fetch(`/api/getVideos?indexId=${footageIndexId}&page=${page}`);
+		if (!response.ok) {
+			throw new Error("Network response was not ok");
+		}
+		return response.json();
+	};
 
-  if (isVideosLoading || isVideosFetching) return <LoadingSpinner />;
-  if (videosError) return <ErrorFallback error={videosError} />;
+	const [isAnalyzeClicked, setIsAnalyzeClicked] = useState(false);
 
-  return (
-    <div className="flex flex-col gap-4">
-      <h2 className="text-center text-2xl">News Footage</h2>
-      <Video video={videosData.data[0]} />
-      <div className="flex justify-center">
-        <Button
-          type="button"
-          size="sm"
-          appearance="primary"
-          onClick={() => setIsAnalyzeClicked(true)}
-        >
-          Analyze
-        </Button>
-      </div>
-      {isAnalyzeClicked && <FootageSummary videoId={videosData.data[0]._id} />}
-    </div>
-  )
+	/** Queries the videos data for the specified page using React Query */
+	const {
+		data: videosData,
+		error: videosError,
+		isLoading: isVideosLoading,
+		isFetching: isVideosFetching,
+	} = useQuery({
+		queryKey: ["videos", 1, footageIndexId],
+		queryFn: () => fetchVideos(1, footageIndexId!),
+		enabled: !!footageIndexId,
+	});
+
+	if (indexIdError || videosError) return <ErrorFallback error={indexIdError || videosError || new Error('Unknown error')} />;
+
+	const isLoading = isIndexIdLoading || isVideosLoading || isVideosFetching;
+	const hasVideoData = videosData && videosData.data && videosData.data.length > 0;
+
+	return (
+		<div className="flex flex-col gap-4">
+			<h2 className="text-center text-2xl">News Footage</h2>
+			{isLoading ? (
+				<LoadingSpinner />
+			) : !hasVideoData ? (
+				<div>No videos available</div>
+			) : (
+				<Video video={videosData.data[0]} indexId={footageIndexId || ''} />
+			)}
+			{!isLoading && hasVideoData && (
+				<div className="flex justify-center">
+					<Button
+						type="button"
+						size="sm"
+						appearance="primary"
+						onClick={() => setIsAnalyzeClicked(true)}
+					>
+						Analyze
+					</Button>
+				</div>
+			)}
+			{isAnalyzeClicked && hasVideoData && (
+				<FootageSummary videoId={videosData.data[0]._id} />
+			)}
+		</div>
+	)
 }
 
 export default Footage

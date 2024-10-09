@@ -20,9 +20,9 @@ interface VideoHLS {
 interface VideoProps {
   video: {
     _id?: string;
-    videoId?: string;
     metadata?: VideoMetadata;
   };
+  indexId: string;
 }
 
 interface VideoDetail {
@@ -33,12 +33,12 @@ interface VideoDetail {
  *
  * Videos ->  Video
  */
-const Video: React.FC<VideoProps> = ({ video }) => {
+const Video: React.FC<VideoProps> = ({ video, indexId }) => {
   const [playing, setPlaying] = useState(false);
 
   /** Fetches detailed information of a video */
-  const fetchVideoDetail = async (videoId: string): Promise<VideoDetail> => {
-    const response = await fetch(`/api/getVideo?videoId=${videoId}`);
+  const fetchVideoDetail = async (videoId: string, indexId: string): Promise<VideoDetail> => {
+    const response = await fetch(`/api/getVideo?videoId=${videoId}&indexId=${indexId}`);
     if (!response.ok) {
       throw new Error("Network response was not ok");
     }
@@ -60,8 +60,13 @@ const Video: React.FC<VideoProps> = ({ video }) => {
 
   /** Queries the detailed information of a video using React Query */
   const { data: videoDetail, error: videoError } = useQuery<VideoDetail, Error>({
-    queryKey: ["videoDetail", video?._id || video?.videoId],
-    queryFn: () => fetchVideoDetail(video?._id || video?.videoId || ""),
+    queryKey: ["videoDetail", video?._id],
+    queryFn: () => {
+      if (!video?._id) {
+        throw new Error("Video ID is missing");
+      }
+      return fetchVideoDetail(video._id, indexId);
+    },
     staleTime: 600000,
     gcTime: 900000,
   });

@@ -1,21 +1,20 @@
 import { NextResponse } from "next/server";
 
-export async function GET(req: Request) {
-    const API_KEY = process.env.TWELVELABS_API_KEY;
-    const FOOTAGE_INDEDX_ID = process.env.TWELVELABS_FOOTAGE_INDEX_ID;
-    const TWELVELABS_API_BASE_URL = process.env.TWELVELABS_API_BASE_URL;
+const API_KEY = process.env.TWELVELABS_API_KEY;
+const TWELVELABS_API_BASE_URL = process.env.TWELVELABS_API_BASE_URL;
+const PROMPT = "Summarize the video focusing on the event type, main content, and the emotional tone. Provide the titles (Event Type, Main Content, Emotional Tone) before each summary. Do not include any introductory text or comments. Start straight away with the summary."
 
-    if (!API_KEY || !FOOTAGE_INDEDX_ID) {
+export async function GET(req: Request) {
+    const { searchParams } = new URL(req.url);
+    const videoId = searchParams.get("videoId");
+
+    if (!videoId) {
       return NextResponse.json(
-        { error: "API key or Index ID is not set" },
-        { status: 500 }
+        { error: "videoId is required" },
+        { status: 400 }
       );
     }
-
-    const { searchParams } = new URL(req.url);
-    const VIDEO_ID = searchParams.get("videoId");
-    const PROMPT = "Summarize the video focusing on the event type, main content, and the emotional tone. Provide the titles (Event Type, Main Content, Emotional Tone) before each summary. Do not include any introductory text or comments. Start straight away with the summary."
-
+   
       const url = `${TWELVELABS_API_BASE_URL}/generate`;
       const options = {
           method: "POST",
@@ -23,7 +22,7 @@ export async function GET(req: Request) {
               "Content-Type": "application/json",
               "x-api-key": `${API_KEY}`,
             },
-            body: JSON.stringify({prompt: PROMPT, video_id: `${VIDEO_ID}`})
+            body: JSON.stringify({prompt: PROMPT, video_id: `${videoId}`})
         };
 
       try {
