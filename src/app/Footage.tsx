@@ -60,8 +60,8 @@ function Footage() {
 	const hasVideoData = videosData && videosData.data && videosData.data.length > 0;
 
 	return (
-		<div className="flex flex-col gap-4">
-			<h2 className="text-center text-2xl">News Footage</h2>
+		<div className="flex flex-col items-center gap-4">
+			<h2 className="text-2xl">News Footage</h2>
 			{isLoading ? (
 				<LoadingSpinner />
 			) : !hasVideoData ? (
@@ -70,16 +70,14 @@ function Footage() {
 				<Video video={videosData.data[0]} indexId={footageIndexId || ''} />
 			)}
 			{!isLoading && hasVideoData && (
-				<div className="flex justify-center">
-					<Button
-						type="button"
-						size="sm"
-						appearance="primary"
-						onClick={() => setIsAnalyzeClicked(true)}
-					>
-						Analyze
-					</Button>
-				</div>
+				<Button
+					type="button"
+					size="sm"
+					appearance="primary"
+					onClick={() => setIsAnalyzeClicked(true)}
+				>
+					Analyze
+				</Button>
 			)}
 			{isAnalyzeClicked && hasVideoData && (
 				<FootageSummary videoId={videosData.data[0]._id} />

@@ -76,10 +76,10 @@ const Video: React.FC<VideoProps> = ({ video, indexId }) => {
   }
 
   return (
-    <div>
-      <div className="relative p-1">
+    <div className="flex flex-col w-full max-w-sm">
+      <div className="relative">
         <div
-          className="w-full h-40 relative overflow-hidden rounded cursor-pointer"
+          className="w-full h-0 pb-[56.25%] relative overflow-hidden rounded cursor-pointer"
           onClick={() => setPlaying(!playing)}
         >
           <ReactPlayer
@@ -87,6 +87,7 @@ const Video: React.FC<VideoProps> = ({ video, indexId }) => {
             controls
             width="100%"
             height="100%"
+            style={{ position: 'absolute', top: 0, left: 0 }}
             light={
               <img
                 src={
@@ -94,7 +95,7 @@ const Video: React.FC<VideoProps> = ({ video, indexId }) => {
                   videoDetail?.hls?.thumbnailUrls?.[0] ||
                   '/videoFallback.jpg'
                 }
-                className="object-contain w-full h-full"
+                className="object-cover w-full h-full"
                 alt="thumbnail"
               />
             }
@@ -111,31 +112,32 @@ const Video: React.FC<VideoProps> = ({ video, indexId }) => {
           <div
             className={clsx(
               "absolute",
-              "top-3",
+              "top-2",
               "left-1/2",
               "transform",
-              "-translate-x-1/2"
+              "-translate-x-1/2",
+              "z-10"
             )}
           >
             <div
               className={clsx(
                 "bg-grey-1000/60",
-                "px-0.5",
+                "px-2",
                 "py-1",
                 "rounded-sm"
               )}
             >
-              <p className={clsx("text-white", "text-xs font-light")}>
+              <p className={clsx("text-white", "text-xs", "font-light")}>
                 {formatDuration(video?.metadata?.duration ?? 0)}
               </p>
             </div>
           </div>
         </div>
-        <div className="text-center mb-2">
-          <p className={clsx("mt-2", "text-body3", "truncate", "grey-700")}>
-            {video?.metadata?.filename}
-          </p>
-        </div>
+      </div>
+      <div className="mt-2">
+        <p className={clsx("text-body3", "truncate", "text-grey-700")}>
+          {video?.metadata?.filename}
+        </p>
       </div>
     </div>
   );

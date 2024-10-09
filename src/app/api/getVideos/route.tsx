@@ -22,7 +22,7 @@ export async function GET(req: Request) {
     );
   }
 
-  const url = `${TWELVELABS_API_BASE_URL}/indexes/${indexId}/videos?page=${page}`;
+  const url = `${TWELVELABS_API_BASE_URL}/indexes/${indexId}/videos?page=${page}&page_limit=9`;
 
   const options = {
     method: "GET",
