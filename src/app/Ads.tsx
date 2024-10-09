@@ -8,15 +8,21 @@ import { useQuery } from "@tanstack/react-query";
 import Button from './Button'
 import PageNav from './PageNav';
 import clsx from 'clsx'
+import RecommendedAds from './RecommendedAds';
 
 type VideoType = {
   _id: string;
   title: string;
 };
 
-function Ads() {
+interface AdsProps {
+  hashtags: string[];
+}
+
+function Ads({ hashtags }: AdsProps) {
   const [adsIndexId, setAdsIndexId] = useState<string | null>(null);
   const [page, setPage] = useState(1);
+  const [isRecommendClicked, setIsRecommendClicked] = useState(false);
 
 	// Fetch the ads index ID
 	const {
@@ -67,7 +73,7 @@ function Ads() {
 	const hasVideoData = videosData && videosData.data && videosData.data.length > 0;
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col items-center gap-4">
       <h2 className="text-center text-2xl">Ads Library</h2>
       {isLoading ? (
         <LoadingSpinner />
@@ -89,10 +95,14 @@ function Ads() {
             type="button"
             size="sm"
             appearance="primary"
+            onClick={() => setIsRecommendClicked(true)}
           >
             Recommend
           </Button>
         </div>
+      )}
+      {isRecommendClicked && hasVideoData && (
+        <RecommendedAds hashtags={hashtags} />
       )}
     </div>
   )

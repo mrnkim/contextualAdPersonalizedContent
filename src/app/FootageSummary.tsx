@@ -5,15 +5,18 @@ import ErrorFallback from './ErrorFallback';
 
 interface FootageSummaryProps {
   videoId: string;
+  setHashtags: (hashtags: string[]) => void;
 }
 
-function FootageSummary({ videoId }: FootageSummaryProps) {
+function FootageSummary({ videoId, setHashtags }: FootageSummaryProps) {
   const generateGist = async () => {
     const response = await fetch(`/api/generateGist?videoId=${videoId}`);
     if (!response.ok) {
       throw new Error("Failed to generate gist");
     }
-    return response.json();
+    const data = await response.json();
+    setHashtags(data.hashtags);
+    return data;
   };
 
   const { data: gistData, error: gistError, isLoading: isGistLoading } = useQuery({

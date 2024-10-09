@@ -8,10 +8,15 @@ import { useQuery } from "@tanstack/react-query";
 import Button from './Button'
 import FootageSummary from './FootageSummary';
 
-function Footage() {
-	const [footageIndexId, setFootageIndexId] = useState<string | null>(null);
+interface FootageProps {
+	setHashtags: (hashtags: string[]) => void;
+  }
 
-	// Fetch the footage index ID
+function Footage({ setHashtags }: FootageProps) {
+	const [footageIndexId, setFootageIndexId] = useState<string | null>(null);
+	const [isAnalyzeClicked, setIsAnalyzeClicked] = useState(false);
+
+	/** Fetch the footage index ID */
 	const {
 		error: indexIdError,
 		isLoading: isIndexIdLoading,
@@ -39,8 +44,6 @@ function Footage() {
 		}
 		return response.json();
 	};
-
-	const [isAnalyzeClicked, setIsAnalyzeClicked] = useState(false);
 
 	/** Queries the videos data for the specified page using React Query */
 	const {
@@ -80,7 +83,7 @@ function Footage() {
 				</Button>
 			)}
 			{isAnalyzeClicked && hasVideoData && (
-				<FootageSummary videoId={videosData.data[0]._id} />
+				<FootageSummary videoId={videosData.data[0]._id} setHashtags={setHashtags} />
 			)}
 		</div>
 	)
