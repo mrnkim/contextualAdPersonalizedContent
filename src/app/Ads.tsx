@@ -6,6 +6,8 @@ import LoadingSpinner from './LoadingSpinner';
 import ErrorFallback from './ErrorFallback';
 import { useQuery } from "@tanstack/react-query";
 import Button from './Button'
+import PageNav from './PageNav';
+import clsx from 'clsx'
 
 type VideoType = {
   _id: string;
@@ -14,6 +16,7 @@ type VideoType = {
 
 function Ads() {
   const [adsIndexId, setAdsIndexId] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
 
 	// Fetch the ads index ID
 	const {
@@ -51,10 +54,12 @@ function Ads() {
 		isLoading: isVideosLoading,
 		isFetching: isVideosFetching,
 	} = useQuery({
-		queryKey: ["videos", 1, adsIndexId],
-		queryFn: () => fetchVideos(1, adsIndexId!),
+		queryKey: ["videos", page, adsIndexId],
+		queryFn: () => fetchVideos(page, adsIndexId!),
 		enabled: !!adsIndexId,
 	});
+
+  const totalPage = videosData?.page_info?.total_page || 1;
 
   if (indexIdError || videosError) return <ErrorFallback error={indexIdError || videosError || new Error('Unknown error')} />;
 
@@ -75,6 +80,9 @@ function Ads() {
           ))}
         </div>
       )}
+         <div className={clsx("w-full", "flex", "justify-center", "mt-8")}>
+              <PageNav page={page} setPage={setPage} totalPage={totalPage} />
+            </div>
       {!isLoading && hasVideoData && (
         <div className="flex justify-center">
           <Button
@@ -82,7 +90,7 @@ function Ads() {
             size="sm"
             appearance="primary"
           >
-            Analyze
+            Recommend
           </Button>
         </div>
       )}
