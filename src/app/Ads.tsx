@@ -18,65 +18,50 @@ type VideoType = {
 
 interface AdsProps {
   hashtags: string[];
+  setHashtags: (hashtags: string[]) => void;
+  indexId: string;
+  isIndexIdLoading: boolean;
+  footageVideoId: string;
 }
 
-function Ads({ hashtags }: AdsProps) {
-  const [adsIndexId, setAdsIndexId] = useState<string | null>(null);
+function Ads({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVideoId }: AdsProps) {
   const [page, setPage] = useState(1);
   const [isRecommendClicked, setIsRecommendClicked] = useState(false);
-
-	const {
-		data: indexIdData,
-		error: indexIdError,
-		isLoading: isIndexIdLoading,
-	} = useQuery({
-		queryKey: ["adsIndexId"],
-		queryFn: fetchAdsIndexId,
-	});
-
-	useEffect(() => {
-		if (indexIdData) {
-			setAdsIndexId(indexIdData.adsIndexId);
-		}
-	}, [indexIdData]);
 
 	/** Queries the videos data for the specified page using React Query */
 	const {
 		data: videosData,
-		error: videosError,
 		isLoading: isVideosLoading,
-		isFetching: isVideosFetching,
 	} = useQuery({
-		queryKey: ["videos", page, adsIndexId],
-		queryFn: () => fetchVideos(page, adsIndexId!),
-		enabled: !!adsIndexId,
+		queryKey: ["videos", page, indexId],
+		queryFn: () => fetchVideos(page, indexId!),
+		enabled: !!indexId,
 	});
+		console.log("🚀 > Ads > videosData=", videosData)
 
   const totalPage = videosData?.page_info?.total_page || 1;
 
-  if (indexIdError || videosError) return <ErrorFallback error={indexIdError || videosError || new Error('Unknown error')} />;
 
-	const isLoading = isIndexIdLoading || isVideosLoading || isVideosFetching;
 	const hasVideoData = videosData && videosData.data && videosData.data.length > 0;
 
   return (
     <div className="flex flex-col items-center gap-4">
       <h2 className="text-center text-2xl">Ads Library</h2>
-      {isLoading ? (
+      {isIndexIdLoading || isVideosLoading ? (
         <LoadingSpinner />
       ) : !hasVideoData ? (
         <div>No videos available</div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 justify-items-center">
           {videosData.data.map((video: VideoType) => (
-            <Video key={video._id} video={video} indexId={adsIndexId || ''} />
+            <Video key={video._id} video={video} indexId={indexId || ''} />
           ))}
         </div>
       )}
          <div className={clsx("w-full", "flex", "justify-center", "mt-8")}>
               <PageNav page={page} setPage={setPage} totalPage={totalPage} />
             </div>
-      {!isLoading && hasVideoData && (
+      {!isIndexIdLoading && hasVideoData && (
         <div className="flex justify-center">
           <Button
             type="button"
@@ -89,7 +74,7 @@ function Ads({ hashtags }: AdsProps) {
         </div>
       )}
       {isRecommendClicked && hasVideoData && (
-        <RecommendedAds hashtags={hashtags} />
+        <RecommendedAds hashtags={hashtags} setHashtags={setHashtags} footageVideoId={footageVideoId} />
       )}
     </div>
   )

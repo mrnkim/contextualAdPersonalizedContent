@@ -15,11 +15,19 @@ export const generateGist = async (videoId: string) => {
     return response.json();
   };
 
- export const fetchVideos = async (page: number, adsIndexId: string) => {
-	if (!adsIndexId) {
+  export const textToVideoSearch = async (indexId: string, query: string): Promise<void> => {
+    const response = await fetch(`/api/search?indexId=${indexId}&query=${query}`);
+    if (!response.ok) {
+      throw new Error("Failed to generate gist");
+    }
+    return response.json();
+  };
+
+ export const fetchVideos = async (page: number, indexId: string) => {
+	if (!indexId) {
 		throw new Error("ads index ID is required");
 	}
-	const response = await fetch(`/api/getVideos?indexId=${adsIndexId}&page=${page}`);
+	const response = await fetch(`/api/getVideos?indexId=${indexId}&page=${page}`);
 	if (!response.ok) {
 		throw new Error("Network response was not ok");
 	}

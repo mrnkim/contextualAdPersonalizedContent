@@ -3,64 +3,50 @@
 import React, { useState, useEffect } from 'react'
 import Video from './Video';
 import LoadingSpinner from './LoadingSpinner';
-import ErrorFallback from './ErrorFallback';
 import { useQuery } from "@tanstack/react-query";
 import Button from './Button'
 import FootageSummary from './FootageSummary';
-import { fetchFootageIndexId, fetchVideos } from '@/hooks/apiHooks';
+import { fetchVideos } from '@/hooks/apiHooks';
+
+const PAGE = 1;
 
 interface FootageProps {
 	setHashtags: (hashtags: string[]) => void;
+	indexId: string;
+	isIndexIdLoading: boolean;
+	footageVideoId: string;
+	setFootageVideoId: (footageVideoId: string) => void;
   }
 
-function Footage({ setHashtags }: FootageProps) {
-	const [footageIndexId, setFootageIndexId] = useState<string | null>(null);
+function Footage({ setHashtags, indexId, isIndexIdLoading, footageVideoId, setFootageVideoId }: FootageProps) {
 	const [isAnalyzeClicked, setIsAnalyzeClicked] = useState(false);
 
-	/** Fetch the footage index ID */
-	const {
-		error: indexIdError,
-		isLoading: isIndexIdLoading,
-		data: indexIdData,
-	} = useQuery({
-		queryKey: ["footageIndexId"],
-		queryFn: fetchFootageIndexId,
+	const { data: videos, isLoading: isVideosLoading } = useQuery({
+		queryKey: ['videos', PAGE, indexId],
+		queryFn: () => fetchVideos(PAGE,indexId),
+		enabled: !!indexId && !isIndexIdLoading,
 	});
+
+	console.log("🚀 > Footage > videos=", videos)
+	const hasVideoData = videos?.data && videos?.data?.length > 0;
 
 	useEffect(() => {
-		if (indexIdData) {
-			setFootageIndexId(indexIdData.footageIndexId);
+		if (videos?.data?.[0]?._id) {
+			setFootageVideoId(videos.data[0]._id);
 		}
-	}, [indexIdData]);
-
-	/** Queries the videos data for the specified page using React Query */
-	const {
-		data: videosData,
-		error: videosError,
-		isLoading: isVideosLoading,
-		isFetching: isVideosFetching,
-	} = useQuery({
-		queryKey: ["videos", 1, footageIndexId],
-		queryFn: () => fetchVideos(1, footageIndexId!),
-		enabled: !!footageIndexId,
-	});
-
-	if (indexIdError || videosError) return <ErrorFallback error={indexIdError || videosError || new Error('Unknown error')} />;
-
-	const isLoading = isIndexIdLoading || isVideosLoading || isVideosFetching;
-	const hasVideoData = videosData && videosData.data && videosData.data.length > 0;
+	}, [videos, setFootageVideoId]);
 
 	return (
 		<div className="flex flex-col items-center gap-4">
 			<h2 className="text-2xl">News Footage</h2>
-			{isLoading ? (
+			{isIndexIdLoading || isVideosLoading ? (
 				<LoadingSpinner />
 			) : !hasVideoData ? (
 				<div>No videos available</div>
 			) : (
-				<Video video={videosData.data[0]} indexId={footageIndexId || ''} />
+				<Video video={videos.data[0]} indexId={indexId || ''} />
 			)}
-			{!isLoading && hasVideoData && (
+			{!isIndexIdLoading && !isVideosLoading && hasVideoData && (
 				<Button
 					type="button"
 					size="sm"
@@ -71,7 +57,7 @@ function Footage({ setHashtags }: FootageProps) {
 				</Button>
 			)}
 			{isAnalyzeClicked && hasVideoData && (
-				<FootageSummary videoId={videosData.data[0]._id} setHashtags={setHashtags} />
+				<FootageSummary videoId={footageVideoId} setHashtags={setHashtags} />
 			)}
 		</div>
 	)

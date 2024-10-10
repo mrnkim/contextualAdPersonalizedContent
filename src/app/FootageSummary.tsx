@@ -14,6 +14,7 @@ interface GistData {
 }
 
 function FootageSummary({ videoId, setHashtags }: FootageSummaryProps) {
+console.log("🚀 > FootageSummary > videoId=", videoId)
 
   const { data: gistData, error: gistError, isLoading: isGistLoading } = useQuery<GistData, Error>({
     queryKey: ["gist", videoId],
