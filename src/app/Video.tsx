@@ -5,10 +5,15 @@ import { useQuery } from "@tanstack/react-query";
 import clsx from "clsx";
 import ReactPlayer from "react-player";
 import ErrorFallback from "./ErrorFallback";
+import { fetchVideoDetail } from "@/hooks/apiHooks";
 
 interface VideoMetadata {
   duration: number;
   filename: string;
+}
+
+interface VideoDetail {
+  hls: VideoHLS;
 }
 
 interface VideoHLS {
@@ -25,25 +30,12 @@ interface VideoProps {
   indexId: string;
 }
 
-interface VideoDetail {
-  hls: VideoHLS;
-}
-
 /**
  *
  * Videos ->  Video
  */
 const Video: React.FC<VideoProps> = ({ video, indexId }) => {
   const [playing, setPlaying] = useState(false);
-
-  /** Fetches detailed information of a video */
-  const fetchVideoDetail = async (videoId: string, indexId: string): Promise<VideoDetail> => {
-    const response = await fetch(`/api/getVideo?videoId=${videoId}&indexId=${indexId}`);
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-    return response.json();
-  };
 
   /** Formats a duration in seconds into a "HH:MM:SS" string format */
   const formatDuration = (seconds: number): string => {

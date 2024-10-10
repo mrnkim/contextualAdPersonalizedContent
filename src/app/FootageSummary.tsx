@@ -1,40 +1,34 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useQuery } from "@tanstack/react-query";
 import LoadingSpinner from './LoadingSpinner';
 import ErrorFallback from './ErrorFallback';
+import { generateGist, generateCustomTexts } from '@/hooks/apiHooks';
 
 interface FootageSummaryProps {
   videoId: string;
   setHashtags: (hashtags: string[]) => void;
 }
 
-function FootageSummary({ videoId, setHashtags }: FootageSummaryProps) {
-  const generateGist = async () => {
-    const response = await fetch(`/api/generateGist?videoId=${videoId}`);
-    if (!response.ok) {
-      throw new Error("Failed to generate gist");
-    }
-    const data = await response.json();
-    setHashtags(data.hashtags);
-    return data;
-  };
+interface GistData {
+  hashtags: string[];
+}
 
-  const { data: gistData, error: gistError, isLoading: isGistLoading } = useQuery({
+function FootageSummary({ videoId, setHashtags }: FootageSummaryProps) {
+
+  const { data: gistData, error: gistError, isLoading: isGistLoading } = useQuery<GistData, Error>({
     queryKey: ["gist", videoId],
-    queryFn: generateGist,
+    queryFn: () => generateGist(videoId),
   });
 
-  const generateCustomTexts = async (): Promise<void> => {
-    const response = await fetch(`/api/generateCustomTexts?videoId=${videoId}`);
-    if (!response.ok) {
-      throw new Error("Failed to generate gist");
+  useEffect(() => {
+    if (gistData?.hashtags) {
+      setHashtags(gistData.hashtags);
     }
-    return response.json();
-  };
+  }, [gistData, setHashtags]);
 
   const { data: customTextsData, error: customTextsError, isLoading: isCustomTextsLoading } = useQuery({
     queryKey: ["customTexts", videoId],
-    queryFn: generateCustomTexts,
+    queryFn: () => generateCustomTexts(videoId),
   });
 
   const formatCustomTexts = (data: string) => {
@@ -64,7 +58,7 @@ function FootageSummary({ videoId, setHashtags }: FootageSummaryProps) {
         </div> */}
         <div className="mb-2">
           {/* <strong>Hashtags:</strong> */}
-          {gistData.hashtags.map((tag: string) => `#${tag?.trim()}`).join(' ')}
+          {gistData?.hashtags?.map((tag: string) => `#${tag?.trim()}`).join(' ')}
         </div>
       </>
     );

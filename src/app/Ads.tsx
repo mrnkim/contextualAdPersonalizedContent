@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Video from './Video';
 import LoadingSpinner from './LoadingSpinner';
 import ErrorFallback from './ErrorFallback';
@@ -9,6 +9,7 @@ import Button from './Button'
 import PageNav from './PageNav';
 import clsx from 'clsx'
 import RecommendedAds from './RecommendedAds';
+import { fetchVideos, fetchAdsIndexId } from '@/hooks/apiHooks';
 
 type VideoType = {
   _id: string;
@@ -24,36 +25,22 @@ function Ads({ hashtags }: AdsProps) {
   const [page, setPage] = useState(1);
   const [isRecommendClicked, setIsRecommendClicked] = useState(false);
 
-	// Fetch the ads index ID
 	const {
+		data: indexIdData,
 		error: indexIdError,
 		isLoading: isIndexIdLoading,
 	} = useQuery({
 		queryKey: ["adsIndexId"],
-		queryFn: async () => {
-			const response = await fetch('/api/getAdsIndexId');
-			if (!response.ok) {
-				throw new Error("Failed to fetch ads index ID");
-			}
-			const data = await response.json();
-			setAdsIndexId(data.adsIndexId);
-			return data;
-		},
+		queryFn: fetchAdsIndexId,
 	});
 
-  /** Fetches videos for the specified page */
-	const fetchVideos = async (page: number, adsIndexId: string) => {
-		if (!adsIndexId) {
-			throw new Error("ads index ID is required");
+	useEffect(() => {
+		if (indexIdData) {
+			setAdsIndexId(indexIdData.adsIndexId);
 		}
-		const response = await fetch(`/api/getVideos?indexId=${adsIndexId}&page=${page}`);
-		if (!response.ok) {
-			throw new Error("Network response was not ok");
-		}
-		return response.json();
-	};
+	}, [indexIdData]);
 
-  /** Queries the videos data for the specified page using React Query */
+	/** Queries the videos data for the specified page using React Query */
 	const {
 		data: videosData,
 		error: videosError,

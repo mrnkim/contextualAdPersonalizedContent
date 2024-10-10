@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Video from './Video';
 import LoadingSpinner from './LoadingSpinner';
 import ErrorFallback from './ErrorFallback';
 import { useQuery } from "@tanstack/react-query";
 import Button from './Button'
 import FootageSummary from './FootageSummary';
+import { fetchFootageIndexId, fetchVideos } from '@/hooks/apiHooks';
 
 interface FootageProps {
 	setHashtags: (hashtags: string[]) => void;
@@ -20,30 +21,17 @@ function Footage({ setHashtags }: FootageProps) {
 	const {
 		error: indexIdError,
 		isLoading: isIndexIdLoading,
+		data: indexIdData,
 	} = useQuery({
 		queryKey: ["footageIndexId"],
-		queryFn: async () => {
-			const response = await fetch('/api/getFootageIndexId');
-			if (!response.ok) {
-				throw new Error("Failed to fetch footage index ID");
-			}
-			const data = await response.json();
-			setFootageIndexId(data.footageIndexId);
-			return data;
-		},
+		queryFn: fetchFootageIndexId,
 	});
 
-	/** Fetches videos for the specified page */
-	const fetchVideos = async (page: number, footageIndexId: string) => {
-		if (!footageIndexId) {
-			throw new Error("Footage index ID is required");
+	useEffect(() => {
+		if (indexIdData) {
+			setFootageIndexId(indexIdData.footageIndexId);
 		}
-		const response = await fetch(`/api/getVideos?indexId=${footageIndexId}&page=${page}`);
-		if (!response.ok) {
-			throw new Error("Network response was not ok");
-		}
-		return response.json();
-	};
+	}, [indexIdData]);
 
 	/** Queries the videos data for the specified page using React Query */
 	const {
