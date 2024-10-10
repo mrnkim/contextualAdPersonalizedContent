@@ -27,7 +27,6 @@ function Footage({ setHashtags, indexId, isIndexIdLoading, footageVideoId, setFo
 		enabled: !!indexId && !isIndexIdLoading,
 	});
 
-	console.log("🚀 > Footage > videos=", videos)
 	const hasVideoData = videos?.data && videos?.data?.length > 0;
 
 	useEffect(() => {

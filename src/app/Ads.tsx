@@ -37,7 +37,6 @@ function Ads({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVideoId 
 		queryFn: () => fetchVideos(page, indexId!),
 		enabled: !!indexId,
 	});
-		console.log("🚀 > Ads > videosData=", videosData)
 
   const totalPage = videosData?.page_info?.total_page || 1;
 
@@ -74,7 +73,7 @@ function Ads({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVideoId 
         </div>
       )}
       {isRecommendClicked && hasVideoData && (
-        <RecommendedAds hashtags={hashtags} setHashtags={setHashtags} footageVideoId={footageVideoId} />
+        <RecommendedAds hashtags={hashtags} setHashtags={setHashtags} footageVideoId={footageVideoId} indexId={indexId}/>
       )}
     </div>
   )

@@ -40,7 +40,6 @@ export async function GET(req: Request) {
     }
 
     const data = await response.json();
-    console.log("🚀 > GET > data =", data )
     return NextResponse.json(data, { status: 200 });
   } catch (error) {
     console.error(error);

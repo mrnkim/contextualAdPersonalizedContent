@@ -20,8 +20,7 @@ export default function Page() {
     queryFn: fetchAdsIndexId,
   });
 
-  console.log("🚀 > Page > adsIndexId=", adsIndexId)
-  return (
+ return (
     <main className="flex min-h-screen p-24">
     <div className="flex w-full max-w-7xl mx-auto">
       <div className="w-1/2 pr-4">

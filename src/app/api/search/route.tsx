@@ -40,20 +40,20 @@ export async function GET(req: Request) {
 
       try {
         const response = await fetch(url, options);
+        console.log("🚀 > GET > response=", response)
 
         if (!response.ok) {
           throw new Error(`Network response was not ok: ${response.status} ${response.statusText}`);
         }
 
         const responseData = await response.json();
+        console.log("🚀 > GET > responseData=", responseData)
 
         if (!responseData) {
           throw new Error("Empty response from API");
         }
 
-        const data = JSON.parse(responseData);
-
-        return NextResponse.json(data.data,{ status: 200 });
+        return NextResponse.json(responseData, { status: 200 });
       } catch (error) {
         console.error("Error in GET function:", error);
         return NextResponse.json(
