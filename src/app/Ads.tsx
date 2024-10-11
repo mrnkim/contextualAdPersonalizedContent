@@ -73,7 +73,12 @@ function Ads({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVideoId 
         </div>
       )}
       {isRecommendClicked && hasVideoData && (
-        <RecommendedAds hashtags={hashtags} setHashtags={setHashtags} footageVideoId={footageVideoId} indexId={indexId}/>
+        <RecommendedAds
+          hashtags={hashtags}
+          setHashtags={setHashtags}
+          footageVideoId={footageVideoId}
+          indexId={indexId}
+        />
       )}
     </div>
   )

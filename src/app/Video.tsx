@@ -7,35 +7,61 @@ import ReactPlayer from "react-player";
 import ErrorFallback from "./ErrorFallback";
 import { fetchVideoDetail } from "@/hooks/apiHooks";
 
-interface VideoMetadata {
-  duration: number;
-  filename: string;
-}
-
 interface VideoDetail {
   hls: VideoHLS;
+  metadata: VideoMetadata;
+}
+
+interface VideoMetadata {
+  duration: number;
+  engine_ids: string[];
+  filename: string;
+  fps: number;
+  height: number;
+  size: number;
+  video_title: string;
+  width: number;
 }
 
 interface VideoHLS {
-  video_url: string;
+  status: string;
   thumbnail_urls: string[];
-  thumbnailUrls?: string[];
+  updated_at: string;
+  video_url: string;
 }
 
 interface VideoProps {
   video: {
     _id?: string;
     metadata?: VideoMetadata;
-  };
+    id?: string;
+    clips?: object[];
+  } | Clip;
   indexId: string;
+  start?: number;
+  end?: number;
 }
 
-/**
- *
- * Videos ->  Video
- */
-const Video: React.FC<VideoProps> = ({ video, indexId }) => {
+// Clip 인터페이스 추가
+interface Clip {
+  confidence: "low" | "medium" | "high";
+  end: number;
+  metadata: Array<{ type: string }>;
+  modules: Array<{ type: string, confidence: string }>;
+  start: number;
+  score: number;
+  thumbnail_url: string;
+  video_id: string;
+}
+
+const Video: React.FC<VideoProps> = ({ video, indexId, start, end }) => {
+  console.log("🚀 > start=", start)
   const [playing, setPlaying] = useState(false);
+
+  // 새로운 함수 추가
+  const roundToInteger = (num: number | undefined): number | undefined => {
+    return num !== undefined ? Math.round(num) : undefined;
+  };
 
   /** Formats a duration in seconds into a "HH:MM:SS" string format */
   const formatDuration = (seconds: number): string => {
@@ -52,16 +78,27 @@ const Video: React.FC<VideoProps> = ({ video, indexId }) => {
 
   /** Queries the detailed information of a video using React Query */
   const { data: videoDetail, error: videoError } = useQuery<VideoDetail, Error>({
-    queryKey: ["videoDetail", video?._id],
+    queryKey: ["videoDetail", 'video_id' in video ? video.video_id : ('_id' in video ? video._id : video.id)],
     queryFn: () => {
-      if (!video?._id) {
+      const videoId = 'video_id' in video ? video.video_id : ('_id' in video ? video._id : video.id);
+      if (!videoId) {
         throw new Error("Video ID is missing");
       }
-      return fetchVideoDetail(video._id, indexId);
+      return fetchVideoDetail(videoId, indexId);
     },
     staleTime: 600000,
     gcTime: 900000,
+    enabled: !!indexId && !!(
+      (video as Clip).video_id ||
+      ('_id' in video && video._id) ||
+      ('id' in video && video.id) ||
+      undefined
+    )
   });
+
+  if (!videoDetail) {
+    return <div>Loading video details...</div>;
+  }
 
   if (videoError) {
     return <ErrorFallback error={videoError} />;
@@ -75,7 +112,7 @@ const Video: React.FC<VideoProps> = ({ video, indexId }) => {
           onClick={() => setPlaying(!playing)}
         >
           <ReactPlayer
-            url={videoDetail?.hls?.video_url}
+            url={videoDetail.hls.video_url}
             controls
             width="100%"
             height="100%"
@@ -83,8 +120,8 @@ const Video: React.FC<VideoProps> = ({ video, indexId }) => {
             light={
               <img
                 src={
-                  videoDetail?.hls?.thumbnail_urls?.[0] ||
-                  videoDetail?.hls?.thumbnailUrls?.[0] ||
+                  (video as Clip).thumbnail_url ||
+                  videoDetail.hls.thumbnail_urls?.[0] ||
                   '/videoFallback.jpg'
                 }
                 className="object-cover w-full h-full"
@@ -100,6 +137,8 @@ const Video: React.FC<VideoProps> = ({ video, indexId }) => {
               },
             }}
             progressInterval={100}
+            start={roundToInteger(start)}
+            end={roundToInteger(end)}
           />
           <div
             className={clsx(
@@ -111,7 +150,7 @@ const Video: React.FC<VideoProps> = ({ video, indexId }) => {
               "z-10"
             )}
           >
-            <div
+            {!video?.confidence && <div
               className={clsx(
                 "bg-grey-1000/60",
                 "px-2",
@@ -120,15 +159,15 @@ const Video: React.FC<VideoProps> = ({ video, indexId }) => {
               )}
             >
               <p className={clsx("text-white", "text-xs", "font-light")}>
-                {formatDuration(video?.metadata?.duration ?? 0)}
+                {formatDuration(videoDetail.metadata?.duration ?? 0)}
               </p>
-            </div>
+            </div>}
           </div>
         </div>
       </div>
       <div className="mt-2">
         <p className={clsx("text-body3", "truncate", "text-grey-700")}>
-          {video?.metadata?.filename}
+          {videoDetail.metadata?.filename}
         </p>
       </div>
     </div>
