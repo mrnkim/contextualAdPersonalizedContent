@@ -34,7 +34,7 @@ export const generateGist = async (videoId: string) => {
 	return response.json();
 };
 
- export const fetchVideoDetail = async (videoId: string, indexId: string) => {
+ export const fetchVideoDetails = async (videoId: string, indexId: string) => {
     const response = await fetch(`/api/getVideo?videoId=${videoId}&indexId=${indexId}`);
     if (!response.ok) {
       throw new Error("Network response was not ok");

@@ -1,7 +1,7 @@
 import React from 'react'
-import Video from './Video'
+import Clip from './Clip';
 
-interface Clip {
+interface ClipData {
     confidence: "low" | "medium" | "high";
     end: number;
     metadata: Array<{ type: string }>;
@@ -12,17 +12,36 @@ interface Clip {
     video_id: string;
   }
 
-interface ClipsProps {
-  clips: Clip[];
-  indexId: string;
+interface VideoDetails {
+  hls: {
+    video_url: string;
+    thumbnail_urls: string[];
+    status: string;
+    updated_at: string;
+  };
+  metadata: {
+    duration: number;
+    engine_ids: string[];
+    filename: string;
+    fps: number;
+    height: number;
+    size: number;
+    video_title: string;
+    width: number;
+  };
 }
 
-const Clips: React.FC<ClipsProps> = ({ clips, indexId }) => {
+interface ClipsProps {
+  clips: ClipData[];
+  videoDetails: VideoDetails;
+}
+
+const Clips: React.FC<ClipsProps> = ({ clips, videoDetails }) => {
   return (
     <div className="flex flex-wrap -mx-2">
       {clips.map((clip, index) => (
         <div key={index} className="w-1/2 px-2 mb-4">
-        <Video video={clip} indexId={indexId} />
+        <Clip clip={clip} start={clip.start} end={clip.end} videoDetails={videoDetails} />
         </div>
       ))}
     </div>

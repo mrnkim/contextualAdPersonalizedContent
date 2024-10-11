@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import clsx from "clsx";
 import ReactPlayer from "react-player";
 import ErrorFallback from "./ErrorFallback";
-import { fetchVideoDetail } from "@/hooks/apiHooks";
+import { fetchVideoDetails } from "@/hooks/apiHooks";
 
 interface VideoDetail {
   hls: VideoHLS;
@@ -36,32 +36,15 @@ interface VideoProps {
     metadata?: VideoMetadata;
     id?: string;
     clips?: object[];
-  } | Clip;
+  }
   indexId: string;
   start?: number;
   end?: number;
 }
 
-// Clip 인터페이스 추가
-interface Clip {
-  confidence: "low" | "medium" | "high";
-  end: number;
-  metadata: Array<{ type: string }>;
-  modules: Array<{ type: string, confidence: string }>;
-  start: number;
-  score: number;
-  thumbnail_url: string;
-  video_id: string;
-}
 
-const Video: React.FC<VideoProps> = ({ video, indexId, start, end }) => {
-  console.log("🚀 > start=", start)
+const Video: React.FC<VideoProps> = ({ video, indexId }) => {
   const [playing, setPlaying] = useState(false);
-
-  // 새로운 함수 추가
-  const roundToInteger = (num: number | undefined): number | undefined => {
-    return num !== undefined ? Math.round(num) : undefined;
-  };
 
   /** Formats a duration in seconds into a "HH:MM:SS" string format */
   const formatDuration = (seconds: number): string => {
@@ -84,12 +67,11 @@ const Video: React.FC<VideoProps> = ({ video, indexId, start, end }) => {
       if (!videoId) {
         throw new Error("Video ID is missing");
       }
-      return fetchVideoDetail(videoId, indexId);
+      return fetchVideoDetails(videoId, indexId);
     },
     staleTime: 600000,
     gcTime: 900000,
     enabled: !!indexId && !!(
-      (video as Clip).video_id ||
       ('_id' in video && video._id) ||
       ('id' in video && video.id) ||
       undefined
@@ -120,7 +102,6 @@ const Video: React.FC<VideoProps> = ({ video, indexId, start, end }) => {
             light={
               <img
                 src={
-                  (video as Clip).thumbnail_url ||
                   videoDetail.hls.thumbnail_urls?.[0] ||
                   '/videoFallback.jpg'
                 }
@@ -137,8 +118,6 @@ const Video: React.FC<VideoProps> = ({ video, indexId, start, end }) => {
               },
             }}
             progressInterval={100}
-            start={roundToInteger(start)}
-            end={roundToInteger(end)}
           />
           <div
             className={clsx(
@@ -150,7 +129,7 @@ const Video: React.FC<VideoProps> = ({ video, indexId, start, end }) => {
               "z-10"
             )}
           >
-            {!video?.confidence && <div
+            <div
               className={clsx(
                 "bg-grey-1000/60",
                 "px-2",
@@ -161,7 +140,7 @@ const Video: React.FC<VideoProps> = ({ video, indexId, start, end }) => {
               <p className={clsx("text-white", "text-xs", "font-light")}>
                 {formatDuration(videoDetail.metadata?.duration ?? 0)}
               </p>
-            </div>}
+            </div>
           </div>
         </div>
       </div>
