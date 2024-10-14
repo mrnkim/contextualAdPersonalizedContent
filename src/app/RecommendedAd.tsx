@@ -1,9 +1,13 @@
 import React, {useState} from 'react'
 import Video from './Video'
 import Clips from './Clips'
-import { useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query"
 import { fetchVideoDetails, generateCustomTexts } from "@/hooks/apiHooks";
 import Button from './Button'
+import {
+  Dialog,
+  DialogContent,
+} from "@mui/material";
 
 interface RecommendedAdProps {
   recommendedAd: {
@@ -24,10 +28,13 @@ interface Clip {
   video_id: string;
 }
 
-const AD_COPY_PROMPT = "Based on the ad video, provide the headlines, ad copies, and hashtags. Provide the titles (Headline, Ad Copy, Hashtag) before each. Do not include any introductory text or comments. Start straight away with Headlines."
+const AD_COPY_PROMPT = "Based on the ad video, provide the headlines, ad copies, and hashtags. Provide the titles (Headline, Ad Copy, Hashtag) before each. Do not include any introductory text or comments. Start straight away with Headlines. If there are many suggestions/scenarios, title them as Suggestion 1, Suggestion 2, etc."
+
 
 const RecommendedAd: React.FC<RecommendedAdProps> = ({ recommendedAd, indexId }) => {
   const [isAdCopyClicked, setIsAdCopyClicked] = useState(false);
+  console.log("🚀 > isAdCopyClicked=", isAdCopyClicked)
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const { data: videoDetails} = useQuery({
     queryKey: ["videoDetails", recommendedAd.id],
@@ -38,7 +45,7 @@ const RecommendedAd: React.FC<RecommendedAdProps> = ({ recommendedAd, indexId })
   const { data: AdCopyData, error: adCopyError, isLoading: isAdCopyLoading } = useQuery({
     queryKey: ["adCopy", recommendedAd.id],
     queryFn: () => generateCustomTexts(recommendedAd.id, AD_COPY_PROMPT),
-    enabled: !!recommendedAd.id
+    enabled: !!recommendedAd.id && isAdCopyClicked
   });
 
   console.log("🚀 > AdCopyData=", AdCopyData)
@@ -51,11 +58,28 @@ const RecommendedAd: React.FC<RecommendedAdProps> = ({ recommendedAd, indexId })
             type="button"
             size="sm"
             appearance="primary"
-            onClick={() => setIsAdCopyClicked(true)}
+            onClick={() => {
+              setIsAdCopyClicked(true);
+              setIsDialogOpen(true);
+            }}
           >
             Generate Ad Copy
           </Button>
         </div>
+        <Dialog
+          open={isDialogOpen}
+          onClose={()=>setIsDialogOpen(false)}
+          >
+
+<DialogContent>                {AdCopyData ? (
+                  <p>{AdCopyData}</p>
+                ) : (
+                  <p>Loading Ad Copy...</p>
+                )}
+      </DialogContent>
+
+
+        </Dialog>
       </div>
       <div className="flex justify-center">
       </div>
