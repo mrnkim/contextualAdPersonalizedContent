@@ -16,20 +16,18 @@ interface Clip {
 
 interface ClipProps {
     clip: Clip;
-    start: number;
-    end: number;
     videoDetails: object;
 }
 
-const Clip: React.FC<ClipProps> = ({ clip, start, end, videoDetails }) => {
+const Clip: React.FC<ClipProps> = ({ clip, videoDetails }) => {
     const [playing, setPlaying] = useState(false);
     const playerRef = useRef<ReactPlayer>(null);
 
     const handleProgress = (state: { playedSeconds: number }) => {
-        if (state.playedSeconds >= end) {
+        if (state.playedSeconds >= clip.end) {
             setPlaying(false);
             if (playerRef.current) {
-                playerRef.current.seekTo(start);
+                playerRef.current.seekTo(clip.start);
             }
         }
     };
@@ -37,15 +35,8 @@ const Clip: React.FC<ClipProps> = ({ clip, start, end, videoDetails }) => {
     const handlePlay = () => {
         setPlaying(true);
         if (playerRef.current) {
-            playerRef.current.seekTo(start);
+            playerRef.current.seekTo(clip.start);
         }
-    };
-
-    // formatDuration 함수 추가 (예시)
-    const formatDuration = (seconds: number): string => {
-        const minutes = Math.floor(seconds / 60);
-        const remainingSeconds = Math.floor(seconds % 60);
-        return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
     };
 
     return (
@@ -94,16 +85,12 @@ const Clip: React.FC<ClipProps> = ({ clip, start, end, videoDetails }) => {
                   )}
                 >
                   <p className={clsx("text-white", "text-xs", "font-light")}>
-                    {formatDuration(end - start)}
+                    {clip.confidence}
+
                   </p>
                 </div>}
               </div>
             </div>
-          </div>
-          <div className="mt-2">
-            <p className={clsx("text-body3", "truncate", "text-grey-700")}>
-              {clip.confidence}
-            </p>
           </div>
         </div>
       );

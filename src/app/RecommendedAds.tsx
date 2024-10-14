@@ -49,9 +49,8 @@ const RecommendedAds = ({ hashtags, setHashtags, footageVideoId, indexId }: Reco
       enabled: hashtagQuery.length > 0,
     });
 
-    console.log("🚀 > RecommendedAds > searchData=", searchData)
     return (
-      <div className="flex flex-col space-y-5">
+      <div className="flex flex-col w-full">
         {isGistLoading && <p>Loading gist...</p>}
         {gistError && <p>Error loading gist: {gistError.message}</p>}
         {isSearchLoading && <p>Searching for ads...</p>}

@@ -7,7 +7,7 @@ import { fetchVideoDetails } from "@/hooks/apiHooks";
 interface RecommendedAdProps {
   recommendedAd: {
     id?: string;
-    clips: Array<object>;
+    clips: Array<object>
   };
   indexId: string;
 }
@@ -30,9 +30,8 @@ const RecommendedAd: React.FC<RecommendedAdProps> = ({ recommendedAd, indexId })
     enabled: !!recommendedAd.id && !!indexId
   });
 
-  console.log("🚀 > videoDetails=", videoDetails)
   return (
-    <div className="flex w-full">
+    <div className="flex w-full my-5">
       <div className="w-1/2 pr-2">
         <Video video={recommendedAd} indexId={indexId}/>
       </div>

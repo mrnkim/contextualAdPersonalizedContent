@@ -41,7 +41,7 @@ const Clips: React.FC<ClipsProps> = ({ clips, videoDetails }) => {
     <div className="flex flex-wrap -mx-2">
       {clips.map((clip, index) => (
         <div key={index} className="w-1/2 px-2 mb-4">
-        <Clip clip={clip} start={clip.start} end={clip.end} videoDetails={videoDetails} />
+        <Clip clip={clip} videoDetails={videoDetails} />
         </div>
       ))}
     </div>
