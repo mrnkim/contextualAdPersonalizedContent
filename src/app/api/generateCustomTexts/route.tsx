@@ -2,11 +2,11 @@ import { NextResponse } from "next/server";
 
 const API_KEY = process.env.TWELVELABS_API_KEY;
 const TWELVELABS_API_BASE_URL = process.env.TWELVELABS_API_BASE_URL;
-const PROMPT = "Summarize the video focusing on the event type, main content, and the emotional tone. Provide the titles (Event Type, Main Content, Emotional Tone) before each summary. Do not include any introductory text or comments. Start straight away with the summary."
 
 export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const videoId = searchParams.get("videoId");
+    const prompt = searchParams.get("prompt");
 
     if (!videoId) {
       return NextResponse.json(
@@ -14,7 +14,7 @@ export async function GET(req: Request) {
         { status: 400 }
       );
     }
-   
+
       const url = `${TWELVELABS_API_BASE_URL}/generate`;
       const options = {
           method: "POST",
@@ -22,7 +22,7 @@ export async function GET(req: Request) {
               "Content-Type": "application/json",
               "x-api-key": `${API_KEY}`,
             },
-            body: JSON.stringify({prompt: PROMPT, video_id: `${videoId}`})
+            body: JSON.stringify({prompt: prompt, video_id: `${videoId}`})
         };
 
       try {

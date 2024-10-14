@@ -13,6 +13,8 @@ interface GistData {
   hashtags: string[];
 }
 
+const PROMPT = "Summarize the video focusing on the event type, main content, and the emotional tone. Provide the titles (Event Type, Main Content, Emotional Tone) before each summary. Do not include any introductory text or comments. Start straight away with the summary."
+
 function FootageSummary({ videoId, setHashtags }: FootageSummaryProps) {
 
   const { data: gistData, error: gistError, isLoading: isGistLoading } = useQuery<GistData, Error>({
@@ -28,7 +30,7 @@ function FootageSummary({ videoId, setHashtags }: FootageSummaryProps) {
 
   const { data: customTextsData, error: customTextsError, isLoading: isCustomTextsLoading } = useQuery({
     queryKey: ["customTexts", videoId],
-    queryFn: () => generateCustomTexts(videoId),
+    queryFn: () => generateCustomTexts(videoId, PROMPT),
   });
 
   const formatCustomTexts = (data: string) => {

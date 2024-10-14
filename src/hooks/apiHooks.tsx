@@ -7,8 +7,8 @@ export const generateGist = async (videoId: string) => {
     return data;
   };
 
-  export const generateCustomTexts = async (videoId: string): Promise<void> => {
-    const response = await fetch(`/api/generateCustomTexts?videoId=${videoId}`);
+  export const generateCustomTexts = async (videoId: string, prompt: string): Promise<void> => {
+    const response = await fetch(`/api/generateCustomTexts?videoId=${videoId}&prompt=${prompt}`);
     if (!response.ok) {
       throw new Error("Failed to generate gist");
     }
