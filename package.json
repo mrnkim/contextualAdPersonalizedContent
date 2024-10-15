@@ -19,7 +19,8 @@
     "next": "14.2.14",
     "react": "^18",
     "react-dom": "^18",
-    "react-player": "^2.16.0"
+    "react-player": "^2.16.0",
+    "twelvelabs-js": "^0.2.6"
   },
   "devDependencies": {
     "@types/node": "^20",

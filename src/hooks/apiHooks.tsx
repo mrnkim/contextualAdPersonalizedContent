@@ -58,3 +58,18 @@ export async function fetchFootageIndexId() {
   return await response.json();
 }
 
+export async function uploadFootage(file: File, indexId: string) {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('indexId', indexId);
+
+  const response = await fetch('/api/uploadVideo', {
+    method: 'POST',
+    body: formData,
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to upload footage");
+  }
+  return await response.json();
+}
