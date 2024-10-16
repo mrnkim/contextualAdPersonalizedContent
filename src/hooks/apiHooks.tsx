@@ -42,6 +42,14 @@ export const generateGist = async (videoId: string) => {
     return response.json();
   };
 
+ export const fetchTaskDetails = async (taskId: string) => {
+    const response = await fetch(`/api/getTask?taskId=${taskId}`);
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+    return response.json();
+  };
+
 export async function fetchAdsIndexId() {
   const response = await fetch('/api/getAdsIndexId');
   if (!response.ok) {
@@ -58,7 +66,7 @@ export async function fetchFootageIndexId() {
   return await response.json();
 }
 
-export async function uploadFootage(file: File, indexId: string) {
+export const uploadFootage = async (file: File, indexId: string) => {
   const formData = new FormData();
   formData.append('file', file);
   formData.append('indexId', indexId);
@@ -69,7 +77,9 @@ export async function uploadFootage(file: File, indexId: string) {
   });
 
   if (!response.ok) {
-    throw new Error("Failed to upload footage");
+    throw new Error('Failed to upload video');
   }
-  return await response.json();
-}
+
+  const data = await response.json();
+  return data;
+};

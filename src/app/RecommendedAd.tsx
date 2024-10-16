@@ -38,7 +38,6 @@ const AD_COPY_PROMPT = "Based on the ad video, provide the headlines, ad copies,
 
 const RecommendedAd: React.FC<RecommendedAdProps> = ({ recommendedAd, indexId }) => {
   const [isAdCopyClicked, setIsAdCopyClicked] = useState(false);
-  console.log("🚀 > isAdCopyClicked=", isAdCopyClicked)
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [currentSuggestionIndex, setCurrentSuggestionIndex] = useState(0);
 
@@ -48,14 +47,12 @@ const RecommendedAd: React.FC<RecommendedAdProps> = ({ recommendedAd, indexId })
     enabled: !!recommendedAd.id && !!indexId
   });
 
-  console.log("🚀 > videoDetails=", videoDetails)
   const { data: AdCopyData, error: adCopyError, isLoading: isAdCopyLoading } = useQuery({
     queryKey: ["adCopy", recommendedAd.id],
     queryFn: () => generateCustomTexts(recommendedAd.id, AD_COPY_PROMPT),
     enabled: !!recommendedAd.id && isAdCopyClicked
   });
 
-  console.log("🚀 > AdCopyData=", AdCopyData)
   const parsedAdCopy = AdCopyData ? parseAdCopy(AdCopyData) : [];
 
   const handlePreviousSuggestion = () => {

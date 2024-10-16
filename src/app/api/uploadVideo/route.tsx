@@ -32,16 +32,8 @@ export async function POST(req: Request) {
       indexId: indexId,
       file: tempFilePath,
     });
-    console.log("🚀 > POST > task=", task)
 
-    await task.waitForDone(500, (task: Task) => {
-      console.log(`Task status: ${task.status}`);
-    });
-
-    // Clean up the temporary file
-    await fs.unlink(tempFilePath);
-
-    return NextResponse.json({ status: task.status, taskId: task._id }, { status: 200 });
+      return NextResponse.json({ status: task.status, taskId: task.id }, { status: 200 });
   } catch (error) {
     console.error("Error in POST function:", error);
     return NextResponse.json(

@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import Video from './Video';
 import LoadingSpinner from './LoadingSpinner';
 import { useQuery, useMutation } from "@tanstack/react-query";
 import Button from './Button'
 import FootageSummary from './FootageSummary';
-import { fetchVideos, uploadFootage } from '@/hooks/apiHooks';
+import { fetchVideos, uploadFootage, fetchTaskDetails } from '@/hooks/apiHooks';
 
 const PAGE = 1;
 
@@ -19,9 +19,10 @@ interface FootageProps {
   }
 
 function Footage({ setHashtags, indexId, isIndexIdLoading, footageVideoId, setFootageVideoId }: FootageProps) {
-	console.log("🚀 > Footage > indexId=", indexId)
 	const [isAnalyzeClicked, setIsAnalyzeClicked] = useState(false);
 	const [selectedFile, setSelectedFile] = useState(null);
+	const [taskId, setTaskId] = useState<string | null>(null);
+	const [taskDetails, setTaskDetails] = useState<object | null>(null);
 
 	const { data: videos, isLoading: isVideosLoading } = useQuery({
 		queryKey: ['videos', PAGE, indexId],
@@ -31,6 +32,10 @@ function Footage({ setHashtags, indexId, isIndexIdLoading, footageVideoId, setFo
 
 	const uploadMutation = useMutation({
 		mutationFn: (file: File) => uploadFootage(file, indexId),
+		onSuccess: (data) => {
+			setTaskId(data.taskId);
+			// You might want to start polling for task status here
+		},
 	});
 
 	const hasVideoData = videos?.data && videos?.data?.length > 0;
@@ -47,16 +52,48 @@ function Footage({ setHashtags, indexId, isIndexIdLoading, footageVideoId, setFo
 
 	const handleUpload = () => {
 		if (!selectedFile) {
-			alert('먼저 비디오를 선택해주세요.');
+			alert('Select a video file');
 			return;
 		}
 
-		const formData = new FormData();
-		formData.append('file', selectedFile);
-
-		// 업로드 로직 실행
 		uploadMutation.mutate(selectedFile);
 	};
+
+	// Add this new useEffect
+	useEffect(() => {
+		let intervalId: NodeJS.Timeout;
+
+		if (taskId) {
+			const checkTaskStatus = async () => {
+				try {
+					const taskDetails = await fetchTaskDetails(taskId);
+					setTaskDetails(taskDetails);
+
+					// If task is completed or failed, clear the interval
+					if (taskDetails.status === 'ready' || taskDetails.status === 'failed') {
+						clearInterval(intervalId);
+						setTaskId(null); // Reset taskId when the task is complete
+					}
+				} catch (error) {
+					console.error('Failed to fetch task details:', error);
+					clearInterval(intervalId); // Clear interval on error as well
+				}
+			};
+
+			// Initial check
+			checkTaskStatus();
+
+			// Set up interval
+			intervalId = setInterval(checkTaskStatus, 5000);
+		}
+
+		// Cleanup function
+		return () => {
+			if (intervalId) {
+				clearInterval(intervalId);
+			}
+		};
+	}, [taskId]);
 
 	return (
 		<div className="flex flex-col items-center gap-4 w-full">
@@ -77,6 +114,12 @@ function Footage({ setHashtags, indexId, isIndexIdLoading, footageVideoId, setFo
 			</div>
 			{uploadMutation.isPending && <LoadingSpinner />}
 			{uploadMutation.isError && <div>Upload failed: {uploadMutation.error.message}</div>}
+			{taskId && (
+				<div>
+					Upload successful. Task ID: {taskId}
+					{taskDetails && <div>Task Status: {taskDetails.status}</div>}
+				</div>
+			)}
 			{isIndexIdLoading || isVideosLoading ? (
 				<LoadingSpinner />
 			) : !hasVideoData ? (
