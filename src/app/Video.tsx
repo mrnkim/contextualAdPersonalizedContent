@@ -94,7 +94,7 @@ const Video: React.FC<VideoProps> = ({ video, indexId }) => {
           onClick={() => setPlaying(!playing)}
         >
           <ReactPlayer
-            url={videoDetail.hls.video_url}
+            url={videoDetail?.hls?.video_url}
             controls
             width="100%"
             height="100%"
@@ -102,7 +102,7 @@ const Video: React.FC<VideoProps> = ({ video, indexId }) => {
             light={
               <img
                 src={
-                  videoDetail.hls.thumbnail_urls?.[0] ||
+                  videoDetail?.hls?.thumbnail_urls?.[0] ||
                   '/videoFallback.jpg'
                 }
                 className="object-cover w-full h-full"

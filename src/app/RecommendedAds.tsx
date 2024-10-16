@@ -55,9 +55,13 @@ const RecommendedAds = ({ hashtags, setHashtags, footageVideoId, indexId }: Reco
         {gistError && <p>Error loading gist: {gistError.message}</p>}
         {isSearchLoading && <p>Searching for ads...</p>}
         {searchError && <p>Error searching for ads: {searchError.message}</p>}
-        {searchData?.data?.length > 0 && searchData.data.map((recommendedAd) => (
-          <RecommendedAd key={recommendedAd.id} recommendedAd={recommendedAd} indexId={indexId} />
-        ))}
+        {searchData?.data?.length > 0 ? (
+          searchData.data.map((recommendedAd) => (
+            <RecommendedAd key={recommendedAd.id} recommendedAd={recommendedAd} indexId={indexId} />
+          ))
+        ) : (
+          searchData && <p>No search results found.</p>
+        )}
       </div>
     )
 }

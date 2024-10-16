@@ -22,9 +22,11 @@ interface AdsProps {
   indexId: string;
   isIndexIdLoading: boolean;
   footageVideoId: string;
+  selectedFile: File | null;
+	setSelectedFile: (file: File | null) => void;
 }
 
-function Ads({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVideoId }: AdsProps) {
+function Ads({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVideoId, selectedFile, setSelectedFile }: AdsProps) {
   const [page, setPage] = useState(1);
   const [isRecommendClicked, setIsRecommendClicked] = useState(false);
 
@@ -67,6 +69,7 @@ function Ads({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVideoId 
             size="sm"
             appearance="primary"
             onClick={() => setIsRecommendClicked(true)}
+            disabled={!!selectedFile}
           >
             Recommend
           </Button>
