@@ -47,7 +47,7 @@ function Ads({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVideoId,
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <h2 className="text-center text-2xl">Ads Library</h2>
+			<h2 className="text-2xl font-bold">Ads Library</h2>
       {isIndexIdLoading || isVideosLoading ? (
         <LoadingSpinner />
       ) : !hasVideoData ? (
@@ -71,6 +71,8 @@ function Ads({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVideoId,
             onClick={() => setIsRecommendClicked(true)}
             disabled={!!selectedFile}
           >
+          <img src="/magic.svg" alt="filter icon" className="w-4 h-4" />
+
             Recommend
           </Button>
         </div>

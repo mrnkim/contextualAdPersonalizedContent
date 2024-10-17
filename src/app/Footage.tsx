@@ -117,16 +117,17 @@ function Footage({ setHashtags, indexId, isIndexIdLoading, footageVideoId, setFo
 
 	return (
 		<div className="flex flex-col items-center gap-4 w-full">
-			<h2 className="text-2xl">News Footage</h2>
-			<div className="flex justify-end items-center w-full my-4">
+			<h2 className="text-2xl font-bold">News Footage</h2>
+			<div className="flex justify-end items-center w-full my-3">
 				<Button
 					type="button"
 					size="sm"
-					appearance="primary"
+					appearance="default"
 					onClick={handleUploadClick}
 					disabled={!!selectedFile || !!taskId}
 				>
-					Upload Footage
+					<img src="/upload.svg" alt="upload icon" className="w-4 h-4" />
+					Upload
 				</Button>
 				<input
 					ref={fileInputRef}
@@ -189,6 +190,8 @@ function Footage({ setHashtags, indexId, isIndexIdLoading, footageVideoId, setFo
 								appearance="primary"
 								onClick={() => setIsAnalyzeClicked(true)}
 							>
+							<img src="/analyze.svg" alt="magic stick icon" className="w-4 h-4" />
+
 								Analyze
 							</Button>
 						</>

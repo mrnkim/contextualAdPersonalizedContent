@@ -28,7 +28,8 @@ const config: Config = {
 		},
 		fontFamily: {
 			aeonik: ['Aeonik, Helvetica, Arial, sans-serif'],
-			denton: ['Denton, Helvetica, Arial, sans-serif']
+			denton: ['Denton, Helvetica, Arial, sans-serif'],
+			rubik: ['var(--font-rubik)'],
 		},
 		extend: {
 			zIndex: {

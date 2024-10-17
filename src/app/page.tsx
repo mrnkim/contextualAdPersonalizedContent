@@ -24,7 +24,7 @@ export default function Page() {
  return (
     <main className="flex min-h-screen p-24">
     <div className="flex w-full max-w-7xl mx-auto">
-      <div className="w-1/2 pr-4">
+      <div className="w-2/3 pr-4">
       <Footage
         setHashtags={setHashtags}
         indexId={footageIndexId?.footageIndexId}
@@ -33,8 +33,10 @@ export default function Page() {
         setFootageVideoId={setFootageVideoId}
         selectedFile={selectedFile}
         setSelectedFile={setSelectedFile}
-      />      </div>
-      <div className="w-1/2 pl-4">
+      />
+      </div>
+      <div className="w-1/6"></div>
+      <div className="w-2/3 pl-4">
       <Ads
         hashtags={hashtags}
         setHashtags={setHashtags}

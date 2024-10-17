@@ -60,7 +60,7 @@ const RecommendedAds = ({ hashtags, setHashtags, footageVideoId, indexId }: Reco
             <RecommendedAd key={recommendedAd.id} recommendedAd={recommendedAd} indexId={indexId} />
           ))
         ) : (
-          searchData && <p>No search results found.</p>
+          searchData && <div className='flex justify-center items-center h-full my-5'>No search results found 😿 </div>
         )}
       </div>
     )

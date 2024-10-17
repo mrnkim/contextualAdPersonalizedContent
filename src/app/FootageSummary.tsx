@@ -52,14 +52,7 @@ function FootageSummary({ videoId, setHashtags }: FootageSummaryProps) {
     if (!gistData) return null;
     return (
       <>
-        {/* <div className="mb-2">
-          <strong>Title:</strong> {gistData.title}
-        </div>
-        <div className="mb-2">
-          <strong>Topics:</strong> {gistData.topics}
-        </div> */}
-        <div className="mb-2">
-          {/* <strong>Hashtags:</strong> */}
+        <div className="mb-5">
           {gistData?.hashtags?.map((tag: string) => `#${tag?.trim()}`).join(' ')}
         </div>
       </>
@@ -75,14 +68,18 @@ function FootageSummary({ videoId, setHashtags }: FootageSummaryProps) {
     );
   };
 
-  if (isGistLoading && isCustomTextsLoading) return <LoadingSpinner />;
-  if (gistError && customTextsError) return <ErrorFallback error={new Error('Failed to load data')} />;
-
   return (
     <div className="mt-4">
-      {renderGistData()}
-      {renderCustomTexts()}
-      {(isGistLoading || isCustomTextsLoading) && <LoadingSpinner />}
+      {(isGistLoading || isCustomTextsLoading) ? (
+        <div className="flex justify-center">
+          <LoadingSpinner />
+        </div>
+      ) : (
+        <>
+          {renderGistData()}
+          {renderCustomTexts()}
+        </>
+      )}
       {(gistError || customTextsError) && <ErrorFallback error={gistError || customTextsError || new Error('Unknown error')} />}
     </div>
   );
