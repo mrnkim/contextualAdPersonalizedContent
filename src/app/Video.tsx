@@ -1,11 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { ErrorBoundary } from "react-error-boundary";
 import clsx from "clsx";
 import ReactPlayer from "react-player";
 import ErrorFallback from "./ErrorFallback";
 import { fetchVideoDetails } from "@/hooks/apiHooks";
+import LoadingSpinner from "./LoadingSpinner";
 
 interface VideoDetail {
   hls: VideoHLS;
@@ -60,7 +62,7 @@ const Video: React.FC<VideoProps> = ({ video, indexId }) => {
   };
 
   /** Queries the detailed information of a video using React Query */
-  const { data: videoDetail, error: videoError } = useQuery<VideoDetail, Error>({
+  const { data: videoDetail } = useQuery<VideoDetail, Error>({
     queryKey: ["videoDetail", 'video_id' in video ? video.video_id : ('_id' in video ? video._id : video.id)],
     queryFn: () => {
       const videoId = 'video_id' in video ? video.video_id : ('_id' in video ? video._id : video.id);
@@ -75,15 +77,12 @@ const Video: React.FC<VideoProps> = ({ video, indexId }) => {
       ('_id' in video && video._id) ||
       ('id' in video && video.id) ||
       undefined
-    )
+    ),
+    suspense: true, 
   });
 
   if (!videoDetail) {
-    return <div>Loading video details...</div>;
-  }
-
-  if (videoError) {
-    return <ErrorFallback error={videoError} />;
+    throw new Error("Video details not available");
   }
 
   return (
@@ -153,4 +152,14 @@ const Video: React.FC<VideoProps> = ({ video, indexId }) => {
   );
 };
 
-export default Video;
+const VideoWrapper: React.FC<VideoProps> = (props) => {
+  return (
+    <ErrorBoundary FallbackComponent={ErrorFallback}>
+      <Suspense fallback={<LoadingSpinner />}>
+        <Video {...props} />
+      </Suspense>
+    </ErrorBoundary>
+  );
+};
+
+export default VideoWrapper;

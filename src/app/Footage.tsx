@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback } from 'react'
+import React, { useState, useEffect, useRef} from 'react'
 import Video from './Video';
 import LoadingSpinner from './LoadingSpinner';
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -20,6 +20,7 @@ interface FootageProps {
 	setFootageVideoId: (footageVideoId: string) => void;
 	selectedFile: File | null;
 	setSelectedFile: (file: File | null) => void;
+	setIsRecommendClicked: (isRecommendClicked: boolean) => void;
   }
 
 interface TaskDetails {
@@ -28,7 +29,7 @@ interface TaskDetails {
   thumbnailUrl?: string;
 }
 
-function Footage({ setHashtags, indexId, isIndexIdLoading, footageVideoId, setFootageVideoId, selectedFile, setSelectedFile }: FootageProps) {
+function Footage({ setHashtags, indexId, isIndexIdLoading, footageVideoId, setFootageVideoId, selectedFile, setSelectedFile, setIsRecommendClicked }: FootageProps) {
 	const [isAnalyzeClicked, setIsAnalyzeClicked] = useState(false);
 	const [taskId, setTaskId] = useState<string | null>(null);
 	const [taskDetails, setTaskDetails] = useState<TaskDetails | null>(null);
@@ -55,7 +56,12 @@ function Footage({ setHashtags, indexId, isIndexIdLoading, footageVideoId, setFo
 		setTaskId(null);
 		setTaskDetails(null);
 		setHashtags([]);
+		setIsRecommendClicked(false)
 		queryClient.invalidateQueries({ queryKey: ['videos'] });
+		queryClient.invalidateQueries({ queryKey: ['gist'] });
+		queryClient.invalidateQueries({ queryKey: ['search'] });
+		queryClient.invalidateQueries({ queryKey: ['customTexts'] });
+		queryClient.invalidateQueries({ queryKey: ['adCopy'] });
 	};
 
 	const fileInputRef = useRef<HTMLInputElement>(null);
@@ -69,6 +75,7 @@ function Footage({ setHashtags, indexId, isIndexIdLoading, footageVideoId, setFo
 		if (file) {
 			setSelectedFile(file);
 			uploadMutation.mutate(file);
+			setIsAnalyzeClicked(false);
 		}
 	};
 
@@ -126,7 +133,11 @@ function Footage({ setHashtags, indexId, isIndexIdLoading, footageVideoId, setFo
 					onClick={handleUploadClick}
 					disabled={!!selectedFile || !!taskId}
 				>
-					<img src="/upload.svg" alt="upload icon" className="w-4 h-4" />
+					<img
+           	 			src={selectedFile ? "/uploadDisabled.svg" : "/upload.svg"}
+						alt="upload icon"
+						className="w-4 h-4"
+					/>
 					Upload
 				</Button>
 				<input
@@ -142,7 +153,7 @@ function Footage({ setHashtags, indexId, isIndexIdLoading, footageVideoId, setFo
 			{taskId && (
 				<div className="flex flex-col w-full max-w-sm gap-4 items-center">
 					<LoadingSpinner />
-					{taskDetails && <div className="capitalize text-center">{taskDetails.status}</div>}
+					{taskDetails && <div className="capitalize text-center">{taskDetails.status}...</div>}
 					{taskDetails && taskDetails.videoUrl &&
 					 <div className="w-full aspect-video relative overflow-hidden rounded cursor-pointer" onClick={() => setPlaying(!playing)}>
 						<ReactPlayer
@@ -189,9 +200,13 @@ function Footage({ setHashtags, indexId, isIndexIdLoading, footageVideoId, setFo
 								size="sm"
 								appearance="primary"
 								onClick={() => setIsAnalyzeClicked(true)}
+								disabled={isAnalyzeClicked}
 							>
-							<img src="/analyze.svg" alt="magic stick icon" className="w-4 h-4" />
-
+								<img
+									src={isAnalyzeClicked ? "/analyzeDisabled.svg" : "/analyze.svg"}
+									alt="magic stick icon"
+									className="w-4 h-4"
+								/>
 								Analyze
 							</Button>
 						</>

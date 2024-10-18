@@ -8,8 +8,10 @@ import { fetchFootageIndexId, fetchAdsIndexId } from '@/hooks/apiHooks';
 
 export default function Page() {
   const [hashtags, setHashtags] = useState<string[]>([]);
+  console.log("🚀 > Page > hashtags=", hashtags)
   const [footageVideoId, setFootageVideoId] = useState<string>('');
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isRecommendClicked, setIsRecommendClicked] = useState(false);
 
   const { data: footageIndexId, isLoading: isFootageIndexIdLoading } = useQuery({
     queryKey: ['footageIndexId'],
@@ -33,6 +35,7 @@ export default function Page() {
         setFootageVideoId={setFootageVideoId}
         selectedFile={selectedFile}
         setSelectedFile={setSelectedFile}
+        setIsRecommendClicked={setIsRecommendClicked}
       />
       </div>
       <div className="w-1/6"></div>
@@ -44,7 +47,8 @@ export default function Page() {
         isIndexIdLoading={isAdsIndexIdLoading}
         footageVideoId={footageVideoId}
         selectedFile={selectedFile}
-        setSelectedFile={setSelectedFile}
+        isRecommendClicked={isRecommendClicked}
+        setIsRecommendClicked={setIsRecommendClicked}
       />
       </div>
     </div>
