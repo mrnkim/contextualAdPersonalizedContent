@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef} from 'react'
 import Video from './Video';
 import LoadingSpinner from './LoadingSpinner';
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import ReactPlayer from "react-player";
+import Task from './Task';
 import Button from './Button'
 import FootageSummary from './FootageSummary';
 import { fetchVideos, uploadFootage, fetchTaskDetails } from '@/hooks/apiHooks';
@@ -23,11 +23,7 @@ interface FootageProps {
 	setIsRecommendClicked: (isRecommendClicked: boolean) => void;
   }
 
-interface TaskDetails {
-  status: string;
-  videoUrl?: string;
-  thumbnailUrl?: string;
-}
+
 
 function Footage({ setHashtags, indexId, isIndexIdLoading, footageVideoId, setFootageVideoId, selectedFile, setSelectedFile, setIsRecommendClicked }: FootageProps) {
 	const [isAnalyzeClicked, setIsAnalyzeClicked] = useState(false);
@@ -151,40 +147,7 @@ function Footage({ setHashtags, indexId, isIndexIdLoading, footageVideoId, setFo
 			{uploadMutation.isPending && <LoadingSpinner />}
 			{uploadMutation.isError && <ErrorFallback error={uploadMutation.error}/>}
 			{taskId && (
-				<div className="flex flex-col w-full max-w-sm gap-4 items-center">
-					<LoadingSpinner />
-					{taskDetails && <div className="capitalize text-center">{taskDetails.status}...</div>}
-					{taskDetails && taskDetails.videoUrl &&
-					 <div className="w-full aspect-video relative overflow-hidden rounded cursor-pointer" onClick={() => setPlaying(!playing)}>
-						<ReactPlayer
-							url={taskDetails.videoUrl}
-							controls
-							width="100%"
-							height="100%"
-							style={{ position: 'absolute', top: 0, left: 0 }}
-							light={
-							<img
-								src={
-								taskDetails.thumbnailUrl ||
-								'/videoFallback.jpg'
-								}
-								className="object-cover w-full h-full"
-								alt="thumbnail"
-							/>
-							}
-							playing={playing}
-							config={{
-							file: {
-								attributes: {
-								preload: "auto",
-								},
-							},
-							}}
-							progressInterval={100}
-					/>
-					    </div>
-					}
-				</div>
+				<Task taskDetails={taskDetails} playing={playing} setPlaying={setPlaying} />
 			)}
 			{!selectedFile && (
 				<>

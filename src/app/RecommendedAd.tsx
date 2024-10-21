@@ -179,9 +179,9 @@ function parseAdCopy(adCopyText: string) {
     const [headline, rest] = suggestion.split('Ad Copy:');
     const [adCopy, hashtag] = rest.split('Hashtag:');
     return {
-      headline: headline.trim(),
-      adCopy: adCopy.trim(),
-      hashtag: hashtag.trim(),
+      headline: headline?.trim(),
+      adCopy: adCopy?.trim(),
+      hashtag: hashtag?.trim(),
     };
   });
 }
