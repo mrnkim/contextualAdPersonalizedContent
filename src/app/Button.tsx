@@ -110,7 +110,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
               "text-secondary", // initial style
             ]
           );
-        case "subtle": 
+        case "subtle":
           return clsx(
             textButtonClasses,
             // background
@@ -173,7 +173,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         default:
           throw new Error(`Invalid size prop: ${size}`);
       }
-    }, [size]);
+    }, [rounded, size]);
 
     return (
       <button

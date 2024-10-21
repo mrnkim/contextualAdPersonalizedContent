@@ -1,14 +1,13 @@
 "use client";
 
-import React, { useState, useEffect, useRef} from 'react'
+import React, { useState, useEffect} from 'react'
 import Video from './Video';
 import LoadingSpinner from './LoadingSpinner';
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Task from './Task';
 import Button from './Button'
 import FootageSummary from './FootageSummary';
-import { fetchVideos, uploadFootage, fetchTaskDetails } from '@/hooks/apiHooks';
-import ErrorFallback from './ErrorFallback';
+import { fetchVideos, fetchTaskDetails } from '@/hooks/apiHooks';
 import { TaskDetails } from './types';
 import UploadForm from './UploadForm';
 
@@ -40,22 +39,24 @@ function Footage({ setHashtags, indexId, isIndexIdLoading, footageVideoId, setFo
 	const queryClient = useQueryClient();
 	const hasVideoData = videos?.data && videos?.data?.length > 0;
 
-	const reset = () => {
-		setIsAnalyzeClicked(false);
-		setSelectedFile(null);
-		setTaskId(null);
-		setTaskDetails(null);
-		setHashtags([]);
-		setIsRecommendClicked(false)
-		queryClient.invalidateQueries({ queryKey: ['videos'] });
-		queryClient.invalidateQueries({ queryKey: ['gist'] });
-		queryClient.invalidateQueries({ queryKey: ['search'] });
-		queryClient.invalidateQueries({ queryKey: ['customTexts'] });
-		queryClient.invalidateQueries({ queryKey: ['adCopy'] });
-	};
+
 
 	useEffect(() => {
 		let intervalId: NodeJS.Timeout | null = null;
+
+		const reset = () => {
+			setIsAnalyzeClicked(false);
+			setSelectedFile(null);
+			setTaskId(null);
+			setTaskDetails(null);
+			setHashtags([]);
+			setIsRecommendClicked(false)
+			queryClient.invalidateQueries({ queryKey: ['videos'] });
+			queryClient.invalidateQueries({ queryKey: ['gist'] });
+			queryClient.invalidateQueries({ queryKey: ['search'] });
+			queryClient.invalidateQueries({ queryKey: ['customTexts'] });
+			queryClient.invalidateQueries({ queryKey: ['adCopy'] });
+		};
 
 		if (taskId) {
 			const fetchTask = async () => {
@@ -83,7 +84,7 @@ function Footage({ setHashtags, indexId, isIndexIdLoading, footageVideoId, setFo
 				clearInterval(intervalId);
 			}
 		};
-	}, [reset, taskId]);
+	}, [queryClient, setHashtags, setIsRecommendClicked, setSelectedFile, taskId]);
 
 	useEffect(() => {
 		if (videos?.data?.[0]?._id) {

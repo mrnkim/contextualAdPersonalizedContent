@@ -87,7 +87,7 @@ const RecommendedAd: React.FC<RecommendedAdProps> = ({ recommendedAd, indexId })
                 setIsDialogOpen(true);
               }}
             >
-              <img src="/chat.svg" alt="chat icon" className="w-4 h-4"className="w-4 h-4" />
+              <img src="/chat.svg" alt="chat icon" className="w-4 h-4" />
               Generate Ad Copy
             </Button>
           </div>
