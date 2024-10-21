@@ -9,6 +9,8 @@ import Button from './Button'
 import FootageSummary from './FootageSummary';
 import { fetchVideos, uploadFootage, fetchTaskDetails } from '@/hooks/apiHooks';
 import ErrorFallback from './ErrorFallback';
+import { TaskDetails } from './types';
+import UploadForm from './UploadForm';
 
 const PAGE = 1;
 
@@ -23,8 +25,6 @@ interface FootageProps {
 	setIsRecommendClicked: (isRecommendClicked: boolean) => void;
   }
 
-
-
 function Footage({ setHashtags, indexId, isIndexIdLoading, footageVideoId, setFootageVideoId, selectedFile, setSelectedFile, setIsRecommendClicked }: FootageProps) {
 	const [isAnalyzeClicked, setIsAnalyzeClicked] = useState(false);
 	const [taskId, setTaskId] = useState<string | null>(null);
@@ -37,13 +37,7 @@ function Footage({ setHashtags, indexId, isIndexIdLoading, footageVideoId, setFo
 		enabled: !!indexId && !isIndexIdLoading,
 	});
 
-	const uploadMutation = useMutation({
-		mutationFn: (file: File) => uploadFootage(file, indexId),
-		onSuccess: (data) => {
-			setTaskId(data.taskId);
-		},
-	});
-
+	const queryClient = useQueryClient();
 	const hasVideoData = videos?.data && videos?.data?.length > 0;
 
 	const reset = () => {
@@ -59,23 +53,6 @@ function Footage({ setHashtags, indexId, isIndexIdLoading, footageVideoId, setFo
 		queryClient.invalidateQueries({ queryKey: ['customTexts'] });
 		queryClient.invalidateQueries({ queryKey: ['adCopy'] });
 	};
-
-	const fileInputRef = useRef<HTMLInputElement>(null);
-
-	const handleUploadClick = () => {
-		fileInputRef.current?.click();
-	};
-
-	const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-		const file = event.target.files?.[0];
-		if (file) {
-			setSelectedFile(file);
-			uploadMutation.mutate(file);
-			setIsAnalyzeClicked(false);
-		}
-	};
-
-	const queryClient = useQueryClient();
 
 	useEffect(() => {
 		let intervalId: NodeJS.Timeout | null = null;
@@ -106,47 +83,29 @@ function Footage({ setHashtags, indexId, isIndexIdLoading, footageVideoId, setFo
 				clearInterval(intervalId);
 			}
 		};
-	}, [taskId]);
+	}, [reset, taskId]);
 
 	useEffect(() => {
 		if (videos?.data?.[0]?._id) {
 			setFootageVideoId(videos.data[0]._id);
 		}
-	}, [videos]);
+	}, [setFootageVideoId, videos]);
 
 	useEffect(() => {
 		queryClient.invalidateQueries({ queryKey: ['videos'] });
-	}, [videos]);
+	}, [queryClient, videos]);
 
 	return (
 		<div className="flex flex-col items-center gap-4 w-full">
 			<h2 className="text-2xl font-bold">News Footage</h2>
-			<div className="flex justify-end items-center w-full my-3">
-				<Button
-					type="button"
-					size="sm"
-					appearance="default"
-					onClick={handleUploadClick}
-					disabled={!!selectedFile || !!taskId}
-				>
-					<img
-           	 			src={selectedFile ? "/uploadDisabled.svg" : "/upload.svg"}
-						alt="upload icon"
-						className="w-4 h-4"
-					/>
-					Upload
-				</Button>
-				<input
-					ref={fileInputRef}
-					type="file"
-					accept="video/*"
-					onChange={handleFileSelect}
-					className="hidden"
-				/>
-			</div>
-			{uploadMutation.isPending && <LoadingSpinner />}
-			{uploadMutation.isError && <ErrorFallback error={uploadMutation.error}/>}
-			{taskId && (
+			<UploadForm
+				indexId={indexId}
+				selectedFile={selectedFile}
+				setSelectedFile={setSelectedFile}
+				setTaskId={setTaskId}
+				taskId={taskId}
+			/>
+			{taskId && taskDetails && (
 				<Task taskDetails={taskDetails} playing={playing} setPlaying={setPlaying} />
 			)}
 			{!selectedFile && (
@@ -176,7 +135,7 @@ function Footage({ setHashtags, indexId, isIndexIdLoading, footageVideoId, setFo
 					)}
 				</>
 			)}
-			{isAnalyzeClicked && hasVideoData && (
+			{!selectedFile && isAnalyzeClicked && hasVideoData && (
 				<FootageSummary videoId={footageVideoId} setHashtags={setHashtags} />
 			)}
 		</div>

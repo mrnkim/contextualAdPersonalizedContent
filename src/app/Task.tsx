@@ -1,12 +1,7 @@
 import React from 'react'
 import LoadingSpinner from './LoadingSpinner';
 import ReactPlayer from "react-player";
-
-interface TaskDetails {
-    status: string;
-    videoUrl?: string;
-    thumbnailUrl?: string;
-  }
+import { TaskDetails } from './types';
 
 const Task = ({ taskDetails, playing, setPlaying }: { taskDetails: TaskDetails, playing: boolean, setPlaying: (playing: boolean) => void }) => {
   return (
