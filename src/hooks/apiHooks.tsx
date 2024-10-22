@@ -15,10 +15,10 @@ export const generateGist = async (videoId: string) => {
     return response.json();
   };
 
-  export const textToVideoSearch = async (indexId: string, query: string): Promise<void> => {
+  export const textToVideoSearch = async (indexId: string, query: string) => {
     const response = await fetch(`/api/search?indexId=${indexId}&query=${query}`);
     if (!response.ok) {
-      throw new Error("Failed to generate gist");
+      throw new Error("Failed to search videos");
     }
     return response.json();
   };

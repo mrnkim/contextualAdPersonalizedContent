@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react'
 import ReactPlayer from 'react-player'
 import clsx from 'clsx'
-import { ClipProps, VideoDetails } from './types'
+import { ClipProps } from './types'
 
 const Clip: React.FC<ClipProps> = ({ clip, videoDetails }) => {
     const [playing, setPlaying] = useState(false);

@@ -1,10 +1,11 @@
 import React, { Suspense, useEffect, useMemo } from 'react'
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { generateGist, textToVideoSearch } from '@/hooks/apiHooks';
 import RecommendedAd from './RecommendedAd';
 import { ErrorBoundary } from 'react-error-boundary';
 import LoadingSpinner from './LoadingSpinner';
 import ErrorFallback from './ErrorFallback';
+import { RecommendedAdsProps, GistData, SearchData } from './types';
 
 const RecommendedAdsContent = ({ hashtags, setHashtags, footageVideoId, indexId, selectedFile, setIsRecommendClicked }: RecommendedAdsProps) => {
 
@@ -14,7 +15,6 @@ const RecommendedAdsContent = ({ hashtags, setHashtags, footageVideoId, indexId,
     enabled: hashtags.length === 0 && !selectedFile,
   });
 
-  console.log("🚀 > RecommendedAdsContent > gistData=", gistData)
   useEffect(() => {
     if (selectedFile) {
       setHashtags([]);
@@ -33,7 +33,6 @@ const RecommendedAdsContent = ({ hashtags, setHashtags, footageVideoId, indexId,
     queryFn: () => textToVideoSearch(indexId, hashtagQuery),
     enabled: hashtagQuery.length > 0 && !selectedFile,
   });
-  console.log("🚀 > RecommendedAdsContent > searchData=", searchData)
 
   return (
     <div className="flex flex-col w-full">
@@ -49,9 +48,13 @@ const RecommendedAdsContent = ({ hashtags, setHashtags, footageVideoId, indexId,
         </div>
       )}
       {searchError && <ErrorFallback error={searchError}/>}
-      {searchData?.data?.length > 0 ? (
-        searchData?.data?.map((recommendedAd) => (
-          <RecommendedAd key={recommendedAd.id} recommendedAd={recommendedAd} indexId={indexId} />
+      {searchData?.data && searchData.data.length > 0 ? (
+        searchData.data.map((recommendedAd) => (
+          <RecommendedAd
+            key={recommendedAd.id}
+            recommendedAd={{ ...recommendedAd, clips: recommendedAd.clips || [] }}
+            indexId={indexId}
+          />
         ))
       ) : (
         searchData && <div className='flex justify-center items-center h-full my-5'>No search results found 😿 </div>

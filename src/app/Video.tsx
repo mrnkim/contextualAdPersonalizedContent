@@ -29,14 +29,14 @@ const Video: React.FC<VideoProps> = ({ video, indexId }) => {
   const { data: videoDetail } = useQuery<VideoDetails, Error>({
     queryKey: ["videoDetail", video._id],
     queryFn: () => {
-      if (!video._id) {
+      if (!video._id && !video.id) {
         throw new Error("Video ID is missing");
       }
-      return fetchVideoDetails(video._id, indexId);
+      return fetchVideoDetails((video._id || video.id)!, indexId);
     },
     staleTime: 600000,
     gcTime: 900000,
-    enabled: !!indexId && !!video._id,
+    enabled: !!indexId && (!!video._id || !!video.id),
   });
 
   return (

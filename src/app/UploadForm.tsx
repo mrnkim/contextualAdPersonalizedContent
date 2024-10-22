@@ -4,6 +4,7 @@ import { uploadFootage } from '@/hooks/apiHooks';
 import Button from './Button';
 import LoadingSpinner from './LoadingSpinner';
 import ErrorFallback from './ErrorFallback';
+import { UploadFormProps } from './types';
 
 function UploadForm({ indexId, selectedFile, setSelectedFile, setTaskId, taskId }: UploadFormProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
