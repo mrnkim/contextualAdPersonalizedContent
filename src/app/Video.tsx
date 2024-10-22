@@ -27,7 +27,7 @@ const Video: React.FC<VideoProps> = ({ video, indexId }) => {
 
   /** Queries the detailed information of a video using React Query */
   const { data: videoDetail } = useQuery<VideoDetails, Error>({
-    queryKey: ["videoDetail", video._id],
+    queryKey: ["videoDetail", video._id || video.id],
     queryFn: () => {
       if (!video._id && !video.id) {
         throw new Error("Video ID is missing");
