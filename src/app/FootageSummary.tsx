@@ -3,15 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import LoadingSpinner from './LoadingSpinner';
 import ErrorFallback from './ErrorFallback';
 import { generateGist, generateCustomTexts } from '@/hooks/apiHooks';
-
-interface FootageSummaryProps {
-  videoId: string;
-  setHashtags: (hashtags: string[]) => void;
-}
-
-interface GistData {
-  hashtags: string[];
-}
+import { FootageSummaryProps, GistData } from './types';
 
 const PROMPT = "Summarize the video focusing on the event type, main content, and the emotional tone. Provide the titles (Event Type, Main Content, Emotional Tone) before each summary. Do not include any introductory text or comments. Start straight away with the summary."
 

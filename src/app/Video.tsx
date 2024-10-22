@@ -8,43 +8,7 @@ import ReactPlayer from "react-player";
 import ErrorFallback from "./ErrorFallback";
 import { fetchVideoDetails } from "@/hooks/apiHooks";
 import LoadingSpinner from "./LoadingSpinner";
-
-interface VideoDetail {
-  hls: VideoHLS;
-  metadata: VideoMetadata;
-}
-
-interface VideoMetadata {
-  duration: number;
-  engine_ids: string[];
-  filename: string;
-  fps: number;
-  height: number;
-  size: number;
-  video_title: string;
-  width: number;
-}
-
-interface VideoHLS {
-  status: string;
-  thumbnail_urls: string[];
-  updated_at: string;
-  video_url: string;
-}
-
-interface VideoProps {
-  video: {
-    _id?: string;
-    metadata?: VideoMetadata;
-    id?: string;
-    clips?: object[];
-  }
-  indexId: string;
-  start?: number;
-  end?: number;
-}
-
-
+import { VideoProps, VideoDetails } from "./types";
 const Video: React.FC<VideoProps> = ({ video, indexId }) => {
   const [playing, setPlaying] = useState(false);
 
@@ -62,14 +26,14 @@ const Video: React.FC<VideoProps> = ({ video, indexId }) => {
   };
 
   /** Queries the detailed information of a video using React Query */
-  const { data: videoDetail } = useQuery<VideoDetail, Error>({
+  const { data: videoDetail } = useQuery<VideoDetails, Error>({
     queryKey: ["videoDetail", 'video_id' in video ? video.video_id : ('_id' in video ? video._id : video.id)],
     queryFn: () => {
       const videoId = 'video_id' in video ? video.video_id : ('_id' in video ? video._id : video.id);
       if (!videoId) {
         throw new Error("Video ID is missing");
       }
-      return fetchVideoDetails(videoId, indexId);
+      return fetchVideoDetails(videoId || "", indexId);
     },
     staleTime: 600000,
     gcTime: 900000,
@@ -78,7 +42,6 @@ const Video: React.FC<VideoProps> = ({ video, indexId }) => {
       ('id' in video && video.id) ||
       undefined
     ),
-    suspense: true, 
   });
 
   if (!videoDetail) {

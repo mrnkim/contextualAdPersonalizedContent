@@ -16,35 +16,16 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { ErrorBoundary } from 'react-error-boundary'
 import ErrorFallback from './ErrorFallback'
 import LoadingSpinner from './LoadingSpinner';
-
-interface RecommendedAdProps {
-  recommendedAd: {
-    id?: string
-    clips: Array<object>
-  };
-  indexId: string;
-}
-
-interface Clip {
-  confidence: "low" | "medium" | "high";
-  end: number;
-  metadata: Array<{ type: string }>;
-  modules: Array<{ type: string, confidence: string }>;
-  start: number;
-  score: number;
-  thumbnail_url: string;
-  video_id: string;
-}
+import { VideoDetails, RecommendedAdProps, Clip } from './types';
 
 const AD_COPY_PROMPT = "Based on the ad video, provide the headlines, ad copies, and hashtags. Provide the titles (Headline, Ad Copy, Hashtag) before each. Do not include any introductory text or comments. Start straight away with Headlines."
-
 
 const RecommendedAd: React.FC<RecommendedAdProps> = ({ recommendedAd, indexId }) => {
   const [isAdCopyClicked, setIsAdCopyClicked] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [currentSuggestionIndex, setCurrentSuggestionIndex] = useState(0);
 
-  const { data: videoDetails, error: videoDetailsError } = useQuery({
+  const { data: videoDetails, error: videoDetailsError } = useQuery<VideoDetails, Error>({
     queryKey: ["videoDetails", recommendedAd.id],
     queryFn: () => fetchVideoDetails(recommendedAd.id!, indexId),
     enabled: !!recommendedAd.id && !!indexId
@@ -162,10 +143,12 @@ const RecommendedAd: React.FC<RecommendedAdProps> = ({ recommendedAd, indexId })
         </div>
         <div className="w-1/2 pl-2 overflow-auto">
           <Suspense fallback={<div className="flex justify-center items-center h-full"><LoadingSpinner /></div>}>
-            <Clips
-              clips={recommendedAd.clips as Clip[]}
-              videoDetails={videoDetails}
-            />
+            {videoDetails && (
+              <Clips
+                clips={recommendedAd.clips as Clip[]}
+                videoDetails={videoDetails}
+              />
+            )}
           </Suspense>
         </div>
       </div>

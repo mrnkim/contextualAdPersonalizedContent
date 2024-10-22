@@ -6,28 +6,6 @@ import { ErrorBoundary } from 'react-error-boundary';
 import LoadingSpinner from './LoadingSpinner';
 import ErrorFallback from './ErrorFallback';
 
-interface RecommendedAdsProps {
-  hashtags: string[];
-  setHashtags: (hashtags: string[]) => void;
-  footageVideoId: string;
-  indexId: string;
-  selectedFile: File | null;
-  setIsRecommendClicked: (isRecommendClicked: boolean) => void;
-}
-
-interface GistData {
-  hashtags: string[];
-}
-
- interface SearchResult {
-  id: string;
-  // Add other properties of recommendedAd as needed
-}
-
-interface SearchData {
-  data: SearchResult[];
-}
-
 const RecommendedAdsContent = ({ hashtags, setHashtags, footageVideoId, indexId, selectedFile, setIsRecommendClicked }: RecommendedAdsProps) => {
 
   const { data: gistData, error: gistError, isLoading: isGistLoading } = useQuery<GistData, Error>({

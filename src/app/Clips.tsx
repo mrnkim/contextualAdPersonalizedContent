@@ -1,40 +1,6 @@
 import React from 'react'
 import Clip from './Clip';
-
-interface ClipData {
-    confidence: "low" | "medium" | "high";
-    end: number;
-    metadata: Array<{ type: string }>;
-    modules: Array<{ type: string, confidence: string }>;
-    start: number;
-    score: number;
-    thumbnail_url: string;
-    video_id: string;
-  }
-
-interface VideoDetails {
-  hls: {
-    video_url: string;
-    thumbnail_urls: string[];
-    status: string;
-    updated_at: string;
-  };
-  metadata: {
-    duration: number;
-    engine_ids: string[];
-    filename: string;
-    fps: number;
-    height: number;
-    size: number;
-    video_title: string;
-    width: number;
-  };
-}
-
-interface ClipsProps {
-  clips: ClipData[];
-  videoDetails: VideoDetails;
-}
+import { ClipsProps } from './types';
 
 const Clips: React.FC<ClipsProps> = ({ clips, videoDetails }) => {
   return (

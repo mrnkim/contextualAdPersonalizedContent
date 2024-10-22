@@ -1,23 +1,7 @@
 import React, { useState, useRef } from 'react'
 import ReactPlayer from 'react-player'
 import clsx from 'clsx'
-
-// Clip 인터페이스 추가
-interface Clip {
-    confidence: "low" | "medium" | "high";
-    end: number;
-    metadata: Array<{ type: string }>;
-    modules: Array<{ type: string, confidence: string }>;
-    start: number;
-    score: number;
-    thumbnail_url: string;
-    video_id: string;
-}
-
-interface ClipProps {
-    clip: Clip;
-    videoDetails: object;
-}
+import { ClipProps, VideoDetails } from './types'
 
 const Clip: React.FC<ClipProps> = ({ clip, videoDetails }) => {
     const [playing, setPlaying] = useState(false);
@@ -40,7 +24,7 @@ const Clip: React.FC<ClipProps> = ({ clip, videoDetails }) => {
     };
 
     return (
-        <div className="flex flex-col w-full max-w-md"> {/* max-w-sm을 max-w-md로 변경 */}
+        <div className="flex flex-col w-full max-w-md">
           <div className="relative">
             <div
               className="w-full h-0 pb-[56.25%] relative overflow-hidden rounded cursor-pointer"
@@ -48,7 +32,7 @@ const Clip: React.FC<ClipProps> = ({ clip, videoDetails }) => {
             >
               <ReactPlayer
                 ref={playerRef}
-                url={`${videoDetails?.hls?.video_url}`}
+                url={videoDetails?.hls?.video_url}
                 controls
                 width="100%"
                 height="100%"

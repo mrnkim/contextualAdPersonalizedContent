@@ -1,8 +1,6 @@
 import React from 'react';
 import clsx from 'clsx';
-
-type Size = 'sm' | 'md' | 'lg';
-type Color = 'default' | 'primary';
+import { LoadingSpinnerProps, Size, Color } from './types';
 
 function getSize(size: Size): string {
   switch (size) {
@@ -22,11 +20,6 @@ function getColor(color: Color): string {
     case 'primary':
       return 'border-green-500';
   }
-}
-
-interface LoadingSpinnerProps extends React.HTMLAttributes<HTMLDivElement> {
-  size?: Size;
-  color?: Color;
 }
 
 const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({

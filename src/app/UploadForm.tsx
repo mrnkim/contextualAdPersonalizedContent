@@ -5,14 +5,6 @@ import Button from './Button';
 import LoadingSpinner from './LoadingSpinner';
 import ErrorFallback from './ErrorFallback';
 
-interface UploadFormProps {
-  indexId: string;
-  selectedFile: File | null;
-  setSelectedFile: (file: File | null) => void;
-  setTaskId: (taskId: string) => void;
-  taskId: string | null;
-}
-
 function UploadForm({ indexId, selectedFile, setSelectedFile, setTaskId, taskId }: UploadFormProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 

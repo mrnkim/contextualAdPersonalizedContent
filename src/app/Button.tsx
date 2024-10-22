@@ -1,16 +1,7 @@
 import clsx from "clsx";
 import LoadingSpinner from "./LoadingSpinner";
 import { forwardRef, memo, useMemo } from "react";
-import { ButtonHTMLAttributes, ReactNode } from "react";
-
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  children: ReactNode;
-  size?: "xs" | "sm" | "md" | "lg" | "xl";
-  appearance?: "primary" | "default" | "danger" | "secondary" | "subtle";
-  rounded?: boolean;
-  loading?: boolean;
-  disableFocusStyle?: boolean;
-}
+import { ButtonProps } from "./types";
 
 const filledButtonClasses = clsx(
   // background

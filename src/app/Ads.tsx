@@ -11,27 +11,15 @@ import clsx from 'clsx'
 import RecommendedAds from './RecommendedAds';
 import { fetchVideos } from '@/hooks/apiHooks';
 import { ErrorBoundary } from 'react-error-boundary';
+import { AdsProps } from './types';
 
 type VideoType = {
   _id: string;
   title: string;
 };
 
-interface AdsProps {
-  hashtags: string[];
-  setHashtags: (hashtags: string[]) => void;
-  indexId: string;
-  isIndexIdLoading: boolean;
-  footageVideoId: string;
-  selectedFile: File | null;
-  isRecommendClicked: boolean;
-  setIsRecommendClicked: (isRecommendClicked: boolean) => void;
-}
-
 function Ads({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVideoId, selectedFile, isRecommendClicked, setIsRecommendClicked }: AdsProps) {
-  console.log("🚀 > Ads > selectedFile=", selectedFile)
   const [page, setPage] = useState(1);
-  console.log("🚀 > Ads > isRecommendClicked=", isRecommendClicked)
 
   return (
     <div className="flex flex-col items-center gap-4">

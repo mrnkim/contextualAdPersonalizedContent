@@ -10,19 +10,9 @@ import FootageSummary from './FootageSummary';
 import { fetchVideos, fetchTaskDetails } from '@/hooks/apiHooks';
 import { TaskDetails } from './types';
 import UploadForm from './UploadForm';
+import { FootageProps } from './types';
 
 const PAGE = 1;
-
-interface FootageProps {
-	setHashtags: (hashtags: string[]) => void;
-	indexId: string;
-	isIndexIdLoading: boolean;
-	footageVideoId: string;
-	setFootageVideoId: (footageVideoId: string) => void;
-	selectedFile: File | null;
-	setSelectedFile: (file: File | null) => void;
-	setIsRecommendClicked: (isRecommendClicked: boolean) => void;
-  }
 
 function Footage({ setHashtags, indexId, isIndexIdLoading, footageVideoId, setFootageVideoId, selectedFile, setSelectedFile, setIsRecommendClicked }: FootageProps) {
 	const [isAnalyzeClicked, setIsAnalyzeClicked] = useState(false);
