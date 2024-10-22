@@ -3,9 +3,9 @@
 import React, { useState, Suspense } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ErrorBoundary } from "react-error-boundary";
+import ErrorFallback from "./ErrorFallback";
 import clsx from "clsx";
 import ReactPlayer from "react-player";
-import ErrorFallback from "./ErrorFallback";
 import { fetchVideoDetails } from "@/hooks/apiHooks";
 import LoadingSpinner from "./LoadingSpinner";
 import { VideoProps, VideoDetails } from "./types";
@@ -27,26 +27,17 @@ const Video: React.FC<VideoProps> = ({ video, indexId }) => {
 
   /** Queries the detailed information of a video using React Query */
   const { data: videoDetail } = useQuery<VideoDetails, Error>({
-    queryKey: ["videoDetail", 'video_id' in video ? video.video_id : ('_id' in video ? video._id : video.id)],
+    queryKey: ["videoDetail", video._id],
     queryFn: () => {
-      const videoId = 'video_id' in video ? video.video_id : ('_id' in video ? video._id : video.id);
-      if (!videoId) {
+      if (!video._id) {
         throw new Error("Video ID is missing");
       }
-      return fetchVideoDetails(videoId || "", indexId);
+      return fetchVideoDetails(video._id, indexId);
     },
     staleTime: 600000,
     gcTime: 900000,
-    enabled: !!indexId && !!(
-      ('_id' in video && video._id) ||
-      ('id' in video && video.id) ||
-      undefined
-    ),
+    enabled: !!indexId && !!video._id,
   });
-
-  if (!videoDetail) {
-    throw new Error("Video details not available");
-  }
 
   return (
     <div className="flex flex-col w-full max-w-sm">
@@ -100,7 +91,7 @@ const Video: React.FC<VideoProps> = ({ video, indexId }) => {
               )}
             >
               <p className={clsx("text-white", "text-xs", "font-light")}>
-                {formatDuration(videoDetail.metadata?.duration ?? 0)}
+                {formatDuration(videoDetail?.metadata?.duration ?? 0)}
               </p>
             </div>
           </div>
@@ -108,7 +99,7 @@ const Video: React.FC<VideoProps> = ({ video, indexId }) => {
       </div>
       <div className="mt-2">
         <p className={clsx("text-body3", "truncate", "text-grey-700")}>
-          {videoDetail.metadata?.filename}
+          {videoDetail?.metadata?.filename}
         </p>
       </div>
     </div>
