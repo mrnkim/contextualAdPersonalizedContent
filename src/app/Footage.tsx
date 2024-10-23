@@ -11,10 +11,12 @@ import { fetchVideos, fetchTaskDetails } from '@/hooks/apiHooks';
 import { TaskDetails } from './types';
 import UploadForm from './UploadForm';
 import { FootageProps } from './types';
+import IndexesDropDown from './IndexesDropDown';
 
 const PAGE = 1;
 
 function Footage({ setHashtags, indexId, isIndexIdLoading, footageVideoId, setFootageVideoId, selectedFile, setSelectedFile, setIsRecommendClicked }: FootageProps) {
+	const [footageIndexId, setFootageIndexId] = useState<string | null>(null);
 	const [isAnalyzeClicked, setIsAnalyzeClicked] = useState(false);
 	const [taskId, setTaskId] = useState<string | null>(null);
 	const [taskDetails, setTaskDetails] = useState<TaskDetails | null>(null);
@@ -89,8 +91,12 @@ function Footage({ setHashtags, indexId, isIndexIdLoading, footageVideoId, setFo
 	return (
 		<div className="flex flex-col items-center gap-4 w-full">
 			<h2 className="text-2xl font-bold">News Footage</h2>
+			<IndexesDropDown
+				setFootageIndexId={setFootageIndexId}
+			/>
 			<UploadForm
-				indexId={indexId}
+				// indexId={indexId}
+				footageIndexId={footageIndexId}
 				selectedFile={selectedFile}
 				setSelectedFile={setSelectedFile}
 				setTaskId={setTaskId}

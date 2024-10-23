@@ -3,17 +3,11 @@ import { NextResponse } from "next/server";
 const API_KEY = process.env.TWELVELABS_API_KEY;
 const TWELVELABS_API_BASE_URL = process.env.TWELVELABS_API_BASE_URL;
 
+const PAGE_LIMIT = 5;
+
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const page = searchParams.get("page");
-  const indexId = searchParams.get("indexId");
-
-  if (!indexId) {
-    return NextResponse.json(
-      { error: "indexId is required" },
-      { status: 400 }
-    );
-  }
 
   if (!page) {
     return NextResponse.json(
@@ -22,18 +16,19 @@ export async function GET(req: Request) {
     );
   }
 
-  const url = `${TWELVELABS_API_BASE_URL}/indexes/${indexId}/videos?page=${page}&page_limit=9`;
+  const url = `${TWELVELABS_API_BASE_URL}/indexes?page=${page}&page_limit=${PAGE_LIMIT}`;
 
   const options = {
     method: "GET",
     headers: {
-      "Content-Type": "application/json",
+      "Content-Type": "applicatoin/json",
       "x-api-key": `${API_KEY}`,
     },
   };
 
   try {
     const response = await fetch(url, options);
+    console.log("🚀 > GET > response=", response)
 
     if (!response.ok) {
       throw new Error("Network response was not ok");

@@ -23,6 +23,14 @@ export const generateGist = async (videoId: string) => {
     return response.json();
   };
 
+ export const fetchIndexes = async (page: number) => {
+	const response = await fetch(`/api/getIndexes?page=${page}`);
+	if (!response.ok) {
+		throw new Error("Network response was not ok");
+	}
+	return response.json();
+};
+
  export const fetchVideos = async (page: number, indexId: string) => {
 	if (!indexId) {
 		throw new Error("ads index ID is required");

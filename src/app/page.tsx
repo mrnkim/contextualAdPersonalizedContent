@@ -19,7 +19,7 @@ export default function Page() {
         <div className="w-2/3 pr-4">
           <Footage
             setHashtags={setHashtags}
-            indexId={footageIndexId ?? ''}
+            // indexId={footageIndexId ?? ''}
             isIndexIdLoading={!footageIndexId}
             footageVideoId={footageVideoId}
             setFootageVideoId={setFootageVideoId}

@@ -18,7 +18,7 @@ export interface LoadingSpinnerProps extends React.HTMLAttributes<HTMLDivElement
 // Page Component Props
 export interface FootageProps {
   setHashtags: (hashtags: string[]) => void;
-  indexId: string;
+  // indexId: string;
   isIndexIdLoading: boolean;
   footageVideoId: string;
   setFootageVideoId: (footageVideoId: string) => void;
@@ -68,6 +68,10 @@ export interface UploadFormProps {
   taskId: string | null;
 }
 
+export interface IndexesDropDownProps {
+  onIndexChange: (id: string) => void;
+}
+
 // Video Related Interfaces
 export interface ClipProps {
   clip: Clip;
@@ -92,6 +96,18 @@ export interface VideoProps {
 }
 
 // Data Structures
+export interface Index {
+  _id: string;
+  index_name: string;
+  engines: object[];
+  video_count: number;
+  total_duration: number;
+  addons: string[];
+  created_at: string;
+  updated_at: string;
+  expires_at: string | null;
+}
+
 export interface Clip {
   confidence: "low" | "medium" | "high";
   end: number;
@@ -154,7 +170,7 @@ export interface GistData {
 
 export interface SearchResult {
   id: string;
-  clips?: object[];  
+  clips?: object[];
 }
 
 export interface SearchData {
