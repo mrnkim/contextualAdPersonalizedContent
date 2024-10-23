@@ -1,5 +1,5 @@
-import React, { useRef, useEffect } from 'react';
-import { useQuery } from "@tanstack/react-query";
+import React, { useRef, useEffect, useState } from 'react';
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { fetchVideos } from '@/hooks/apiHooks';
 import { Video } from './types';
 
@@ -10,46 +10,80 @@ interface VideosDropDownProps {
 
 const VideosDropDown: React.FC<VideosDropDownProps> = ({ indexId, onVideoChange }) => {
   const selectRef = useRef<HTMLSelectElement>(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
 
-  const { data: videosData, isLoading: isVideosLoading } = useQuery<{
-    data: Video[];
-    page_info: {
-      limit_per_page: number;
-      page: number;
-      total_page: number;
-      total_results: number;
-    };
-  }>({
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+  } = useInfiniteQuery({
     queryKey: ['videos', indexId],
-    queryFn: () => fetchVideos(1, indexId),
+    queryFn: ({ pageParam }) => fetchVideos(pageParam, indexId),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => {
+      if (lastPage.page_info.page < lastPage.page_info.total_page) {
+        return lastPage.page_info.page + 1;
+      }
+      return undefined;
+    },
     enabled: !!indexId,
   });
 
-  // 컴포넌트가 마운트되거나 videosData가 변경될 때 첫 번째 비디오 선택
   useEffect(() => {
-    if (videosData?.data && videosData.data.length > 0) {
-      onVideoChange(videosData.data[0]._id);
+    if (data?.pages[0]?.data && data.pages[0].data.length > 0 && !selectedVideoId) {
+      const firstVideoId = data.pages[0].data[0]._id;
+      setSelectedVideoId(firstVideoId);
+      onVideoChange(firstVideoId);
     }
-  }, [videosData, onVideoChange]);
+  }, [data, onVideoChange, selectedVideoId]);
 
-  const handleChange = () => {
-    if (selectRef.current) {
-      onVideoChange(selectRef.current.value);
+  const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const newVideoId = event.target.value;
+    setSelectedVideoId(newVideoId);
+    onVideoChange(newVideoId);
+    setIsOpen(false);
+  };
+
+  const handleScroll = (event: React.UIEvent<HTMLSelectElement>) => {
+    const { scrollTop, clientHeight, scrollHeight } = event.currentTarget;
+    if (scrollHeight - scrollTop <= clientHeight * 1.5) {
+      if (hasNextPage && !isFetchingNextPage) {
+        fetchNextPage();
+      }
     }
   };
 
-  if (isVideosLoading) {
+  if (isLoading) {
     return <div>Loading videos...</div>;
   }
 
   return (
-    <select ref={selectRef} onChange={handleChange} value={videosData?.data[0]?._id || ""}>
-      {videosData?.data.map((video) => (
-        <option key={video._id} value={video._id}>
-          {video.metadata.filename}
-        </option>
-      ))}
-    </select>
+    <div className="relative">
+      <select
+        ref={selectRef}
+        onChange={handleChange}
+        onScroll={handleScroll}
+        value={selectedVideoId || ""}
+        className="w-full p-2 border rounded"
+        size={isOpen ? 5 : 1}
+        onFocus={() => setIsOpen(true)}
+        onBlur={() => setIsOpen(false)}
+      >
+        {data?.pages.map((page, pageIndex) => (
+          <React.Fragment key={pageIndex}>
+            {page.data.map((video: Video) => (
+              <option key={video._id} value={video._id}>
+                {video.metadata.filename}
+              </option>
+            ))}
+          </React.Fragment>
+        ))}
+      </select>
+      {isFetchingNextPage && <div className="text-center mt-2">Loading more...</div>}
+    </div>
   );
 };
 

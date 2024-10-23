@@ -5,19 +5,12 @@ const TWELVELABS_API_BASE_URL = process.env.TWELVELABS_API_BASE_URL;
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const page = searchParams.get("page");
+  const page = searchParams.get("page") || "1";
   const indexId = searchParams.get("indexId");
 
   if (!indexId) {
     return NextResponse.json(
       { error: "indexId is required" },
-      { status: 400 }
-    );
-  }
-
-  if (!page) {
-    return NextResponse.json(
-      { error: "page is required" },
       { status: 400 }
     );
   }

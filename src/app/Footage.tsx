@@ -16,7 +16,6 @@ import VideosDropDown from './VideosDropDown';
 const PAGE = 1;
 
 function Footage({ setHashtags, indexId, isIndexIdLoading, footageVideoId, setFootageVideoId, selectedFile, setSelectedFile, setIsRecommendClicked }: FootageProps) {
-	console.log("🚀 > Footage > footageVideoId=", footageVideoId)
 	const [isAnalyzeClicked, setIsAnalyzeClicked] = useState(false);
 	const [taskId, setTaskId] = useState<string | null>(null);
 	const [taskDetails, setTaskDetails] = useState<TaskDetails | null>(null);

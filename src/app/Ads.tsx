@@ -73,7 +73,6 @@ function AdsContent({
     enabled: !!indexId,
   });
 
-  console.log("🚀 > videosData=", videosData)
   const totalPage = videosData?.page_info?.total_page || 1;
   const hasVideoData = videosData && videosData.data && videosData.data.length > 0;
 
