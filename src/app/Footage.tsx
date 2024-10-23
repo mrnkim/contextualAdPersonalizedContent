@@ -11,27 +11,35 @@ import { fetchVideos, fetchTaskDetails } from '@/hooks/apiHooks';
 import { TaskDetails } from './types';
 import UploadForm from './UploadForm';
 import { FootageProps } from './types';
-import IndexesDropDown from './IndexesDropDown';
+import VideosDropDown from './VideosDropDown';
 
 const PAGE = 1;
 
 function Footage({ setHashtags, indexId, isIndexIdLoading, footageVideoId, setFootageVideoId, selectedFile, setSelectedFile, setIsRecommendClicked }: FootageProps) {
-	const [footageIndexId, setFootageIndexId] = useState<string | null>(null);
+	const [videoId, setVideoId] = useState<string | null>(null);
 	const [isAnalyzeClicked, setIsAnalyzeClicked] = useState(false);
 	const [taskId, setTaskId] = useState<string | null>(null);
 	const [taskDetails, setTaskDetails] = useState<TaskDetails | null>(null);
 	const [playing, setPlaying] = useState(false);
 
+	const handleVideoChange = (selectedIndexId: string) => {
+		setVideoId(selectedIndexId);
+		// 필요한 경우 여기에 추가 로직을 넣을 수 있습니다.
+		// 예: 선택된 인덱스에 따라 비디오 목록을 다시 불러오기
+		queryClient.invalidateQueries({ queryKey: ['videos'] });
+	};
+
+
+
+	// videos 쿼리를 수정하여 footageIndexId를 사용하도록 합니다.
 	const { data: videos, isLoading: isVideosLoading } = useQuery({
 		queryKey: ['videos', PAGE, indexId],
-		queryFn: () => fetchVideos(PAGE,indexId),
+		queryFn: () => fetchVideos(PAGE, indexId),
 		enabled: !!indexId && !isIndexIdLoading,
 	});
 
 	const queryClient = useQueryClient();
 	const hasVideoData = videos?.data && videos?.data?.length > 0;
-
-
 
 	useEffect(() => {
 		let intervalId: NodeJS.Timeout | null = null;
@@ -91,12 +99,12 @@ function Footage({ setHashtags, indexId, isIndexIdLoading, footageVideoId, setFo
 	return (
 		<div className="flex flex-col items-center gap-4 w-full">
 			<h2 className="text-2xl font-bold">News Footage</h2>
-			<IndexesDropDown
-				setFootageIndexId={setFootageIndexId}
+			<VideosDropDown
+				indexId={indexId}
+				onVideoChange={handleVideoChange}
 			/>
 			<UploadForm
-				// indexId={indexId}
-				footageIndexId={footageIndexId}
+				indexId={indexId}
 				selectedFile={selectedFile}
 				setSelectedFile={setSelectedFile}
 				setTaskId={setTaskId}

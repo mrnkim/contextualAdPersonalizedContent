@@ -18,7 +18,7 @@ export interface LoadingSpinnerProps extends React.HTMLAttributes<HTMLDivElement
 // Page Component Props
 export interface FootageProps {
   setHashtags: (hashtags: string[]) => void;
-  // indexId: string;
+  indexId: string;
   isIndexIdLoading: boolean;
   footageVideoId: string;
   setFootageVideoId: (footageVideoId: string) => void;
@@ -156,6 +156,22 @@ export interface VideoHLS {
   thumbnail_urls: string[];
   updated_at: string;
   video_url: string;
+}
+
+export interface Video {
+  _id: string;
+  created_at: string;
+  updated_at: string;
+  indexed_at: string;
+  metadata: {
+    duration: number;
+    engine_ids: string[];
+    filename: string;
+    fps: number;
+    height: number;
+    size: number;
+    width: number;
+  };
 }
 
 export interface TaskDetails {
