@@ -21,7 +21,7 @@ export default function Page() {
             setHashtags={setHashtags}
             indexId={footageIndexId ?? ''}
             isIndexIdLoading={!footageIndexId}
-            footageVideoId={footageVideoId}
+            footageVideoId ={footageVideoId}
             setFootageVideoId={setFootageVideoId}
             selectedFile={selectedFile}
             setSelectedFile={setSelectedFile}
@@ -35,7 +35,7 @@ export default function Page() {
             setHashtags={setHashtags}
             indexId={adsIndexId ?? ''}
             isIndexIdLoading={!adsIndexId}
-            footageVideoId={footageVideoId}
+            footageVideoId ={footageVideoId}
             selectedFile={selectedFile}
             isRecommendClicked={isRecommendClicked}
             setIsRecommendClicked={setIsRecommendClicked}

@@ -56,7 +56,7 @@ const RecommendedAd: React.FC<RecommendedAdProps> = ({ recommendedAd, indexId })
       <div className="flex w-full my-5">
         <div className="w-1/2 pr-2">
           <Suspense fallback={<div className="flex justify-center items-center h-full"><LoadingSpinner /></div>}>
-            <Video video={recommendedAd} indexId={indexId}/>
+            <Video videoId={recommendedAd.id} indexId={indexId}/>
           </Suspense>
           <div className="flex justify-center mt-4">
             <Button

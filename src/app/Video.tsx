@@ -9,7 +9,8 @@ import ReactPlayer from "react-player";
 import { fetchVideoDetails } from "@/hooks/apiHooks";
 import LoadingSpinner from "./LoadingSpinner";
 import { VideoProps, VideoDetails } from "./types";
-const Video: React.FC<VideoProps> = ({ video, indexId }) => {
+
+const Video: React.FC<VideoProps> = ({ videoId, indexId }) => {
   const [playing, setPlaying] = useState(false);
 
   /** Formats a duration in seconds into a "HH:MM:SS" string format */
@@ -27,16 +28,16 @@ const Video: React.FC<VideoProps> = ({ video, indexId }) => {
 
   /** Queries the detailed information of a video using React Query */
   const { data: videoDetail } = useQuery<VideoDetails, Error>({
-    queryKey: ["videoDetail", video._id || video.id],
+    queryKey: ["videoDetail", videoId],
     queryFn: () => {
-      if (!video._id && !video.id) {
+      if (!videoId) {
         throw new Error("Video ID is missing");
       }
-      return fetchVideoDetails((video._id || video.id)!, indexId);
+      return fetchVideoDetails((videoId)!, indexId);
     },
     staleTime: 600000,
     gcTime: 900000,
-    enabled: !!indexId && (!!video._id || !!video.id),
+    enabled: !!indexId && (!!videoId),
   });
 
   return (

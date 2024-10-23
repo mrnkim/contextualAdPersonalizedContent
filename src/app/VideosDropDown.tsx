@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { useQuery } from "@tanstack/react-query";
 import { fetchVideos } from '@/hooks/apiHooks';
 import { Video } from './types';
@@ -25,6 +25,13 @@ const VideosDropDown: React.FC<VideosDropDownProps> = ({ indexId, onVideoChange 
     enabled: !!indexId,
   });
 
+  // 컴포넌트가 마운트되거나 videosData가 변경될 때 첫 번째 비디오 선택
+  useEffect(() => {
+    if (videosData?.data && videosData.data.length > 0) {
+      onVideoChange(videosData.data[0]._id);
+    }
+  }, [videosData, onVideoChange]);
+
   const handleChange = () => {
     if (selectRef.current) {
       onVideoChange(selectRef.current.value);
@@ -36,11 +43,10 @@ const VideosDropDown: React.FC<VideosDropDownProps> = ({ indexId, onVideoChange 
   }
 
   return (
-    <select ref={selectRef} onChange={handleChange} defaultValue="">
-      <option value="">Select a video</option>
+    <select ref={selectRef} onChange={handleChange} value={videosData?.data[0]?._id || ""}>
       {videosData?.data.map((video) => (
         <option key={video._id} value={video._id}>
-          {video.metadata.filename} ({new Date(video.created_at).toLocaleString()})
+          {video.metadata.filename}
         </option>
       ))}
     </select>

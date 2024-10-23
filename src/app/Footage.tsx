@@ -16,22 +16,17 @@ import VideosDropDown from './VideosDropDown';
 const PAGE = 1;
 
 function Footage({ setHashtags, indexId, isIndexIdLoading, footageVideoId, setFootageVideoId, selectedFile, setSelectedFile, setIsRecommendClicked }: FootageProps) {
-	const [videoId, setVideoId] = useState<string | null>(null);
+	console.log("🚀 > Footage > footageVideoId=", footageVideoId)
 	const [isAnalyzeClicked, setIsAnalyzeClicked] = useState(false);
 	const [taskId, setTaskId] = useState<string | null>(null);
 	const [taskDetails, setTaskDetails] = useState<TaskDetails | null>(null);
 	const [playing, setPlaying] = useState(false);
 
-	const handleVideoChange = (selectedIndexId: string) => {
-		setVideoId(selectedIndexId);
-		// 필요한 경우 여기에 추가 로직을 넣을 수 있습니다.
-		// 예: 선택된 인덱스에 따라 비디오 목록을 다시 불러오기
+	const handleVideoChange = (selectedVideoId: string) => {
+		setFootageVideoId(selectedVideoId);
 		queryClient.invalidateQueries({ queryKey: ['videos'] });
 	};
 
-
-
-	// videos 쿼리를 수정하여 footageIndexId를 사용하도록 합니다.
 	const { data: videos, isLoading: isVideosLoading } = useQuery({
 		queryKey: ['videos', PAGE, indexId],
 		queryFn: () => fetchVideos(PAGE, indexId),
@@ -86,15 +81,15 @@ function Footage({ setHashtags, indexId, isIndexIdLoading, footageVideoId, setFo
 		};
 	}, [queryClient, setHashtags, setIsRecommendClicked, setSelectedFile, taskId]);
 
-	useEffect(() => {
-		if (videos?.data?.[0]?._id) {
-			setFootageVideoId(videos.data[0]._id);
-		}
-	}, [setFootageVideoId, videos]);
+	// useEffect(() => {
+	// 	if (videos?.data?.[0]?._id) {
+	// 		setFootageVideoId(videos.data[0]._id);
+	// 	}
+	// }, [setFootageVideoId, videos]);
 
-	useEffect(() => {
-		queryClient.invalidateQueries({ queryKey: ['videos'] });
-	}, [queryClient, videos]);
+	// useEffect(() => {
+	// 	queryClient.invalidateQueries({ queryKey: ['videos'] });
+	// }, [queryClient, videos]);
 
 	return (
 		<div className="flex flex-col items-center gap-4 w-full">
@@ -121,7 +116,7 @@ function Footage({ setHashtags, indexId, isIndexIdLoading, footageVideoId, setFo
 						<div>No videos available</div>
 					) : (
 						<>
-							<Video video={videos.data[0]} indexId={indexId || ''} />
+							<Video videoId={footageVideoId} indexId={indexId || ''} />
 							<Button
 								type="button"
 								size="sm"
@@ -141,7 +136,7 @@ function Footage({ setHashtags, indexId, isIndexIdLoading, footageVideoId, setFo
 				</>
 			)}
 			{!selectedFile && isAnalyzeClicked && hasVideoData && (
-				<FootageSummary videoId={footageVideoId} setHashtags={setHashtags} />
+				<FootageSummary videoId={footageVideoId._id} setHashtags={setHashtags} />
 			)}
 		</div>
 	)

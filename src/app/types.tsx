@@ -84,12 +84,7 @@ export interface ClipsProps {
 }
 
 export interface VideoProps {
-  video: {
-    _id?: string;
-    metadata?: VideoMetadata;
-    id?: string;
-    clips?: object[];
-  }
+  videoId?: string;
   indexId: string;
   start?: number;
   end?: number;

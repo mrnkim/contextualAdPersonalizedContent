@@ -73,6 +73,7 @@ function AdsContent({
     enabled: !!indexId,
   });
 
+  console.log("🚀 > videosData=", videosData)
   const totalPage = videosData?.page_info?.total_page || 1;
   const hasVideoData = videosData && videosData.data && videosData.data.length > 0;
 
@@ -88,7 +89,7 @@ function AdsContent({
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 justify-items-center">
         {videosData.data.map((video: VideoType) => (
-          <Video key={video._id} video={video} indexId={indexId || ''} />
+          <Video key={video._id} videoId={video._id} indexId={indexId || ''} />
         ))}
       </div>
       <div className={clsx("w-full", "flex", "justify-center", "mt-8")}>
