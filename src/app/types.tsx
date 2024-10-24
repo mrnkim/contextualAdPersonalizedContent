@@ -175,6 +175,13 @@ export interface TaskDetails {
   status: string;
   videoUrl?: string;
   thumbnailUrl?: string;
+  metadata?: {
+    duration: number;
+    filename: string;
+    fps: number;
+    height: number;
+    width: number;
+  }
 }
 
 export interface GistData {

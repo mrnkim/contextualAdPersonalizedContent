@@ -37,6 +37,7 @@ export async function GET(req: Request) {
       status: task?.status,
       videoUrl: task?.hls?.video_url,
       thumbnailUrl: task?.hls?.thumbnail_urls[0],
+      metadata: task?.metadata,
     });
   } catch (error) {
     return NextResponse.json(
