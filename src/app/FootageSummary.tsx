@@ -7,7 +7,7 @@ import { FootageSummaryProps, GistData } from './types';
 
 const PROMPT = "Summarize the video focusing on the event type, main content, and the emotional tone. Provide the titles (Event Type, Main Content, Emotional Tone) before each summary. Do not include any introductory text or comments. Start straight away with the summary."
 
-function FootageSummary({ videoId, setHashtags }: FootageSummaryProps) {
+function FootageSummary({ videoId, hashtags, setHashtags }: FootageSummaryProps) {
 
   const { data: gistData, error: gistError, isLoading: isGistLoading } = useQuery<GistData, Error>({
     queryKey: ["gist", videoId],
@@ -51,6 +51,12 @@ function FootageSummary({ videoId, setHashtags }: FootageSummaryProps) {
     );
   };
 
+  const renderHashtags = () => {
+    if (hashtags.length > 0) {
+      return <div className="mb-5">{hashtags.map((tag: string) => `#${tag?.trim()}`).join(' ')}</div>;
+    }
+  };
+
   const renderCustomTexts = () => {
     if (!customTextsData) return null;
     return (
@@ -68,7 +74,7 @@ function FootageSummary({ videoId, setHashtags }: FootageSummaryProps) {
         </div>
       ) : (
         <>
-          {renderGistData()}
+          {hashtags.length > 0 ? renderHashtags() : renderGistData()}
           {renderCustomTexts()}
         </>
       )}

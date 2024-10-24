@@ -17,6 +17,7 @@ export interface LoadingSpinnerProps extends React.HTMLAttributes<HTMLDivElement
 
 // Page Component Props
 export interface FootageProps {
+  hashtags: string[];
   setHashtags: (hashtags: string[]) => void;
   indexId: string;
   isIndexIdLoading: boolean;
@@ -39,6 +40,7 @@ export interface AdsProps {
 }
 
 export interface FootageSummaryProps {
+  hashtags: string[];
   videoId: string;
   setHashtags: (hashtags: string[]) => void;
 }

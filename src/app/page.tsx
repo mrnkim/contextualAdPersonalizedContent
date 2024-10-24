@@ -18,6 +18,7 @@ export default function Page() {
       <div className="flex w-full max-w-7xl mx-auto">
         <div className="w-2/3 pr-4">
           <Footage
+            hashtags={hashtags}
             setHashtags={setHashtags}
             indexId={footageIndexId ?? ''}
             isIndexIdLoading={!footageIndexId}

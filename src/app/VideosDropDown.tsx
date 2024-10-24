@@ -1,16 +1,16 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { fetchVideos } from '@/hooks/apiHooks';
 import { Video } from './types';
+import { MenuItem, Select, Skeleton, SelectChangeEvent } from '@mui/material'
+import clsx from 'clsx';
 
 interface VideosDropDownProps {
   indexId: string;
-  onVideoChange: (videoId: string) => void;
+  onVideoChange: (selectedVideoId: string) => void;
 }
 
 const VideosDropDown: React.FC<VideosDropDownProps> = ({ indexId, onVideoChange }) => {
-  const selectRef = useRef<HTMLSelectElement>(null);
-  const [isOpen, setIsOpen] = useState(false);
   const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
 
   const {
@@ -40,14 +40,13 @@ const VideosDropDown: React.FC<VideosDropDownProps> = ({ indexId, onVideoChange 
     }
   }, [data, onVideoChange, selectedVideoId]);
 
-  const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleChange = (event: SelectChangeEvent<string>) => {
     const newVideoId = event.target.value;
     setSelectedVideoId(newVideoId);
     onVideoChange(newVideoId);
-    setIsOpen(false);
   };
 
-  const handleScroll = (event: React.UIEvent<HTMLSelectElement>) => {
+  const handleScroll = (event: React.UIEvent<HTMLUListElement>) => {
     const { scrollTop, clientHeight, scrollHeight } = event.currentTarget;
     if (scrollHeight - scrollTop <= clientHeight * 1.5) {
       if (hasNextPage && !isFetchingNextPage) {
@@ -60,29 +59,96 @@ const VideosDropDown: React.FC<VideosDropDownProps> = ({ indexId, onVideoChange 
     return <div>Loading videos...</div>;
   }
 
+  const ITEM_HEIGHT = 48;
+  const MENU_MAX_HEIGHT = 5 * ITEM_HEIGHT;
+
   return (
     <div className="relative">
-      <select
-        ref={selectRef}
-        onChange={handleChange}
-        onScroll={handleScroll}
+      <Select
         value={selectedVideoId || ""}
-        className="w-full p-2 border rounded"
-        size={isOpen ? 5 : 1}
-        onFocus={() => setIsOpen(true)}
-        onBlur={() => setIsOpen(false)}
+        onChange={handleChange}
+        className={clsx('h-9 w-full tablet:w-[200px]', 'bg-white', 'pl-[1px]', 'truncate text-ellipsis')}
+        renderValue={(value) => (
+          <div className="truncate">
+            {data?.pages.flatMap(page => page.data).find(video => video._id === value)?.metadata.filename || "Select a video"}
+          </div>
+        )}
+        MenuProps={{
+          PaperProps: {
+            sx: {
+              maxHeight: MENU_MAX_HEIGHT,
+              width: 200
+            }
+          },
+          MenuListProps: {
+            sx: {
+              padding: 0,
+              maxHeight: MENU_MAX_HEIGHT,
+              overflowY: 'auto',
+              overflowX: 'hidden'
+            },
+            onScroll: handleScroll
+          }
+        }}
+        sx={{
+          '& .MuiOutlinedInput-notchedOutline': {
+            borderColor: '#6BDE11',
+            borderWidth: '1px',
+            borderRadius: '0',
+          },
+          '&:hover .MuiOutlinedInput-notchedOutline': {
+            borderColor: '#6BDE11',
+            borderWidth: '1px',
+          },
+          '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+            borderColor: '#6BDE11',
+            borderWidth: '1px',
+          },
+          '& .MuiSelect-select': {
+            padding: '8px 14px',
+            borderRadius: '0',
+          },
+          '& .MuiSelect-icon': {
+            right: '7px',
+          },
+          '& .MuiOutlinedInput-input': {
+            padding: '8px 14px',
+            borderRadius: '0',
+          },
+          '& .MuiInputBase-root': {
+            borderRadius: '0',
+          },
+          '& .MuiSelect-outlined': {
+            borderRadius: '0',
+          },
+        }}
       >
-        {data?.pages.map((page, pageIndex) => (
-          <React.Fragment key={pageIndex}>
-            {page.data.map((video: Video) => (
-              <option key={video._id} value={video._id}>
-                {video.metadata.filename}
-              </option>
-            ))}
-          </React.Fragment>
-        ))}
-      </select>
-      {isFetchingNextPage && <div className="text-center mt-2">Loading more...</div>}
+        {data?.pages.flatMap((page, pageIndex) =>
+          page.data.map((video: Video) => (
+            <MenuItem
+              key={`${pageIndex}-${video._id}`}
+              value={video._id}
+              sx={{
+                paddingX: 1.5,
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                maxWidth: '100%',
+                display: 'block',
+                width: '100%'
+              }}
+            >
+              {video.metadata.filename}
+            </MenuItem>
+          ))
+        )}
+        {isFetchingNextPage && (
+          <MenuItem disabled sx={{ alignItems: 'flex-start', flexDirection: 'column', paddingX: 1.5 }}>
+            <Skeleton variant="text" width={60} />
+            <Skeleton variant="text" width={180} sx={{ mt: 0.5 }} />
+          </MenuItem>
+        )}
+      </Select>
     </div>
   );
 };

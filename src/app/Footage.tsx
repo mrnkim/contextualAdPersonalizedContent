@@ -15,13 +15,14 @@ import VideosDropDown from './VideosDropDown';
 
 const PAGE = 1;
 
-function Footage({ setHashtags, indexId, isIndexIdLoading, footageVideoId, setFootageVideoId, selectedFile, setSelectedFile, setIsRecommendClicked }: FootageProps) {
+function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVideoId, setFootageVideoId, selectedFile, setSelectedFile, setIsRecommendClicked }: FootageProps) {
 	const [isAnalyzeClicked, setIsAnalyzeClicked] = useState(false);
 	const [taskId, setTaskId] = useState<string | null>(null);
 	const [taskDetails, setTaskDetails] = useState<TaskDetails | null>(null);
 	const [playing, setPlaying] = useState(false);
 
 	const handleVideoChange = (selectedVideoId: string) => {
+		reset();
 		setFootageVideoId(selectedVideoId);
 		queryClient.invalidateQueries({ queryKey: ['videos'] });
 	};
@@ -35,22 +36,22 @@ function Footage({ setHashtags, indexId, isIndexIdLoading, footageVideoId, setFo
 	const queryClient = useQueryClient();
 	const hasVideoData = videos?.data && videos?.data?.length > 0;
 
+	const reset = () => {
+		setIsAnalyzeClicked(false);
+		setSelectedFile(null);
+		setTaskId(null);
+		setTaskDetails(null);
+		setHashtags([]);
+		setIsRecommendClicked(false)
+		queryClient.invalidateQueries({ queryKey: ['videos'] });
+		queryClient.invalidateQueries({ queryKey: ['gist'] });
+		queryClient.invalidateQueries({ queryKey: ['search'] });
+		queryClient.invalidateQueries({ queryKey: ['customTexts'] });
+		queryClient.invalidateQueries({ queryKey: ['adCopy'] });
+	};
+
 	useEffect(() => {
 		let intervalId: NodeJS.Timeout | null = null;
-
-		const reset = () => {
-			setIsAnalyzeClicked(false);
-			setSelectedFile(null);
-			setTaskId(null);
-			setTaskDetails(null);
-			setHashtags([]);
-			setIsRecommendClicked(false)
-			queryClient.invalidateQueries({ queryKey: ['videos'] });
-			queryClient.invalidateQueries({ queryKey: ['gist'] });
-			queryClient.invalidateQueries({ queryKey: ['search'] });
-			queryClient.invalidateQueries({ queryKey: ['customTexts'] });
-			queryClient.invalidateQueries({ queryKey: ['adCopy'] });
-		};
 
 		if (taskId) {
 			const fetchTask = async () => {
@@ -93,17 +94,23 @@ function Footage({ setHashtags, indexId, isIndexIdLoading, footageVideoId, setFo
 	return (
 		<div className="flex flex-col items-center gap-4 w-full">
 			<h2 className="text-2xl font-bold">News Footage</h2>
-			<VideosDropDown
-				indexId={indexId}
-				onVideoChange={handleVideoChange}
-			/>
-			<UploadForm
-				indexId={indexId}
-				selectedFile={selectedFile}
-				setSelectedFile={setSelectedFile}
-				setTaskId={setTaskId}
-				taskId={taskId}
-			/>
+			<div className="flex items-center justify-center w-full">
+				<div className="flex-grow mr-4 w-64">
+					<VideosDropDown
+						indexId={indexId}
+						onVideoChange={handleVideoChange}
+					/>
+				</div>
+				<div className="flex-shrink-0">
+					<UploadForm
+						indexId={indexId}
+						selectedFile={selectedFile}
+						setSelectedFile={setSelectedFile}
+						setTaskId={setTaskId}
+						taskId={taskId}
+					/>
+				</div>
+			</div>
 			{taskId && taskDetails && (
 				<Task taskDetails={taskDetails} playing={playing} setPlaying={setPlaying} />
 			)}
@@ -135,7 +142,7 @@ function Footage({ setHashtags, indexId, isIndexIdLoading, footageVideoId, setFo
 				</>
 			)}
 			{!selectedFile && isAnalyzeClicked && hasVideoData && (
-				<FootageSummary videoId={footageVideoId._id} setHashtags={setHashtags} />
+				<FootageSummary videoId={footageVideoId} hashtags={hashtags} setHashtags={setHashtags} />
 			)}
 		</div>
 	)
