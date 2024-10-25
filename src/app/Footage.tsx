@@ -1,16 +1,16 @@
 "use client";
 
-import React, { useState, useEffect} from 'react'
+import { useEffect, useState } from 'react';
+import { useInfiniteQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import { fetchVideos, fetchTaskDetails, uploadFootage } from '@/hooks/apiHooks';
+import Button from './Button';
 import Video from './Video';
-import LoadingSpinner from './LoadingSpinner';
-import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
-import Task from './Task';
-import Button from './Button'
 import FootageSummary from './FootageSummary';
-import { fetchVideos, fetchTaskDetails } from '@/hooks/apiHooks';
-import { TaskDetails, FootageProps, VideosData } from './types';
-import UploadForm from './UploadForm';
+import LoadingSpinner from './LoadingSpinner';
 import VideosDropDown from './VideosDropDown';
+import UploadForm from './UploadForm';
+import Task from './Task';
+import { FootageProps, TaskDetails, VideosData } from './types';
 
 function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVideoId, setFootageVideoId, selectedFile, setSelectedFile, setIsRecommendClicked }: FootageProps) {
 	const [isAnalyzeClicked, setIsAnalyzeClicked] = useState(false);
@@ -45,6 +45,18 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 
 	const queryClient = useQueryClient();
 	const hasVideoData = videosData?.pages[0]?.data && videosData.pages[0].data.length > 0;
+
+	const uploadMutation = useMutation({
+		mutationFn: (file: File) => uploadFootage(file, indexId),
+		onSuccess: (data) => {
+			setTaskId(data.taskId);
+		},
+	});
+
+	const handleFileUpload = (file: File) => {
+		setSelectedFile(file);
+		uploadMutation.mutate(file);
+	};
 
 	const reset = () => {
 		setIsAnalyzeClicked(false);
@@ -117,15 +129,19 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 				</div>
 				<div className="flex-shrink-0">
 					<UploadForm
-						indexId={indexId}
 						selectedFile={selectedFile}
-						setSelectedFile={setSelectedFile}
-						setTaskId={setTaskId}
 						taskId={taskId}
+						onFileUpload={handleFileUpload}
 					/>
 				</div>
 			</div>
-			{taskId && taskDetails && (
+			{uploadMutation.isPending && !taskId && (
+    			<div className="flex flex-col w-full max-w-sm gap-4 items-center">
+				<div className="text-center">Starting up the indexing engine...</div>
+				<LoadingSpinner />
+				</div>
+			)}
+			{taskDetails && (
 				<Task taskDetails={taskDetails} playing={playing} setPlaying={setPlaying} />
 			)}
 			{!selectedFile && (
@@ -156,7 +172,7 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 				</>
 			)}
 			{!selectedFile && isAnalyzeClicked && hasVideoData && (
-				<FootageSummary videoId={footageVideoId} hashtags={hashtags} setHashtags={setHashtags} />
+				<FootageSummary videoId={footageVideoId} hashtags={hashtags} setHashtags={setHashtags} setIsAnalyzeClicked={setIsAnalyzeClicked} />
 			)}
 		</div>
 	)

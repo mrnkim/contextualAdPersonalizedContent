@@ -1,20 +1,9 @@
 import React, { useRef } from 'react';
-import { useMutation } from "@tanstack/react-query";
-import { uploadFootage } from '@/hooks/apiHooks';
 import Button from './Button';
-import LoadingSpinner from './LoadingSpinner';
-import ErrorFallback from './ErrorFallback';
 import { UploadFormProps } from './types';
 
-function UploadForm({ indexId, selectedFile, setSelectedFile, setTaskId, taskId }: UploadFormProps) {
+function UploadForm({ selectedFile, taskId, onFileUpload}: UploadFormProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const uploadMutation = useMutation({
-    mutationFn: (file: File) => uploadFootage(file, indexId),
-    onSuccess: (data) => {
-      setTaskId(data.taskId);
-    },
-  });
 
   const handleUploadClick = () => {
     fileInputRef.current?.click();
@@ -23,8 +12,7 @@ function UploadForm({ indexId, selectedFile, setSelectedFile, setTaskId, taskId 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      setSelectedFile(file);
-      uploadMutation.mutate(file);
+      onFileUpload(file);
     }
   };
 
@@ -39,7 +27,7 @@ function UploadForm({ indexId, selectedFile, setSelectedFile, setTaskId, taskId 
           disabled={!!selectedFile || !!taskId}
         >
           <img
-            src={selectedFile ? "/uploadDisabled.svg" : "/upload.svg"}
+            src={!!selectedFile || !!taskId ? "/uploadDisabled.svg" : "/upload.svg"}
             alt="upload icon"
             className="w-4 h-4"
           />
@@ -53,11 +41,8 @@ function UploadForm({ indexId, selectedFile, setSelectedFile, setTaskId, taskId 
           className="hidden"
         />
       </div>
-      {uploadMutation.isPending && <LoadingSpinner />}
-      {uploadMutation.isError && <ErrorFallback error={uploadMutation.error}/>}
     </div>
   );
 }
 
 export default UploadForm;
-

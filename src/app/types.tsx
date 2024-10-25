@@ -63,11 +63,9 @@ export interface RecommendedAdsProps {
 }
 
 export interface UploadFormProps {
-  indexId: string;
   selectedFile: File | null;
-  setSelectedFile: (file: File | null) => void;
-  setTaskId: (taskId: string) => void;
   taskId: string | null;
+  onFileUpload: (file: File) => void;
 }
 
 export interface IndexesDropDownProps {
