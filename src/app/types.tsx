@@ -158,16 +158,10 @@ export interface VideoHLS {
 export interface Video {
   _id: string;
   created_at: string;
-  updated_at: string;
+  updated_at?: string;
   indexed_at: string;
   metadata: {
-    duration: number;
-    engine_ids: string[];
     filename: string;
-    fps: number;
-    height: number;
-    size: number;
-    width: number;
   };
 }
 
@@ -200,3 +194,19 @@ export interface SearchData {
 // Types
 export type Size = 'sm' | 'md' | 'lg';
 export type Color = 'default' | 'primary';
+
+export interface VideoPage {
+  data: Video[];
+  page_info: {
+    limit_per_page: number;
+    page: number;
+    total_duration: number;
+    total_page: number;
+    total_results: number;
+  };
+}
+
+export interface VideosData {
+  pages: VideoPage[];
+  pageParams: number[];
+}
