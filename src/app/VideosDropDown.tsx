@@ -1,48 +1,38 @@
-import React, { useEffect, useState } from 'react';
-import { useInfiniteQuery } from "@tanstack/react-query";
-import { fetchVideos } from '@/hooks/apiHooks';
-import { Video } from './types';
+import React from 'react';
+import { Video, VideoPage } from './types';
 import { MenuItem, Select, Skeleton, SelectChangeEvent } from '@mui/material'
 import clsx from 'clsx';
+import LoadingSpinner from './LoadingSpinner';
 
 interface VideosDropDownProps {
   indexId: string;
-  onVideoChange: (selectedVideoId: string) => void;
+  onVideoChange: (footageVideoId: string) => void;
+  videosData: {
+    pages: VideoPage[];
+    pageParams: number[];
+  };
+  fetchNextPage: () => void;
+  hasNextPage: boolean;
+  isFetchingNextPage: boolean;
+  isLoading: boolean;
+  selectedFile: File | null;
+  taskId: string | null;
+  footageVideoId: string | null;
 }
 
-const VideosDropDown: React.FC<VideosDropDownProps> = ({ indexId, onVideoChange }) => {
-  const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
-
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    isLoading,
-  } = useInfiniteQuery({
-    queryKey: ['videos', indexId],
-    queryFn: ({ pageParam }) => fetchVideos(pageParam, indexId),
-    initialPageParam: 1,
-    getNextPageParam: (lastPage) => {
-      if (lastPage.page_info.page < lastPage.page_info.total_page) {
-        return lastPage.page_info.page + 1;
-      }
-      return undefined;
-    },
-    enabled: !!indexId,
-  });
-
-  useEffect(() => {
-    if (data?.pages[0]?.data && data.pages[0].data.length > 0 && !selectedVideoId) {
-      const firstVideoId = data.pages[0].data[0]._id;
-      setSelectedVideoId(firstVideoId);
-      onVideoChange(firstVideoId);
-    }
-  }, [data, onVideoChange, selectedVideoId]);
-
+const VideosDropDown: React.FC<VideosDropDownProps> = ({
+  onVideoChange,
+  videosData,
+  fetchNextPage,
+  hasNextPage,
+  isFetchingNextPage,
+  isLoading,
+  selectedFile,
+  taskId,
+  footageVideoId
+}) => {
   const handleChange = (event: SelectChangeEvent<string>) => {
     const newVideoId = event.target.value;
-    setSelectedVideoId(newVideoId);
     onVideoChange(newVideoId);
   };
 
@@ -56,7 +46,11 @@ const VideosDropDown: React.FC<VideosDropDownProps> = ({ indexId, onVideoChange 
   };
 
   if (isLoading) {
-    return <div>Loading videos...</div>;
+    return (
+      <div className="flex justify-center items-center h-full my-5">
+        <LoadingSpinner />
+      </div>
+    );
   }
 
   const ITEM_HEIGHT = 48;
@@ -65,12 +59,13 @@ const VideosDropDown: React.FC<VideosDropDownProps> = ({ indexId, onVideoChange 
   return (
     <div className="relative">
       <Select
-        value={selectedVideoId || ""}
+        value={footageVideoId || ""}
         onChange={handleChange}
+        disabled={!!selectedFile || !!taskId}
         className={clsx('h-9 w-full tablet:w-[200px]', 'bg-white', 'pl-[1px]', 'truncate text-ellipsis')}
         renderValue={(value) => (
           <div className="truncate">
-            {data?.pages.flatMap(page => page.data).find(video => video._id === value)?.metadata.filename || "Select a video"}
+            {videosData?.pages.flatMap(page => page.data).find(video => video._id === value)?.metadata.filename || "Select a video"}
           </div>
         )}
         MenuProps={{
@@ -123,7 +118,7 @@ const VideosDropDown: React.FC<VideosDropDownProps> = ({ indexId, onVideoChange 
           },
         }}
       >
-        {data?.pages.flatMap((page, pageIndex) =>
+        {videosData?.pages.flatMap((page, pageIndex) =>
           page.data.map((video: Video) => (
             <MenuItem
               key={`${pageIndex}-${video._id}`}
