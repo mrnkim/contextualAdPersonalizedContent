@@ -94,6 +94,11 @@ function AdsContent({
     setIsRecommendClicked(false);
   };
 
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsRecommendClicked(true);
+  };
+
   return (
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 justify-items-center">
@@ -105,7 +110,7 @@ function AdsContent({
         <PageNav page={page} setPage={setPage} totalPage={totalPage} />
       </div>
       <div className="flex flex-col items-center gap-4">
-        <form ref={searchOptionRef}>
+        <form ref={searchOptionRef} onSubmit={handleFormSubmit}>
           <div className="flex gap-4 items-center">
             <label className="flex items-center gap-2">
               <input
@@ -165,6 +170,12 @@ function AdsContent({
               onFocus={() => {
                 const customRadio = document.getElementById('customRadio') as HTMLInputElement;
                 if (customRadio) customRadio.checked = true;
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  setIsRecommendClicked(true);
+                }
               }}
             />
           </div>
