@@ -67,6 +67,9 @@ function AdsContent({
   setHashtags: (hashtags: string[]) => void;
   footageVideoId: string;
 }) {
+  const [searchOption, setSearchOption] = useState('general');
+  const [customQuery, setCustomQuery] = useState('');  // 추가된 state
+
   const { data: videosData, isLoading } = useQuery({
     queryKey: ["videos", page, indexId],
     queryFn: () => fetchVideos(page, indexId!),
@@ -94,21 +97,85 @@ function AdsContent({
       <div className={clsx("w-full", "flex", "justify-center", "mt-8")}>
         <PageNav page={page} setPage={setPage} totalPage={totalPage} />
       </div>
-      <div className="flex justify-center">
-        <Button
-          type="button"
-          size="sm"
-          appearance="primary"
-          onClick={() => setIsRecommendClicked(true)}
-          disabled={!!selectedFile || isRecommendClicked}
-        >
-          <img
-            src={selectedFile || isRecommendClicked? "/magicDisabled.svg" : "/magic.svg"}
-            alt="Magic wand icon"
-            className="w-4 h-4"
+      <div className="flex flex-col items-center gap-4">
+        <div className="flex gap-4 items-center">
+          <label className="flex items-center gap-2">
+            <input
+              type="radio"
+              name="searchOption"
+              value="general"
+              checked={searchOption === 'general'}
+              onChange={(e) => setSearchOption(e.target.value)}
+            />
+            General
+          </label>
+          <label className="flex items-center gap-2">
+            <input
+              type="radio"
+              name="searchOption"
+              value="emotion"
+              checked={searchOption === 'emotion'}
+              onChange={(e) => setSearchOption(e.target.value)}
+            />
+            Emotion
+          </label>
+          <label className="flex items-center gap-2">
+            <input
+              type="radio"
+              name="searchOption"
+              value="visual"
+              checked={searchOption === 'visual'}
+              onChange={(e) => setSearchOption(e.target.value)}
+            />
+            Visual
+          </label>
+          <label className="flex items-center gap-2">
+            <input
+              type="radio"
+              name="searchOption"
+              value="conversation"
+              checked={searchOption === 'conversation'}
+              onChange={(e) => setSearchOption(e.target.value)}
+            />
+            Conversation
+          </label>
+        </div>
+        <div className="flex items-center gap-2 w-full max-w-md">
+          <label className="flex items-center gap-2 shrink-0">
+            <input
+              type="radio"
+              name="searchOption"
+              value="custom"
+              checked={searchOption === 'custom'}
+              onChange={(e) => setSearchOption(e.target.value)}
+            />
+            Custom
+          </label>
+          <input
+            type="text"
+            value={customQuery}
+            onChange={(e) => setCustomQuery(e.target.value)}
+            placeholder="Enter custom search query"
+            className="border rounded px-2 py-1 flex-1"
+            disabled={searchOption !== 'custom'}
           />
-          Recommend
-        </Button>
+        </div>
+        <div className="flex justify-center">
+          <Button
+            type="button"
+            size="sm"
+            appearance="primary"
+            onClick={() => setIsRecommendClicked(true)}
+            disabled={!!selectedFile || isRecommendClicked}
+          >
+            <img
+              src={selectedFile || isRecommendClicked? "/magicDisabled.svg" : "/magic.svg"}
+              alt="Magic wand icon"
+              className="w-4 h-4"
+              />
+            Recommend
+          </Button>
+        </div>
       </div>
       {isRecommendClicked && !selectedFile && (
         <RecommendedAds
