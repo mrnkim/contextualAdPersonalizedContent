@@ -26,6 +26,8 @@ export interface FootageProps {
   selectedFile: File | null;
   setSelectedFile: (file: File | null) => void;
   setIsRecommendClicked: (isRecommendClicked: boolean) => void;
+  emotions: string[];
+  setEmtions: (emotions: string[]) => void;
 }
 
 export interface AdsProps {
@@ -43,6 +45,8 @@ export interface FootageSummaryProps {
   hashtags: string[];
   videoId: string;
   setHashtags: (hashtags: string[]) => void;
+  emotions: string[];
+  setEmotions: (emotions: string[]) => void;
 }
 
 export interface RecommendedAdProps {
