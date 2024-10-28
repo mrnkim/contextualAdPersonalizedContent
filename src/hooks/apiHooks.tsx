@@ -16,8 +16,8 @@ export const generateGist = async (videoId: string) => {
     return data;
   };
 
-  export const textToVideoSearch = async (indexId: string, query: string) => {
-    const response = await fetch(`/api/search?indexId=${indexId}&query=${query}`);
+  export const textToVideoSearch = async (indexId: string, query: string, searchOptions: string[]) => {
+    const response = await fetch(`/api/search?indexId=${indexId}&query=${query}&searchOptions=${searchOptions}`);
     if (!response.ok) {
       throw new Error("Failed to search videos");
     }

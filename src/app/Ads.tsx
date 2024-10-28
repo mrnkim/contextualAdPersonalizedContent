@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, Suspense } from 'react'
+import React, { useState, Suspense, useRef } from 'react'
 import Video from './Video';
 import LoadingSpinner from './LoadingSpinner';
 import ErrorFallback from './ErrorFallback';
@@ -18,7 +18,7 @@ type VideoType = {
   title: string;
 };
 
-function Ads({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVideoId, selectedFile, isRecommendClicked, setIsRecommendClicked }: AdsProps) {
+function Ads({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVideoId, selectedFile, isRecommendClicked, setIsRecommendClicked, emotions }: AdsProps) {
   const [page, setPage] = useState(1);
 
   return (
@@ -37,6 +37,7 @@ function Ads({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVideoId,
             hashtags={hashtags}
             setHashtags={setHashtags}
             footageVideoId={footageVideoId}
+            emotions={emotions}
           />
         </Suspense>
       </ErrorBoundary>
@@ -54,7 +55,8 @@ function AdsContent({
   selectedFile,
   hashtags,
   setHashtags,
-  footageVideoId
+  footageVideoId,
+  emotions
 }: {
   indexId: string;
   isIndexIdLoading: boolean;
@@ -66,9 +68,10 @@ function AdsContent({
   hashtags: string[];
   setHashtags: (hashtags: string[]) => void;
   footageVideoId: string;
+  emotions: string[];
 }) {
-  const [searchOption, setSearchOption] = useState('general');
-  const [customQuery, setCustomQuery] = useState('');  // 추가된 state
+  const searchOptionRef = useRef<HTMLFormElement>(null);
+  const customQueryRef = useRef<HTMLInputElement>(null);
 
   const { data: videosData, isLoading } = useQuery({
     queryKey: ["videos", page, indexId],
@@ -87,6 +90,10 @@ function AdsContent({
     return <div className="text-center py-8">There are no videos in this index</div>;
   }
 
+  const handleSearchOptionChange = () => {
+    setIsRecommendClicked(false);
+  };
+
   return (
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 justify-items-center">
@@ -98,68 +105,70 @@ function AdsContent({
         <PageNav page={page} setPage={setPage} totalPage={totalPage} />
       </div>
       <div className="flex flex-col items-center gap-4">
-        <div className="flex gap-4 items-center">
-          <label className="flex items-center gap-2">
+        <form ref={searchOptionRef}>
+          <div className="flex gap-4 items-center">
+            <label className="flex items-center gap-2">
+              <input
+                type="radio"
+                name="searchOption"
+                value="general"
+                defaultChecked
+                onChange={handleSearchOptionChange}
+              />
+              General
+            </label>
+            <label className="flex items-center gap-2">
+              <input
+                type="radio"
+                name="searchOption"
+                value="emotion"
+                onChange={handleSearchOptionChange}
+              />
+              Emotion
+            </label>
+            <label className="flex items-center gap-2">
+              <input
+                type="radio"
+                name="searchOption"
+                value="visual"
+                onChange={handleSearchOptionChange}
+              />
+              Visual
+            </label>
+            <label className="flex items-center gap-2">
+              <input
+                type="radio"
+                name="searchOption"
+                value="conversation"
+                onChange={handleSearchOptionChange}
+              />
+              Conversation
+            </label>
+          </div>
+          <div className="flex items-center gap-2 w-full max-w-md">
+            <label className="flex items-center gap-2 shrink-0">
+              <input
+                type="radio"
+                name="searchOption"
+                value="custom"
+                id="customRadio"
+                onChange={handleSearchOptionChange}
+              />
+              Custom
+            </label>
             <input
-              type="radio"
-              name="searchOption"
-              value="general"
-              checked={searchOption === 'general'}
-              onChange={(e) => setSearchOption(e.target.value)}
+              type="text"
+              ref={customQueryRef}
+              placeholder="Enter custom search query"
+              className="border px-2 py-1 flex-1"
+              onChange={handleSearchOptionChange}
+              onFocus={() => {
+                const customRadio = document.getElementById('customRadio') as HTMLInputElement;
+                if (customRadio) customRadio.checked = true;
+              }}
             />
-            General
-          </label>
-          <label className="flex items-center gap-2">
-            <input
-              type="radio"
-              name="searchOption"
-              value="emotion"
-              checked={searchOption === 'emotion'}
-              onChange={(e) => setSearchOption(e.target.value)}
-            />
-            Emotion
-          </label>
-          <label className="flex items-center gap-2">
-            <input
-              type="radio"
-              name="searchOption"
-              value="visual"
-              checked={searchOption === 'visual'}
-              onChange={(e) => setSearchOption(e.target.value)}
-            />
-            Visual
-          </label>
-          <label className="flex items-center gap-2">
-            <input
-              type="radio"
-              name="searchOption"
-              value="conversation"
-              checked={searchOption === 'conversation'}
-              onChange={(e) => setSearchOption(e.target.value)}
-            />
-            Conversation
-          </label>
-        </div>
-        <div className="flex items-center gap-2 w-full max-w-md">
-          <label className="flex items-center gap-2 shrink-0">
-            <input
-              type="radio"
-              name="searchOption"
-              value="custom"
-              checked={searchOption === 'custom'}
-              onChange={(e) => setSearchOption(e.target.value)}
-            />
-            Custom
-          </label>
-          <input
-            type="text"
-            value={customQuery}
-            onChange={(e) => setCustomQuery(e.target.value)}
-            placeholder="Enter custom search query"
-            className="border rounded px-2 py-1 flex-1"
-            disabled={searchOption !== 'custom'}
-          />
-        </div>
+          </div>
+        </form>
         <div className="flex justify-center">
           <Button
             type="button"
@@ -185,6 +194,9 @@ function AdsContent({
           indexId={indexId}
           selectedFile={selectedFile}
           setIsRecommendClicked={setIsRecommendClicked}
+          searchOptionRef={searchOptionRef}
+          customQueryRef={customQueryRef}
+          emotions={emotions}
         />
       )}
     </>

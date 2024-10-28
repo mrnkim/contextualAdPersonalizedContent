@@ -39,6 +39,7 @@ export interface AdsProps {
   selectedFile: File | null;
   isRecommendClicked: boolean;
   setIsRecommendClicked: (isRecommendClicked: boolean) => void;
+  emotions: string[];
 }
 
 export interface FootageSummaryProps {
@@ -63,6 +64,9 @@ export interface RecommendedAdsProps {
   indexId: string;
   selectedFile: File | null;
   setIsRecommendClicked: (isRecommendClicked: boolean) => void;
+  searchOptionRef: React.RefObject<HTMLFormElement>;
+  customQueryRef: React.RefObject<HTMLInputElement>;
+  emotions: string[];
 }
 
 export interface UploadFormProps {

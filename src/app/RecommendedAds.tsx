@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useMemo } from 'react'
+import React, { Suspense, useEffect, useMemo, useState } from 'react'
 import { useQuery } from "@tanstack/react-query";
 import { generateGist, textToVideoSearch } from '@/hooks/apiHooks';
 import RecommendedAd from './RecommendedAd';
@@ -7,7 +7,15 @@ import LoadingSpinner from './LoadingSpinner';
 import ErrorFallback from './ErrorFallback';
 import { RecommendedAdsProps, GistData, SearchData } from './types';
 
-const RecommendedAdsContent = ({ hashtags, setHashtags, footageVideoId, indexId, selectedFile, setIsRecommendClicked }: RecommendedAdsProps) => {
+export enum SearchOption {
+  VISUAL = 'visual',
+  CONVERSATION = 'conversation',
+  TEXT_IN_VIDEO = 'text_in_video',
+  LOGO = 'logo'
+}
+
+const RecommendedAdsContent = ({ hashtags, setHashtags, footageVideoId, indexId, selectedFile, setIsRecommendClicked, searchOptionRef, customQueryRef, emotions }: RecommendedAdsProps) => {
+  const [searchOptions, setSearchOptions] = useState<SearchOption[]>([]);
 
   const { data: gistData, error: gistError, isLoading: isGistLoading } = useQuery<GistData, Error>({
     queryKey: ["gist", footageVideoId],
@@ -24,14 +32,40 @@ const RecommendedAdsContent = ({ hashtags, setHashtags, footageVideoId, indexId,
     }
   }, [gistData, setHashtags, hashtags, selectedFile, setIsRecommendClicked]);
 
-  const hashtagQuery = useMemo(() => {
-    return hashtags.slice(0, 3).join(' ');
-  }, [hashtags]);
+  const searchQuery: string = useMemo(() => {
+    if ((searchOptionRef.current?.[0] as HTMLInputElement)?.checked || (searchOptionRef.current?.[2] as HTMLInputElement)?.checked || (searchOptionRef.current?.[3] as HTMLInputElement)?.checked) {
+      return hashtags.slice(0, 3).join(' ');
+    }
+    if ((searchOptionRef.current?.[1] as HTMLInputElement)?.checked) {
+      return emotions.join(' ');
+    }
+    if ((searchOptionRef.current?.[4] as HTMLInputElement)?.checked) {
+      return customQueryRef.current?.value ?? '';
+    }
+    return '';
+  }, [hashtags, emotions, searchOptionRef]);
+
+  useEffect(() => {
+    if ((searchOptionRef.current?.[0] as HTMLInputElement)?.checked || (searchOptionRef.current?.[1] as HTMLInputElement)?.checked || (searchOptionRef.current?.[4] as HTMLInputElement)?.checked) {
+      setSearchOptions([
+        SearchOption.VISUAL,
+        SearchOption.CONVERSATION,
+        SearchOption.TEXT_IN_VIDEO,
+        SearchOption.LOGO
+      ]);
+    }
+    if ((searchOptionRef.current?.[2] as HTMLInputElement)?.checked) {
+      setSearchOptions([SearchOption.VISUAL]);
+    }
+    if ((searchOptionRef.current?.[3] as HTMLInputElement)?.checked) {
+      setSearchOptions([SearchOption.CONVERSATION]);
+    }
+  }, [searchOptionRef]);
 
   const { data: searchData, error: searchError, isLoading: isSearchLoading } = useQuery<SearchData, Error>({
-    queryKey: ["search", footageVideoId, hashtagQuery],
-    queryFn: () => textToVideoSearch(indexId, hashtagQuery),
-    enabled: hashtagQuery.length > 0 && !selectedFile,
+    queryKey: ["search", footageVideoId, searchQuery, searchOptions],
+    queryFn: () => textToVideoSearch(indexId, searchQuery, searchOptions),
+    enabled: searchQuery.length > 0 && searchOptions.length > 0 && !selectedFile,
   });
 
   return (
