@@ -12,7 +12,7 @@ import UploadForm from './UploadForm';
 import Task from './Task';
 import { FootageProps, TaskDetails, VideosData } from './types';
 
-function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVideoId, setFootageVideoId, selectedFile, setSelectedFile, setIsRecommendClicked }: FootageProps) {
+function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVideoId, setFootageVideoId, selectedFile, setSelectedFile, setIsRecommendClicked, setEmotions }: FootageProps) {
 	const [isAnalyzeClicked, setIsAnalyzeClicked] = useState(false);
 	const [taskId, setTaskId] = useState<string | null>(null);
 	const [taskDetails, setTaskDetails] = useState<TaskDetails | null>(null);
@@ -172,7 +172,7 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 				</>
 			)}
 			{!selectedFile && isAnalyzeClicked && hasVideoData && (
-				<FootageSummary videoId={footageVideoId} hashtags={hashtags} setHashtags={setHashtags} setIsAnalyzeClicked={setIsAnalyzeClicked} />
+				<FootageSummary videoId={footageVideoId} hashtags={hashtags} setHashtags={setHashtags} setEmotions={setEmotions} />
 			)}
 		</div>
 	)

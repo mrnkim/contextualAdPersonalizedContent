@@ -7,12 +7,13 @@ export const generateGist = async (videoId: string) => {
     return data;
   };
 
-  export const generateCustomTexts = async (videoId: string, prompt: string): Promise<void> => {
+  export const generateCustomTexts = async (videoId: string, prompt: string) => {
     const response = await fetch(`/api/generateCustomTexts?videoId=${videoId}&prompt=${prompt}`);
     if (!response.ok) {
       throw new Error("Failed to generate gist");
     }
-    return response.json();
+    const data = await response.json();
+    return data;
   };
 
   export const textToVideoSearch = async (indexId: string, query: string) => {

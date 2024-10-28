@@ -5,9 +5,9 @@ import ErrorFallback from './ErrorFallback';
 import { generateGist, generateCustomTexts } from '@/hooks/apiHooks';
 import { FootageSummaryProps, GistData } from './types';
 
-const PROMPT = "Summarize the video focusing on the event type, main content, and the emotional tone. Provide the titles (Event Type, Main Content, Emotional Tone) before each summary. Do not include any introductory text or comments. Start straight away with the summary."
+const PROMPT = "Summarize the video focusing on the event type, main content, and the emotional tone. Provide the titles (Event Type, Main Content, Emotional Tone) before each summary. Do not include any introductory text or comments. Start straight away with the summary. For Emotional Tone, start with three words and a period then add more as needed."
 
-function FootageSummary({ videoId, hashtags, setHashtags }: FootageSummaryProps) {
+function FootageSummary({ videoId, hashtags, setHashtags, setEmotions }: FootageSummaryProps) {
 
   const { data: gistData, error: gistError, isLoading: isGistLoading } = useQuery<GistData, Error>({
     queryKey: ["gist", videoId],
@@ -20,10 +20,21 @@ function FootageSummary({ videoId, hashtags, setHashtags }: FootageSummaryProps)
     }
   }, [gistData, setHashtags]);
 
-  const { data: customTextsData, error: customTextsError, isLoading: isCustomTextsLoading } = useQuery({
+  const { data: customTextsData, error: customTextsError, isLoading: isCustomTextsLoading } = useQuery<string, Error>({
     queryKey: ["customTexts", videoId],
     queryFn: () => generateCustomTexts(videoId, PROMPT),
   });
+
+  useEffect(() => {
+    if (customTextsData) {
+      const emotionalToneRegex = /Emotional Tone:\s*([^.]+)\./;
+      const match = (customTextsData as string).match(emotionalToneRegex);
+      if (match && match[1]) {
+        const firstThreeWords = match[1].trim().split(/\s+/).slice(0, 3);
+        setEmotions(firstThreeWords);
+      }
+    }
+  }, [customTextsData, setEmotions]);
 
   const formatCustomTexts = (data: string) => {
     const sections = ["Event Type", "Main Content", "Emotional Tone"];
@@ -61,7 +72,7 @@ function FootageSummary({ videoId, hashtags, setHashtags }: FootageSummaryProps)
     if (!customTextsData) return null;
     return (
       <div className="mb-2">
-        {formatCustomTexts(customTextsData)}
+        {formatCustomTexts(customTextsData as string)}
       </div>
     );
   };

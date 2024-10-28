@@ -9,6 +9,8 @@ const adsIndexId = process.env.NEXT_PUBLIC_ADS_INDEX_ID;
 
 export default function Page() {
   const [hashtags, setHashtags] = useState<string[]>([]);
+  const [emotions, setEmotions] = useState<string[]>([]);
+  console.log("🚀 > Page > emotions=", emotions)
   const [footageVideoId, setFootageVideoId] = useState<string>('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isRecommendClicked, setIsRecommendClicked] = useState(false);
@@ -27,6 +29,8 @@ export default function Page() {
             selectedFile={selectedFile}
             setSelectedFile={setSelectedFile}
             setIsRecommendClicked={setIsRecommendClicked}
+            emotions={emotions}
+            setEmotions={setEmotions}
           />
         </div>
         <div className="w-1/6"></div>
