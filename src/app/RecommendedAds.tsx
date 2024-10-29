@@ -40,7 +40,7 @@ const RecommendedAdsContent = ({ hashtags, setHashtags, footageVideoId, indexId,
       return emotions.join(' ');
     }
     if ((searchOptionRef.current?.[4] as HTMLInputElement)?.checked) {
-      return customQueryRef.current?.value ?? '';
+      return [...hashtags.slice(0,2), customQueryRef.current?.value].join(' ');
     }
     return '';
   }, [hashtags, emotions, searchOptionRef]);
