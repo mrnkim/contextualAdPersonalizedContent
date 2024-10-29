@@ -4,10 +4,17 @@ import LoadingSpinner from './LoadingSpinner';
 import ErrorFallback from './ErrorFallback';
 import { generateGist, generateCustomTexts } from '@/hooks/apiHooks';
 import { FootageSummaryProps, GistData } from './types';
+import {
+  Dialog,
+  DialogContent,
+  IconButton,
+  DialogTitle
+} from "@mui/material";
+import CloseIcon from '@mui/icons-material/Close';
 
 const PROMPT = "Summarize the video focusing on the event type, main content, and the emotional tone. Provide the titles (Event Type, Main Content, Emotional Tone) before each summary. Do not include any introductory text or comments. Start straight away with the summary. For Emotional Tone, start with three words and a period then add more as needed."
 
-function FootageSummary({ videoId, hashtags, setHashtags, setEmotions }: FootageSummaryProps) {
+function FootageSummary({ videoId, hashtags, setHashtags, setEmotions, setShowAnalysis }: FootageSummaryProps) {
 
   const { data: gistData, error: gistError, isLoading: isGistLoading } = useQuery<GistData, Error>({
     queryKey: ["gist", videoId],
@@ -78,19 +85,41 @@ function FootageSummary({ videoId, hashtags, setHashtags, setEmotions }: Footage
   };
 
   return (
-    <div className="mt-4">
-      {(isGistLoading || isCustomTextsLoading) ? (
-        <div className="flex justify-center">
-          <LoadingSpinner />
+    <Dialog
+      open={true}
+      onClose={() => setShowAnalysis(false)}
+      maxWidth="md"
+      fullWidth
+    >
+      <DialogTitle>
+        <div className="flex justify-between items-center">
+          <span>News Footage Analysis</span>
+          <IconButton
+            onClick={() => setShowAnalysis(false)}
+            size="small"
+          >
+            <CloseIcon />
+          </IconButton>
         </div>
-      ) : (
-        <>
-          {hashtags.length > 0 ? renderHashtags() : renderGistData()}
-          {renderCustomTexts()}
-        </>
-      )}
-      {(gistError || customTextsError) && <ErrorFallback error={gistError || customTextsError || new Error('Unknown error')} />}
-    </div>
+      </DialogTitle>
+      <DialogContent>
+        <div className="space-y-4">
+          {(isGistLoading || isCustomTextsLoading) ? (
+            <div className="flex justify-center">
+              <LoadingSpinner />
+            </div>
+          ) : (
+            <>
+              {hashtags.length > 0 ? renderHashtags() : renderGistData()}
+              {renderCustomTexts()}
+            </>
+          )}
+          {(gistError || customTextsError) &&
+            <ErrorFallback error={gistError || customTextsError || new Error('Unknown error')} />
+          }
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
 

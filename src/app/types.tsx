@@ -47,6 +47,7 @@ export interface FootageSummaryProps {
   videoId: string;
   setHashtags: (hashtags: string[]) => void;
   setEmotions: (emotions: string[]) => void;
+  setShowAnalysis: (showAnalysis: boolean) => void;
 }
 
 export interface RecommendedAdProps {

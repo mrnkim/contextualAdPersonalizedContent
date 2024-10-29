@@ -14,6 +14,7 @@ import { FootageProps, TaskDetails, VideosData } from './types';
 
 function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVideoId, setFootageVideoId, selectedFile, setSelectedFile, setIsRecommendClicked, setEmotions }: FootageProps) {
 	const [isAnalyzeClicked, setIsAnalyzeClicked] = useState(false);
+	const [showAnalysis, setShowAnalysis] = useState(false);
 	const [taskId, setTaskId] = useState<string | null>(null);
 	const [taskDetails, setTaskDetails] = useState<TaskDetails | null>(null);
 	const [playing, setPlaying] = useState(false);
@@ -60,6 +61,7 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 
 	const reset = () => {
 		setIsAnalyzeClicked(false);
+		setShowAnalysis(false);
 		setSelectedFile(null);
 		setTaskId(null);
 		setTaskDetails(null);
@@ -153,26 +155,44 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 					) : (
 						<>
 							<Video videoId={footageVideoId || ''} indexId={indexId || ''} />
-							<Button
-								type="button"
-								size="sm"
-								appearance="primary"
-								onClick={() => setIsAnalyzeClicked(true)}
-								disabled={isAnalyzeClicked}
-							>
-								<img
-									src={isAnalyzeClicked ? "/analyzeDisabled.svg" : "/analyze.svg"}
-									alt="magic stick icon"
-									className="w-4 h-4"
-								/>
-								Analyze
-							</Button>
+							<div className="flex gap-2">
+								<Button
+									type="button"
+									size="sm"
+									appearance="primary"
+									onClick={() => setIsAnalyzeClicked(true)}
+									disabled={isAnalyzeClicked}
+								>
+									<img
+										src={isAnalyzeClicked ? "/analyzeDisabled.svg" : "/analyze.svg"}
+										alt="magic stick icon"
+										className="w-4 h-4"
+									/>
+									Analyze
+								</Button>
+								{isAnalyzeClicked && (
+									<Button
+										type="button"
+										size="sm"
+										appearance="secondary"
+										onClick={() => setShowAnalysis(!showAnalysis)}
+									>
+										{showAnalysis ? 'Hide Analysis' : 'View Analysis'}
+									</Button>
+								)}
+							</div>
 						</>
 					)}
 				</>
 			)}
-			{!selectedFile && isAnalyzeClicked && hasVideoData && (
-				<FootageSummary videoId={footageVideoId} hashtags={hashtags} setHashtags={setHashtags} setEmotions={setEmotions} />
+			{!selectedFile && isAnalyzeClicked && showAnalysis && hasVideoData && (
+				<FootageSummary
+					videoId={footageVideoId}
+					hashtags={hashtags}
+					setHashtags={setHashtags}
+					setEmotions={setEmotions}
+					setShowAnalysis={setShowAnalysis}
+				/>
 			)}
 		</div>
 	)
