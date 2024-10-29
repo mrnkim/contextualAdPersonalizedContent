@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import Footage from './Footage';
 import Ads from './Ads';
+import RecommendedAds from './RecommendedAds'
 
 const footageIndexId = process.env.NEXT_PUBLIC_FOOTAGE_INDEX_ID;
 const adsIndexId = process.env.NEXT_PUBLIC_ADS_INDEX_ID;
@@ -14,8 +15,11 @@ export default function Page() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isRecommendClicked, setIsRecommendClicked] = useState(false);
 
+  const searchOptionRef = useRef<HTMLFormElement>(null);
+  const customQueryRef = useRef<HTMLInputElement>(null);
+
   return (
-    <main className="flex min-h-screen p-24">
+    <main className="flex flex-col min-h-screen p-24">
       <div className="flex w-full max-w-7xl mx-auto">
         <div className="w-2/3 pr-4">
           <Footage
@@ -44,10 +48,26 @@ export default function Page() {
             isRecommendClicked={isRecommendClicked}
             setIsRecommendClicked={setIsRecommendClicked}
             emotions={emotions}
-
+            searchOptionRef={searchOptionRef}
+            customQueryRef={customQueryRef}
           />
         </div>
       </div>
+      {isRecommendClicked && !selectedFile && (
+        <div className="w-full mt-4">
+          <RecommendedAds
+            hashtags={hashtags}
+            setHashtags={setHashtags}
+            footageVideoId={footageVideoId}
+            indexId={footageIndexId ?? ''}
+            selectedFile={selectedFile}
+            setIsRecommendClicked={setIsRecommendClicked}
+            searchOptionRef={searchOptionRef}
+            customQueryRef={customQueryRef}
+            emotions={emotions}
+          />
+        </div>
+      )}
     </main>
   );
 }

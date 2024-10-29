@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, Suspense, useRef } from 'react'
+import React, { useState, Suspense } from 'react'
 import Video from './Video';
 import LoadingSpinner from './LoadingSpinner';
 import ErrorFallback from './ErrorFallback';
@@ -8,7 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import Button from './Button'
 import PageNav from './PageNav';
 import clsx from 'clsx'
-import RecommendedAds from './RecommendedAds';
+// import RecommendedAds from './RecommendedAds';
 import { fetchVideos } from '@/hooks/apiHooks';
 import { ErrorBoundary } from 'react-error-boundary';
 import { AdsProps } from './types';
@@ -18,7 +18,7 @@ type VideoType = {
   title: string;
 };
 
-function Ads({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVideoId, selectedFile, isRecommendClicked, setIsRecommendClicked, emotions }: AdsProps) {
+function Ads({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVideoId, selectedFile, isRecommendClicked, setIsRecommendClicked, emotions, searchOptionRef, customQueryRef }: AdsProps) {
   const [page, setPage] = useState(1);
 
   return (
@@ -38,6 +38,8 @@ function Ads({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVideoId,
             setHashtags={setHashtags}
             footageVideoId={footageVideoId}
             emotions={emotions}
+            searchOptionRef={searchOptionRef}
+            customQueryRef={customQueryRef}
           />
         </Suspense>
       </ErrorBoundary>
@@ -53,10 +55,12 @@ function AdsContent({
   isRecommendClicked,
   setIsRecommendClicked,
   selectedFile,
-  hashtags,
-  setHashtags,
-  footageVideoId,
-  emotions
+  // hashtags,
+  // setHashtags,
+  // footageVideoId,
+  // emotions,
+  searchOptionRef,
+  customQueryRef
 }: {
   indexId: string;
   isIndexIdLoading: boolean;
@@ -69,9 +73,10 @@ function AdsContent({
   setHashtags: (hashtags: string[]) => void;
   footageVideoId: string;
   emotions: string[];
+  searchOptionRef: React.RefObject<HTMLFormElement>;
+  customQueryRef: React.RefObject<HTMLInputElement>;
 }) {
-  const searchOptionRef = useRef<HTMLFormElement>(null);
-  const customQueryRef = useRef<HTMLInputElement>(null);
+
 
   const { data: videosData, isLoading } = useQuery({
     queryKey: ["videos", page, indexId],
@@ -197,7 +202,7 @@ function AdsContent({
           </Button>
         </div>
       </div>
-      {isRecommendClicked && !selectedFile && (
+      {/* {isRecommendClicked && !selectedFile && (
         <RecommendedAds
           hashtags={hashtags}
           setHashtags={setHashtags}
@@ -209,7 +214,7 @@ function AdsContent({
           customQueryRef={customQueryRef}
           emotions={emotions}
         />
-      )}
+      )} */}
     </>
   );
 }

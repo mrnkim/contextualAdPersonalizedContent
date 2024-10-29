@@ -40,6 +40,8 @@ export interface AdsProps {
   isRecommendClicked: boolean;
   setIsRecommendClicked: (isRecommendClicked: boolean) => void;
   emotions: string[];
+  searchOptionRef: React.RefObject<HTMLFormElement>;
+  customQueryRef: React.RefObject<HTMLInputElement>;
 }
 
 export interface FootageSummaryProps {

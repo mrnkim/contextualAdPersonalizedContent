@@ -69,7 +69,8 @@ const RecommendedAdsContent = ({ hashtags, setHashtags, footageVideoId, indexId,
   });
 
   return (
-    <div className="flex flex-col w-full">
+    <div className="flex flex-col w-full my-10">
+      <h2 className="text-center text-2xl font-bold my-5"> Recommendations </h2>
       {isGistLoading && (
         <div className="flex justify-center items-center h-full my-5">
           <LoadingSpinner />
