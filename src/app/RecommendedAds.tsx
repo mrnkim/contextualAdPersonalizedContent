@@ -84,13 +84,15 @@ const RecommendedAdsContent = ({ hashtags, setHashtags, footageVideoId, indexId,
       )}
       {searchError && <ErrorFallback error={searchError}/>}
       {searchData?.data && searchData.data.length > 0 ? (
-        searchData.data.map((recommendedAd) => (
-          <RecommendedAd
-            key={recommendedAd.id}
-            recommendedAd={{ ...recommendedAd, clips: recommendedAd.clips || [] }}
-            indexId={indexId}
-          />
-        ))
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+          {searchData.data.map((recommendedAd) => (
+            <RecommendedAd
+              key={recommendedAd.id}
+              recommendedAd={{ ...recommendedAd, clips: recommendedAd.clips || [] }}
+              indexId={indexId}
+            />
+          ))}
+        </div>
       ) : (
         searchData && <div className='flex justify-center items-center h-full my-5'>No search results found 😿 </div>
       )}

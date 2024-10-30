@@ -4,10 +4,10 @@ import { ClipsProps } from './types';
 
 const Clips: React.FC<ClipsProps> = ({ clips, videoDetails }) => {
   return (
-    <div className="flex flex-wrap -mx-2">
+    <div className="flex flex-wrap -mx-2 max-h-[280px] overflow-y-auto">
       {clips.map((clip, index) => (
         <div key={index} className="w-1/2 px-2 mb-4">
-        <Clip clip={clip} videoDetails={videoDetails} />
+          <Clip clip={clip} videoDetails={videoDetails} />
         </div>
       ))}
     </div>
