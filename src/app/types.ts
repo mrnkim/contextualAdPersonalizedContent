@@ -199,6 +199,18 @@ export interface SearchData {
   data: SearchResult[];
 }
 
+export interface ChaptersData  {
+  chapters: Chapter[];
+}
+
+export interface Chapter {
+  chapter_number: number;
+  start: number;
+  end: number;
+  chapter_title: string;
+  chapter_summary: string;
+}
+
 // Types
 export type Size = 'sm' | 'md' | 'lg';
 export type Color = 'default' | 'primary';
@@ -218,3 +230,5 @@ export interface VideosData {
   pages: VideoPage[];
   pageParams: number[];
 }
+
+

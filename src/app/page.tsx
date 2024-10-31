@@ -4,6 +4,7 @@ import { useState, useRef } from 'react';
 import Footage from './Footage';
 import Ads from './Ads';
 import RecommendedAds from './RecommendedAds'
+import RecommendedPlacements from './RecommendedPlacements';
 
 const footageIndexId = process.env.NEXT_PUBLIC_FOOTAGE_INDEX_ID;
 const adsIndexId = process.env.NEXT_PUBLIC_ADS_INDEX_ID;
@@ -65,6 +66,14 @@ export default function Page() {
             searchOptionRef={searchOptionRef}
             customQueryRef={customQueryRef}
             emotions={emotions}
+          />
+        </div>
+      )}
+      {isRecommendClicked && !selectedFile && (
+        <div className="w-3/4 mt-4 mx-auto">
+          <RecommendedPlacements
+            indexId={footageIndexId ?? ''}
+            footageVideoId ={footageVideoId}
           />
         </div>
       )}
