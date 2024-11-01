@@ -1,11 +1,11 @@
 import React, { Suspense, useEffect, useMemo, useState } from 'react'
 import { useQuery } from "@tanstack/react-query";
-import { generateGist, textToVideoSearch } from '@/hooks/apiHooks';
+import { generateGist, textToVideoSearch, fetchVideoDetails } from '@/hooks/apiHooks';
 import RecommendedAd from './RecommendedAd';
 import { ErrorBoundary } from 'react-error-boundary';
 import LoadingSpinner from './LoadingSpinner';
 import ErrorFallback from './ErrorFallback';
-import { RecommendedAdsProps, GistData, SearchData } from './types';
+import { RecommendedAdsProps, GistData, SearchData, VideoDetails, RecommendedAdProps } from './types';
 import RecommendedPlacements from './RecommendedPlacements';
 
 export enum SearchOption {
@@ -15,7 +15,32 @@ export enum SearchOption {
   LOGO = 'logo'
 }
 
-const RecommendedAdsContent = ({ hashtags, setHashtags, footageVideoId, adsIndexId, selectedFile, setIsRecommendClicked, searchOptionRef, customQueryRef, emotions, footageIndexId }: RecommendedAdsProps) => {
+const RecommendedAdItem = ({ recommendedAd, adsIndexId }: { recommendedAd: RecommendedAdProps["recommendedAd"], adsIndexId: string }) => {
+  const { data: videoDetails } = useQuery<VideoDetails, Error>({
+    queryKey: ["videoDetails", recommendedAd.id],
+    queryFn: () => fetchVideoDetails(recommendedAd.id!, adsIndexId),
+    enabled: !!recommendedAd.id && !!adsIndexId
+  });
+
+  return (
+    <div className="flex flex-col">
+      {videoDetails?.metadata.filename && (
+        <h3 className="mb-2 text-lg font-medium">
+          {videoDetails.metadata.filename.split('.')[0]}
+        </h3>
+      )}
+      {videoDetails && (
+        <RecommendedAd
+          recommendedAd={{ ...recommendedAd, clips: recommendedAd.clips || [] }}
+          indexId={adsIndexId}
+          videoDetails={videoDetails}
+        />
+      )}
+    </div>
+  );
+};
+
+const RecommendedAds = ({ hashtags, setHashtags, footageVideoId, adsIndexId, selectedFile, setIsRecommendClicked, searchOptionRef, customQueryRef, emotions, footageIndexId }: RecommendedAdsProps) => {
   const [searchOptions, setSearchOptions] = useState<SearchOption[]>([]);
 
   const { data: gistData, error: gistError, isLoading: isGistLoading } = useQuery<GistData, Error>({
@@ -69,54 +94,49 @@ const RecommendedAdsContent = ({ hashtags, setHashtags, footageVideoId, adsIndex
     enabled: searchQuery.length > 0 && searchOptions.length > 0 && !selectedFile,
   });
 
-  return (
-    <div className="flex flex-col w-full my-10">
-      <h2 className="text-center text-2xl font-bold my-5"> Recommended Ads </h2>
-      {isGistLoading && (
-        <div className="flex justify-center items-center h-full my-5">
-          <LoadingSpinner />
-        </div>
-      )}
-      {gistError && <ErrorFallback error={gistError} />}
-      {isSearchLoading && (
-        <div className="flex justify-center items-center h-full my-5">
-          <LoadingSpinner />
-        </div>
-      )}
-      {searchError && <ErrorFallback error={searchError}/>}
-      {searchData?.data && searchData.data.length > 0 ? (
-        <>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-            {searchData.data.map((recommendedAd) => (
-              <RecommendedAd
-                key={recommendedAd.id}
-                recommendedAd={{ ...recommendedAd, clips: recommendedAd.clips || [] }}
-                indexId={adsIndexId}
-              />
-            ))}
-          </div>
-          <div className="my-20">
-          <RecommendedPlacements
-            footageIndexId={footageIndexId ?? ''}
-            footageVideoId={footageVideoId}
-          />
-          </div>
-        </>
-      ) : (
-        searchData && <div className='flex justify-center items-center h-full my-5'>No search results found 😿 </div>
-      )}
-    </div>
-  )
-}
+  if (gistError) return <ErrorFallback error={gistError} />;
+  if (searchError) return <ErrorFallback error={searchError} />;
 
-const RecommendedAds = (props: RecommendedAdsProps) => {
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
-      <Suspense fallback={<LoadingSpinner />}>
-        <RecommendedAdsContent {...props} />
-      </Suspense>
+      <div className="flex flex-col w-full my-20">
+        <h2 className="text-center text-2xl font-bold my-10"> Recommended Ads </h2>
+
+        {(isGistLoading || isSearchLoading) && (
+          <div className="flex justify-center items-center h-full my-5">
+            <LoadingSpinner />
+          </div>
+        )}
+
+        <Suspense fallback={<LoadingSpinner />}>
+          {searchData?.data && searchData.data.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-20">
+              {searchData.data.map((recommendedAd) => (
+                <RecommendedAdItem
+                  key={recommendedAd.id}
+                  recommendedAd={recommendedAd as RecommendedAdProps["recommendedAd"]}
+                  adsIndexId={adsIndexId}
+                />
+              ))}
+            </div>
+          ) : (
+            searchData && <div className='flex justify-center items-center h-full my-5'>No search results found 😿 </div>
+          )}
+        </Suspense>
+
+        {searchData?.data && searchData.data.length > 0 && (
+          <div className="my-20">
+            <Suspense fallback={<LoadingSpinner />}>
+            <RecommendedPlacements
+              footageIndexId={footageIndexId ?? ''}
+              footageVideoId={footageVideoId}
+            />
+            </Suspense>
+          </div>
+        )}
+      </div>
     </ErrorBoundary>
-  )
-}
+  );
+};
 
 export default RecommendedAds

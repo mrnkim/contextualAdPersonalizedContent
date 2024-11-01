@@ -10,7 +10,7 @@ import { fetchVideoDetails } from "@/hooks/apiHooks";
 import LoadingSpinner from "./LoadingSpinner";
 import { VideoProps, VideoDetails } from "./types";
 
-const Video: React.FC<VideoProps> = ({ videoId, indexId }) => {
+const Video: React.FC<VideoProps> = ({ videoId, indexId, showTitle = true }) => {
   const [playing, setPlaying] = useState(false);
 
   /** Formats a duration in seconds into a "HH:MM:SS" string format */
@@ -98,11 +98,13 @@ const Video: React.FC<VideoProps> = ({ videoId, indexId }) => {
           </div>
         </div>
       </div>
-      <div className="mt-2">
-        <p className={clsx("text-body3", "truncate", "text-grey-700")}>
-          {videoDetail?.metadata?.filename}
-        </p>
-      </div>
+      {showTitle && (
+        <div className="mt-2">
+          <p className={clsx("text-body3", "truncate", "text-grey-700")}>
+            {videoDetail?.metadata?.filename}
+          </p>
+        </div>
+      )}
     </div>
   );
 };

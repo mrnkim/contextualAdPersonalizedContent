@@ -66,6 +66,7 @@ export interface RecommendedAdProps {
     clips: Array<object>
   };
   indexId: string;
+  videoDetails: VideoDetails;
 }
 
 export interface RecommendedAdsProps {
@@ -105,8 +106,7 @@ export interface ClipsProps {
 export interface VideoProps {
   videoId?: string;
   indexId: string;
-  start?: number;
-  end?: number;
+  showTitle?: boolean;
 }
 
 // Data Structures

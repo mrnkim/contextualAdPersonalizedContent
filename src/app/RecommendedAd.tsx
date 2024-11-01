@@ -2,7 +2,7 @@ import React, {useState, Suspense} from 'react'
 import Video from './Video'
 import Clips from './Clips'
 import { useQuery } from "@tanstack/react-query"
-import { fetchVideoDetails, generateCustomTexts } from "@/hooks/apiHooks";
+import { generateCustomTexts } from "@/hooks/apiHooks";
 import Button from './Button'
 import {
   Dialog,
@@ -16,26 +16,33 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { ErrorBoundary } from 'react-error-boundary'
 import ErrorFallback from './ErrorFallback'
 import LoadingSpinner from './LoadingSpinner';
-import { VideoDetails, RecommendedAdProps, Clip } from './types';
+import { RecommendedAdProps, Clip } from './types';
 
 const AD_COPY_PROMPT = "Based on the ad video, provide the headlines, ad copies, and hashtags. Provide the titles (Headline, Ad Copy, Hashtag) before each. Do not include any introductory text or comments. Start straight away with Headlines."
 
-const RecommendedAd: React.FC<RecommendedAdProps> = ({ recommendedAd, indexId }) => {
+const RecommendedAd: React.FC<RecommendedAdProps> = ({ recommendedAd, indexId, videoDetails }) => {
   const [isAdCopyClicked, setIsAdCopyClicked] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [currentSuggestionIndex, setCurrentSuggestionIndex] = useState(0);
-
-  const { data: videoDetails, error: videoDetailsError } = useQuery<VideoDetails, Error>({
-    queryKey: ["videoDetails", recommendedAd.id],
-    queryFn: () => fetchVideoDetails(recommendedAd.id!, indexId),
-    enabled: !!recommendedAd.id && !!indexId
-  });
 
   const { data: AdCopyData, error: adCopyError} = useQuery({
     queryKey: ["adCopy", recommendedAd.id],
     queryFn: () => generateCustomTexts(recommendedAd.id!, AD_COPY_PROMPT),
     enabled: !!recommendedAd.id && isAdCopyClicked
   });
+
+  function parseAdCopy(adCopyText: string) {
+    const suggestions = adCopyText.split('Headline:').filter(Boolean);
+    return suggestions.map(suggestion => {
+      const [headline, rest] = suggestion.split('Ad Copy:');
+      const [adCopy, hashtag] = rest.split('Hashtag:');
+      return {
+        headline: headline?.trim(),
+        adCopy: adCopy?.trim(),
+        hashtag: hashtag?.trim(),
+      };
+    });
+  }
 
   const parsedAdCopy = AdCopyData ? parseAdCopy(AdCopyData) : [];
 
@@ -48,16 +55,30 @@ const RecommendedAd: React.FC<RecommendedAdProps> = ({ recommendedAd, indexId })
   };
 
   return (
-    <ErrorBoundary
-      FallbackComponent={({ error }) =>
-        <ErrorFallback error={error || videoDetailsError} />
-      }
-    >
-      <div className="flex w-full my-5">
-        <div className="w-1/2 pr-2">
-          <Suspense fallback={<div className="flex justify-center items-center h-full"><LoadingSpinner /></div>}>
-            <Video videoId={recommendedAd.id} indexId={indexId}/>
-          </Suspense>
+    <div className="w-full">
+      <ErrorBoundary
+        FallbackComponent={({ error }) =>
+          <ErrorFallback error={error} />
+        }
+      >
+        <div className="flex flex-col w-full">
+          <div className="flex flex-row gap-4 mb-4">
+            <div className="w-1/2">
+              <Suspense fallback={<div className="flex justify-center items-center h-full"><LoadingSpinner /></div>}>
+                <Video videoId={recommendedAd.id} indexId={indexId} showTitle={false}/>
+              </Suspense>
+            </div>
+            <div className="w-1/2">
+              <Suspense fallback={<div className="flex justify-center items-center h-full"><LoadingSpinner /></div>}>
+                {videoDetails && (
+                  <Clips
+                    clips={recommendedAd.clips as Clip[]}
+                    videoDetails={videoDetails}
+                  />
+                )}
+              </Suspense>
+            </div>
+          </div>
           <div className="flex justify-center mt-4">
             <Button
               type="button"
@@ -139,34 +160,11 @@ const RecommendedAd: React.FC<RecommendedAdProps> = ({ recommendedAd, indexId })
             </Dialog>
           </ErrorBoundary>
         </div>
-        <div className="flex justify-center">
-        </div>
-        <div className="w-1/2 pl-2 overflow-auto">
-          <Suspense fallback={<div className="flex justify-center items-center h-full"><LoadingSpinner /></div>}>
-            {videoDetails && (
-              <Clips
-                clips={recommendedAd.clips as Clip[]}
-                videoDetails={videoDetails}
-              />
-            )}
-          </Suspense>
-        </div>
-      </div>
-    </ErrorBoundary>
+      </ErrorBoundary>
+    </div>
   )
 }
 
-function parseAdCopy(adCopyText: string) {
-  const suggestions = adCopyText.split('Headline:').filter(Boolean);
-  return suggestions.map(suggestion => {
-    const [headline, rest] = suggestion.split('Ad Copy:');
-    const [adCopy, hashtag] = rest.split('Hashtag:');
-    return {
-      headline: headline?.trim(),
-      adCopy: adCopy?.trim(),
-      hashtag: hashtag?.trim(),
-    };
-  });
-}
+
 
 export default RecommendedAd
