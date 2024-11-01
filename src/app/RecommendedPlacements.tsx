@@ -87,11 +87,16 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId }: RecommendedPl
             ? Math.min(chapterEnd + 2, videoDetail.metadata?.duration)
             : chapterEnd + 2;
 
-        // 시간을 mm:ss 형식으로 변환
-        const formatTime = (seconds: number) => {
-            const mins = Math.floor(seconds / 60);
+        const formatTime = (seconds: number): string => {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
             const secs = Math.floor(seconds % 60);
-            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+
+            return [
+                hours.toString().padStart(2, "0"),
+                minutes.toString().padStart(2, "0"),
+                secs.toString().padStart(2, "0"),
+            ].join(":");
         };
 
         return `${formatTime(start)} - ${formatTime(end)}`;
