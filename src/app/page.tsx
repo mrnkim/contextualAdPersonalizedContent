@@ -1,13 +1,18 @@
 "use client";
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Footage from './Footage';
 import Ads from './Ads';
 import RecommendedAds from './RecommendedAds'
 import RecommendedPlacements from './RecommendedPlacements';
+import { useQuery } from "@tanstack/react-query";
+import { generateGist, generateCustomTexts } from '@/hooks/apiHooks';
+import { GistData } from './types';
 
 const footageIndexId = process.env.NEXT_PUBLIC_FOOTAGE_INDEX_ID;
 const adsIndexId = process.env.NEXT_PUBLIC_ADS_INDEX_ID;
+
+const PROMPT = "Summarize the video focusing on the event type, main content, and the emotional tone. Provide the titles (Event Type, Main Content, Emotional Tone) before each summary. Do not include any introductory text or comments. Start straight away with the summary. For Emotional Tone, start with three words and a period then add more as needed."
 
 export default function Page() {
   const [hashtags, setHashtags] = useState<string[]>([]);
@@ -18,6 +23,35 @@ export default function Page() {
 
   const searchOptionRef = useRef<HTMLFormElement>(null);
   const customQueryRef = useRef<HTMLInputElement>(null);
+
+  const { data: gistData, isLoading: isGistLoading, error: gistDataError } = useQuery<GistData, Error>({
+    queryKey: ["gist", footageVideoId],
+    queryFn: () => generateGist(footageVideoId),
+    enabled: !!footageVideoId
+  });
+
+  const { data: customTextsData, isLoading: isCustomTextsLoading, error: customTextsError } = useQuery<string, Error>({
+    queryKey: ["customTexts", footageVideoId],
+    queryFn: () => generateCustomTexts(footageVideoId, PROMPT),
+    enabled: !!footageVideoId
+  });
+
+  useEffect(() => {
+    if (gistData?.hashtags) {
+      setHashtags(gistData.hashtags);
+    }
+  }, [gistData]);
+
+  useEffect(() => {
+    if (customTextsData) {
+      const emotionalToneRegex = /Emotional Tone:\s*([^.]+)\./;
+      const match = (customTextsData as string).match(emotionalToneRegex);
+      if (match && match[1]) {
+        const firstThreeWords = match[1].trim().split(/\s+/).slice(0, 3);
+        setEmotions(firstThreeWords);
+      }
+    }
+  }, [customTextsData]);
 
   return (
     <main className="flex flex-col min-h-screen p-24">
@@ -35,6 +69,10 @@ export default function Page() {
             setIsRecommendClicked={setIsRecommendClicked}
             emotions={emotions}
             setEmotions={setEmotions}
+            gistData={gistData || { hashtags: [] }}
+            customTextsData={customTextsData ?? ""}
+            isLoading={isGistLoading || isCustomTextsLoading}
+            error={gistDataError || customTextsError}
           />
         </div>
         <div className="w-1/6"></div>
@@ -51,6 +89,7 @@ export default function Page() {
             emotions={emotions}
             searchOptionRef={searchOptionRef}
             customQueryRef={customQueryRef}
+            isAnalysisLoading={isGistLoading || isCustomTextsLoading}
           />
         </div>
       </div>

@@ -12,13 +12,14 @@ import clsx from 'clsx'
 import { fetchVideos } from '@/hooks/apiHooks';
 import { ErrorBoundary } from 'react-error-boundary';
 import { AdsProps } from './types';
+import { is } from '../../.next/static/webpack/main.ed2b4069190f5e6e.hot-update';
 
 type VideoType = {
   _id: string;
   title: string;
 };
 
-function Ads({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVideoId, selectedFile, isRecommendClicked, setIsRecommendClicked, emotions, searchOptionRef, customQueryRef }: AdsProps) {
+function Ads({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVideoId, selectedFile, isRecommendClicked, setIsRecommendClicked, emotions, searchOptionRef, customQueryRef, isAnalysisLoading }: AdsProps) {
   const [page, setPage] = useState(1);
 
   return (
@@ -40,6 +41,7 @@ function Ads({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVideoId,
             emotions={emotions}
             searchOptionRef={searchOptionRef}
             customQueryRef={customQueryRef}
+            isAnalysisLoading={isAnalysisLoading}
           />
         </Suspense>
       </ErrorBoundary>
@@ -60,7 +62,8 @@ function AdsContent({
   // footageVideoId,
   // emotions,
   searchOptionRef,
-  customQueryRef
+  customQueryRef,
+  isAnalysisLoading
 }: {
   indexId: string;
   isIndexIdLoading: boolean;
@@ -75,6 +78,7 @@ function AdsContent({
   emotions: string[];
   searchOptionRef: React.RefObject<HTMLFormElement>;
   customQueryRef: React.RefObject<HTMLInputElement>;
+  isAnalysisLoading: boolean;
 }) {
 
 
@@ -191,10 +195,10 @@ function AdsContent({
             size="sm"
             appearance="primary"
             onClick={() => setIsRecommendClicked(true)}
-            disabled={!!selectedFile || isRecommendClicked}
+            disabled={!!selectedFile || isRecommendClicked || isAnalysisLoading}
           >
             <img
-              src={selectedFile || isRecommendClicked? "/magicDisabled.svg" : "/magic.svg"}
+              src={selectedFile || isRecommendClicked || isAnalysisLoading ? "/magicDisabled.svg" : "/magic.svg"}
               alt="Magic wand icon"
               className="w-4 h-4"
               />

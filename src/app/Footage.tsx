@@ -12,7 +12,7 @@ import UploadForm from './UploadForm';
 import Task from './Task';
 import { FootageProps, TaskDetails, VideosData } from './types';
 
-function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVideoId, setFootageVideoId, selectedFile, setSelectedFile, setIsRecommendClicked, setEmotions }: FootageProps) {
+function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVideoId, setFootageVideoId, selectedFile, setSelectedFile, setIsRecommendClicked, setEmotions, gistData, customTextsData, isLoading, error }: FootageProps) {
 	const [isAnalyzeClicked, setIsAnalyzeClicked] = useState(false);
 	const [showAnalysis, setShowAnalysis] = useState(false);
 	const [taskId, setTaskId] = useState<string | null>(null);
@@ -177,7 +177,7 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 										appearance="secondary"
 										onClick={() => setShowAnalysis(!showAnalysis)}
 									>
-										{showAnalysis ? 'Hide Analysis' : 'View Analysis'}
+										{isLoading ? <LoadingSpinner /> : 'View Analysis'}
 									</Button>
 								)}
 							</div>
@@ -191,6 +191,10 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 					hashtags={hashtags}
 					setHashtags={setHashtags}
 					setEmotions={setEmotions}
+					gistData={gistData}
+					customTextsData={customTextsData}
+					isLoading={isLoading}
+					error={error}
 					setShowAnalysis={setShowAnalysis}
 				/>
 			)}

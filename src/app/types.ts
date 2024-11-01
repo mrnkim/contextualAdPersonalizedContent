@@ -15,7 +15,6 @@ export interface LoadingSpinnerProps extends React.HTMLAttributes<HTMLDivElement
   color?: Color;
 }
 
-// Page Component Props
 export interface FootageProps {
   hashtags: string[];
   setHashtags: (hashtags: string[]) => void;
@@ -28,6 +27,10 @@ export interface FootageProps {
   setIsRecommendClicked: (isRecommendClicked: boolean) => void;
   emotions: string[];
   setEmotions: (emotions: string[]) => void;
+  gistData: GistData;
+  customTextsData: string;
+  isLoading: boolean;
+  error: Error | null;
 }
 
 export interface AdsProps {
@@ -42,6 +45,7 @@ export interface AdsProps {
   emotions: string[];
   searchOptionRef: React.RefObject<HTMLFormElement>;
   customQueryRef: React.RefObject<HTMLInputElement>;
+  isAnalysisLoading: boolean;
 }
 
 export interface FootageSummaryProps {
@@ -49,6 +53,10 @@ export interface FootageSummaryProps {
   videoId: string;
   setHashtags: (hashtags: string[]) => void;
   setEmotions: (emotions: string[]) => void;
+  gistData: GistData;
+  customTextsData: string;
+  isLoading: boolean;
+  error: Error | null;
   setShowAnalysis: (showAnalysis: boolean) => void;
 }
 

@@ -1,9 +1,7 @@
 import React, { useEffect } from 'react';
-import { useQuery } from "@tanstack/react-query";
 import LoadingSpinner from './LoadingSpinner';
 import ErrorFallback from './ErrorFallback';
-import { generateGist, generateCustomTexts } from '@/hooks/apiHooks';
-import { FootageSummaryProps, GistData } from './types';
+import { FootageSummaryProps } from './types';
 import {
   Dialog,
   DialogContent,
@@ -12,25 +10,23 @@ import {
 } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 
-const PROMPT = "Summarize the video focusing on the event type, main content, and the emotional tone. Provide the titles (Event Type, Main Content, Emotional Tone) before each summary. Do not include any introductory text or comments. Start straight away with the summary. For Emotional Tone, start with three words and a period then add more as needed."
-
-function FootageSummary({ videoId, hashtags, setHashtags, setEmotions, setShowAnalysis }: FootageSummaryProps) {
-
-  const { data: gistData, error: gistError, isLoading: isGistLoading } = useQuery<GistData, Error>({
-    queryKey: ["gist", videoId],
-    queryFn: () => generateGist(videoId),
-  });
+function FootageSummary({
+  hashtags,
+  setHashtags,
+  setEmotions,
+  gistData,
+  customTextsData,
+  isLoading,
+  error,
+  setShowAnalysis
+}: FootageSummaryProps) {
+  console.log("🚀 > customTextsData=", customTextsData)
 
   useEffect(() => {
     if (gistData?.hashtags) {
       setHashtags(gistData.hashtags);
     }
-  }, [gistData, setHashtags]);
-
-  const { data: customTextsData, error: customTextsError, isLoading: isCustomTextsLoading } = useQuery<string, Error>({
-    queryKey: ["customTexts", videoId],
-    queryFn: () => generateCustomTexts(videoId, PROMPT),
-  });
+  }, [gistData]);
 
   useEffect(() => {
     if (customTextsData) {
@@ -104,7 +100,7 @@ function FootageSummary({ videoId, hashtags, setHashtags, setEmotions, setShowAn
       </DialogTitle>
       <DialogContent>
         <div className="space-y-4">
-          {(isGistLoading || isCustomTextsLoading) ? (
+          {isLoading ? (
             <div className="flex justify-center">
               <LoadingSpinner />
             </div>
@@ -114,9 +110,7 @@ function FootageSummary({ videoId, hashtags, setHashtags, setEmotions, setShowAn
               {renderCustomTexts()}
             </>
           )}
-          {(gistError || customTextsError) &&
-            <ErrorFallback error={gistError || customTextsError || new Error('Unknown error')} />
-          }
+          {error && <ErrorFallback error={error} />}
         </div>
       </DialogContent>
     </Dialog>
