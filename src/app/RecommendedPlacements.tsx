@@ -1,9 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
 import { ChaptersData, VideoDetails } from './types';
 import { generateChapters, fetchVideoDetails } from '@/hooks/apiHooks';
-import React, {useState, useRef, useEffect} from 'react'
+import React, {useState, useRef, useEffect, Suspense} from 'react'
 import ReactPlayer from 'react-player';
 import VideoThumbnail from './VideoThumbnail';
+import { ErrorBoundary } from 'react-error-boundary'
+import ErrorFallback from './ErrorFallback'
+import LoadingSpinner from './LoadingSpinner';
 
 interface RecommendedPlacementsProps {
   footageVideoId: string;
@@ -20,7 +23,7 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId }: RecommendedPl
     });
     const playerRef = useRef<ReactPlayer>(null);
 
-    const { data: chaptersData } = useQuery<ChaptersData, Error>({
+    const { data: chaptersData, isLoading: isChaptersLoading } = useQuery<ChaptersData, Error>({
         queryKey: ["chapters", footageVideoId],
         queryFn: () => generateChapters(footageVideoId),
     });
@@ -95,60 +98,82 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId }: RecommendedPl
     };
 
     return (
-		<div>
-        <h2 className="text-2xl text-center font-bold my-20">Recommended Ad Placements</h2>
-        <div className="grid grid-cols-3 items-center gap-4">
-            {chaptersData?.chapters?.map((chapter, index) => (
-                <div key={`chapter-${index}`}>
-                    <div
-                        className="w-full h-0 pb-[56.25%] relative overflow-hidden rounded cursor-pointer"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            handlePlay(index);
-                        }}
-                    >
-                        <div className="absolute inset-0">
-                            <VideoThumbnail
-                                footageIndexId={footageIndexId}
-                                videoId={footageVideoId}
-                                time={Math.round(chapter.end - 2)}
-                            />
+        <ErrorBoundary
+            FallbackComponent={({ error }) =>
+                <ErrorFallback error={error} />
+            }
+        >
+            <div>
+                <h2 className="text-2xl text-center font-bold my-20">Recommended Ad Placements</h2>
+                <div className="grid grid-cols-3 items-center gap-4">
+                    {isChaptersLoading ? (
+                        <div className="col-span-3 flex justify-center items-center">
+                            <LoadingSpinner />
                         </div>
-
-                        <div className={`absolute inset-0 transition-opacity duration-300 ${playingState.chapterIndex === index && playingState.isPlaying ? 'opacity-100' : 'opacity-0'}`}>
-                            <ReactPlayer
-                                key={`player-${index}`}
-                                ref={index === playingState.chapterIndex ? playerRef : null}
-                                url={videoDetail?.hls?.video_url}
-                                controls
-                                width="100%"
-                                height="100%"
-                                style={{ position: 'absolute', top: 0, left: 0 }}
-                                playing={playingState.chapterIndex === index && playingState.isPlaying}
-                                config={{
-                                    file: {
-                                        forceHLS: true,
-                                        hlsOptions: {},
-                                        attributes: {
-                                            preload: "auto",
-                                        }
-                                    },
+                    ) : chaptersData?.chapters?.map((chapter, index) => (
+                        <div key={`chapter-${index}`}>
+                            <div
+                                className="w-full h-0 pb-[56.25%] relative overflow-hidden rounded cursor-pointer"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    handlePlay(index);
                                 }}
-                                progressInterval={100}
-                                onProgress={handleProgress}
-                            />
+                            >
+                                <div className="absolute inset-0">
+                                    {!videoDetail ? (
+                                        <div className="flex justify-center items-center h-full bg-gray-100">
+                                            <LoadingSpinner />
+                                        </div>
+                                    ) : (
+                                        <VideoThumbnail
+                                            footageIndexId={footageIndexId}
+                                            videoId={footageVideoId}
+                                            time={Math.round(chapter.end - 2)}
+                                        />
+                                    )}
+                                </div>
+
+                                <div className={`absolute inset-0 transition-opacity duration-300 ${playingState.chapterIndex === index && playingState.isPlaying ? 'opacity-100' : 'opacity-0'}`}>
+                                    {!videoDetail ? (
+                                        <div className="flex justify-center items-center h-full bg-gray-100">
+                                            <LoadingSpinner />
+                                        </div>
+                                    ) : (
+                                        <ReactPlayer
+                                            key={`player-${index}`}
+                                            ref={index === playingState.chapterIndex ? playerRef : null}
+                                            url={videoDetail?.hls?.video_url}
+                                            controls
+                                            width="100%"
+                                            height="100%"
+                                            style={{ position: 'absolute', top: 0, left: 0 }}
+                                            playing={playingState.chapterIndex === index && playingState.isPlaying}
+                                            config={{
+                                                file: {
+                                                    forceHLS: true,
+                                                    hlsOptions: {},
+                                                    attributes: {
+                                                        preload: "auto",
+                                                    }
+                                                },
+                                            }}
+                                            progressInterval={100}
+                                            onProgress={handleProgress}
+                                        />
+                                    )}
+                                </div>
+                            </div>
+                            <div className="mt-2">
+                                <p className="text-body3 text-grey-700 text-center">
+                                    {displayTimeRange(chapter.end)}
+                                </p>
+                            </div>
                         </div>
-                    </div>
-                    <div className="mt-2">
-                        <p className="text-body3 text-grey-700 text-center">
-                            {displayTimeRange(chapter.end)}
-                        </p>
-                    </div>
+                    ))}
                 </div>
-            ))}
-        </div>
-        </div>
+            </div>
+        </ErrorBoundary>
     );
 }
 
