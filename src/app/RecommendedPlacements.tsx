@@ -11,9 +11,14 @@ interface RecommendedPlacementsProps {
 }
 
 const RecommendedPlacements = ({ footageVideoId, footageIndexId }: RecommendedPlacementsProps) => {
-    const [playing, setPlaying] = useState(false);
+    const [playingState, setPlayingState] = useState<{
+        isPlaying: boolean;
+        chapterIndex: number | null;
+    }>({
+        isPlaying: false,
+        chapterIndex: null
+    });
     const playerRef = useRef<ReactPlayer>(null);
-    const [currentChapterIndex, setCurrentChapterIndex] = useState<number | null>(null);
 
     const { data: chaptersData } = useQuery<ChaptersData, Error>({
         queryKey: ["chapters", footageVideoId],
@@ -23,22 +28,26 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId }: RecommendedPl
     const { data: videoDetail } = useQuery<VideoDetails, Error>({
         queryKey: ["videoDetail", footageVideoId],
         queryFn: () => {
-          if (!footageVideoId) {
-            throw new Error("Footage Video ID is missing");
-          }
-          return fetchVideoDetails(footageVideoId, footageIndexId);
+            if (!footageVideoId) {
+                throw new Error("Footage Video ID is missing");
+            }
+            return fetchVideoDetails(footageVideoId, footageIndexId);
         },
         staleTime: 600000,
         gcTime: 900000,
         enabled: !!footageIndexId && (!!footageVideoId),
-      });
+    });
 
-      const handleProgress = (state: { playedSeconds: number }) => {
-        if (currentChapterIndex !== null && chaptersData?.chapters) {
-            const chapter = chaptersData.chapters[currentChapterIndex];
-            if (state.playedSeconds >= chapter.end + 2) {
-                setPlaying(false);
-                setCurrentChapterIndex(null);
+    console.log("🚀 > RecommendedPlacements > videoDetail=", videoDetail)
+    const handleProgress = (state: { playedSeconds: number }) => {
+        if (playingState.chapterIndex !== null && chaptersData?.chapters && videoDetail?.metadata?.duration) {
+            const chapter = chaptersData.chapters[playingState.chapterIndex];
+            const endTime = Math.min(chapter.end + 2, videoDetail.metadata.duration);
+            if (state.playedSeconds >= endTime) {
+                setPlayingState({
+                    isPlaying: false,
+                    chapterIndex: null
+                });
                 if (playerRef.current) {
                     playerRef.current.seekTo(chapter.end - 2, 'seconds');
                 }
@@ -47,67 +56,94 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId }: RecommendedPl
     };
 
     useEffect(() => {
-        if (currentChapterIndex !== null && playerRef.current && chaptersData?.chapters) {
-            const chapter = chaptersData.chapters[currentChapterIndex];
+        if (playingState.chapterIndex !== null && playerRef.current && chaptersData?.chapters) {
+            const chapter = chaptersData.chapters[playingState.chapterIndex];
             const seekTime = chapter.end - 2;
             playerRef.current.seekTo(seekTime, 'seconds');
-            setPlaying(true);
         }
-    }, [currentChapterIndex, chaptersData]);
+    }, [playingState.chapterIndex, chaptersData]);
 
     const handlePlay = (index: number) => {
-        if (currentChapterIndex === index) {
-            setPlaying(!playing);
-        } else {
-            setCurrentChapterIndex(index);
-            setPlaying(true);
-        }
+        setPlayingState(prev => {
+            if (prev.chapterIndex === index) {
+                return {
+                    ...prev,
+                    isPlaying: !prev.isPlaying
+                };
+            }
+            return {
+                isPlaying: true,
+                chapterIndex: index
+            };
+        });
+    };
+
+    const displayTimeRange = (chapterEnd: number) => {
+        const start = Math.max(0, chapterEnd - 2);
+        const end = videoDetail?.metadata?.duration
+            ? Math.min(chapterEnd + 2, videoDetail.metadata?.duration)
+            : chapterEnd + 2;
+
+        // 시간을 mm:ss 형식으로 변환
+        const formatTime = (seconds: number) => {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        };
+
+        return `${formatTime(start)} - ${formatTime(end)}`;
     };
 
     return (
 		<div>
-        <h2 className="text-2xl text-center font-bold mb-10">Recommended Placements</h2>
+        <h2 className="text-2xl text-center font-bold my-20">Recommended Ad Placements</h2>
         <div className="grid grid-cols-3 items-center gap-4">
             {chaptersData?.chapters?.map((chapter, index) => (
-                <div
-                    key={`chapter-${index}`}
-                    className="w-full h-0 pb-[56.25%] relative overflow-hidden rounded cursor-pointer"
-                    onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        handlePlay(index);
-                    }}
-                >
-                    <div className="absolute inset-0">
-                        <VideoThumbnail
-                            footageIndexId={footageIndexId}
-                            videoId={footageVideoId}
-                            time={Math.round(chapter.end - 2)}
-                        />
-                    </div>
+                <div key={`chapter-${index}`}>
+                    <div
+                        className="w-full h-0 pb-[56.25%] relative overflow-hidden rounded cursor-pointer"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handlePlay(index);
+                        }}
+                    >
+                        <div className="absolute inset-0">
+                            <VideoThumbnail
+                                footageIndexId={footageIndexId}
+                                videoId={footageVideoId}
+                                time={Math.round(chapter.end - 2)}
+                            />
+                        </div>
 
-                    <div className={`absolute inset-0 transition-opacity duration-300 ${currentChapterIndex === index && playing ? 'opacity-100' : 'opacity-0'}`}>
-                        <ReactPlayer
-                            key={`player-${index}`}
-                            ref={index === currentChapterIndex ? playerRef : null}
-                            url={videoDetail?.hls?.video_url}
-                            controls
-                            width="100%"
-                            height="100%"
-                            style={{ position: 'absolute', top: 0, left: 0 }}
-                            playing={currentChapterIndex === index && playing}
-                            config={{
-                                file: {
-                                    forceHLS: true,
-                                    hlsOptions: {},
-                                    attributes: {
-                                        preload: "auto",
-                                    }
-                                },
-                            }}
-                            progressInterval={100}
-                            onProgress={handleProgress}
-                        />
+                        <div className={`absolute inset-0 transition-opacity duration-300 ${playingState.chapterIndex === index && playingState.isPlaying ? 'opacity-100' : 'opacity-0'}`}>
+                            <ReactPlayer
+                                key={`player-${index}`}
+                                ref={index === playingState.chapterIndex ? playerRef : null}
+                                url={videoDetail?.hls?.video_url}
+                                controls
+                                width="100%"
+                                height="100%"
+                                style={{ position: 'absolute', top: 0, left: 0 }}
+                                playing={playingState.chapterIndex === index && playingState.isPlaying}
+                                config={{
+                                    file: {
+                                        forceHLS: true,
+                                        hlsOptions: {},
+                                        attributes: {
+                                            preload: "auto",
+                                        }
+                                    },
+                                }}
+                                progressInterval={100}
+                                onProgress={handleProgress}
+                            />
+                        </div>
+                    </div>
+                    <div className="mt-2">
+                        <p className="text-body3 text-grey-700 text-center">
+                            {displayTimeRange(chapter.end)}
+                        </p>
                     </div>
                 </div>
             ))}

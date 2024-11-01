@@ -87,7 +87,7 @@ const Video: React.FC<VideoProps> = ({ videoId, indexId, showTitle = true }) => 
               className={clsx(
                 "bg-grey-1000/60",
                 "px-2",
-                "py-1",
+                "py-1", 
                 "rounded-sm"
               )}
             >
