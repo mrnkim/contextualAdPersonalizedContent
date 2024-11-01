@@ -189,11 +189,13 @@ function AdsContent({
             />
           </div>
         </form>
-        <div className="flex justify-center">
-          <Button
-            type="button"
-            size="sm"
-            appearance="primary"
+        <div className="w-fit">
+									<span className="text-xs font-bold mb-0.5 text-left block">Step 2</span>
+          <div className="flex gap-2">
+            <Button
+              type="button"
+              size="sm"
+              appearance="primary"
             onClick={() => setIsRecommendClicked(true)}
             disabled={!!selectedFile || isRecommendClicked || isAnalysisLoading}
           >
@@ -204,6 +206,7 @@ function AdsContent({
               />
             Recommend
           </Button>
+          </div>
         </div>
       </div>
       {/* {isRecommendClicked && !selectedFile && (

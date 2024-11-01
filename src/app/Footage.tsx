@@ -155,32 +155,39 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 					) : (
 						<>
 							<Video videoId={footageVideoId || ''} indexId={indexId || ''} />
-							<div className="flex gap-2">
-								<Button
-									type="button"
-									size="sm"
-									appearance="primary"
-									onClick={() => setIsAnalyzeClicked(true)}
-									disabled={isAnalyzeClicked}
-								>
-									<img
-										src={isAnalyzeClicked ? "/analyzeDisabled.svg" : "/analyze.svg"}
-										alt="magic stick icon"
-										className="w-4 h-4"
-									/>
-									Analyze
-								</Button>
-								{isAnalyzeClicked && (
-									<Button
-										type="button"
-										size="sm"
-										appearance="secondary"
-										onClick={() => setShowAnalysis(!showAnalysis)}
-									>
-										{isLoading ? <LoadingSpinner /> : 'View Analysis'}
-									</Button>
-								)}
-							</div>
+							{/* <div className="flex flex-col w-full items-center"> */}
+								<div className="w-fit">
+									<span className="text-xs font-bold mb-0.5 text-left block">Step 1</span>
+									<div className="flex gap-2">
+										<Button
+											type="button"
+											size="sm"
+											appearance="primary"
+											onClick={() => setIsAnalyzeClicked(true)}
+											disabled={isAnalyzeClicked}
+										>
+											<div className="flex items-center">
+												<img
+													src={isAnalyzeClicked ? "/analyzeDisabled.svg" : "/analyze.svg"}
+													alt="magic stick icon"
+													className="w-4 h-4 mr-1"
+												/>
+												Analyze
+											</div>
+										</Button>
+										{isAnalyzeClicked && (
+											<Button
+												type="button"
+												size="sm"
+												appearance="secondary"
+												onClick={() => setShowAnalysis(!showAnalysis)}
+											>
+												{isLoading ? <LoadingSpinner /> : 'View Analysis'}
+											</Button>
+										)}
+									</div>
+								</div>
+							{/* </div> */}
 						</>
 					)}
 				</>
