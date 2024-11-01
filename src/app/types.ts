@@ -72,7 +72,8 @@ export interface RecommendedAdsProps {
   hashtags: string[];
   setHashtags: (hashtags: string[]) => void;
   footageVideoId: string;
-  indexId: string;
+  adsIndexId: string;
+  footageIndexId: string;
   selectedFile: File | null;
   setIsRecommendClicked: (isRecommendClicked: boolean) => void;
   searchOptionRef: React.RefObject<HTMLFormElement>;

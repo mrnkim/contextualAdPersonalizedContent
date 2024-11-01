@@ -6,6 +6,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 import LoadingSpinner from './LoadingSpinner';
 import ErrorFallback from './ErrorFallback';
 import { RecommendedAdsProps, GistData, SearchData } from './types';
+import RecommendedPlacements from './RecommendedPlacements';
 
 export enum SearchOption {
   VISUAL = 'visual',
@@ -14,7 +15,7 @@ export enum SearchOption {
   LOGO = 'logo'
 }
 
-const RecommendedAdsContent = ({ hashtags, setHashtags, footageVideoId, indexId, selectedFile, setIsRecommendClicked, searchOptionRef, customQueryRef, emotions }: RecommendedAdsProps) => {
+const RecommendedAdsContent = ({ hashtags, setHashtags, footageVideoId, adsIndexId, selectedFile, setIsRecommendClicked, searchOptionRef, customQueryRef, emotions, footageIndexId }: RecommendedAdsProps) => {
   const [searchOptions, setSearchOptions] = useState<SearchOption[]>([]);
 
   const { data: gistData, error: gistError, isLoading: isGistLoading } = useQuery<GistData, Error>({
@@ -63,14 +64,14 @@ const RecommendedAdsContent = ({ hashtags, setHashtags, footageVideoId, indexId,
   }, [searchOptionRef]);
 
   const { data: searchData, error: searchError, isLoading: isSearchLoading } = useQuery<SearchData, Error>({
-    queryKey: ["search", indexId, searchQuery, searchOptions],
-    queryFn: () => textToVideoSearch(indexId, searchQuery, searchOptions),
+    queryKey: ["search", adsIndexId, searchQuery, searchOptions],
+    queryFn: () => textToVideoSearch(adsIndexId, searchQuery, searchOptions),
     enabled: searchQuery.length > 0 && searchOptions.length > 0 && !selectedFile,
   });
 
   return (
     <div className="flex flex-col w-full my-10">
-      <h2 className="text-center text-2xl font-bold my-5"> Recommendations </h2>
+      <h2 className="text-center text-2xl font-bold my-5"> Recommended Ads </h2>
       {isGistLoading && (
         <div className="flex justify-center items-center h-full my-5">
           <LoadingSpinner />
@@ -84,15 +85,23 @@ const RecommendedAdsContent = ({ hashtags, setHashtags, footageVideoId, indexId,
       )}
       {searchError && <ErrorFallback error={searchError}/>}
       {searchData?.data && searchData.data.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-          {searchData.data.map((recommendedAd) => (
-            <RecommendedAd
-              key={recommendedAd.id}
-              recommendedAd={{ ...recommendedAd, clips: recommendedAd.clips || [] }}
-              indexId={indexId}
-            />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+            {searchData.data.map((recommendedAd) => (
+              <RecommendedAd
+                key={recommendedAd.id}
+                recommendedAd={{ ...recommendedAd, clips: recommendedAd.clips || [] }}
+                indexId={adsIndexId}
+              />
+            ))}
+          </div>
+          <div className="my-20">
+          <RecommendedPlacements
+            footageIndexId={footageIndexId ?? ''}
+            footageVideoId={footageVideoId}
+          />
+          </div>
+        </>
       ) : (
         searchData && <div className='flex justify-center items-center h-full my-5'>No search results found 😿 </div>
       )}

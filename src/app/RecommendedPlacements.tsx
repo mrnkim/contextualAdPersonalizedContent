@@ -7,15 +7,15 @@ import VideoThumbnail from './VideoThumbnail';
 
 interface RecommendedPlacementsProps {
   footageVideoId: string;
-  indexId: string;
+  footageIndexId: string;
 }
 
-const RecommendedPlacements = ({ footageVideoId, indexId }: RecommendedPlacementsProps) => {
+const RecommendedPlacements = ({ footageVideoId, footageIndexId }: RecommendedPlacementsProps) => {
     const [playing, setPlaying] = useState(false);
     const playerRef = useRef<ReactPlayer>(null);
     const [currentChapterIndex, setCurrentChapterIndex] = useState<number | null>(null);
 
-    const { data: chaptersData, error: chaptersError, isLoading: isChaptersLoading } = useQuery<ChaptersData, Error>({
+    const { data: chaptersData } = useQuery<ChaptersData, Error>({
         queryKey: ["chapters", footageVideoId],
         queryFn: () => generateChapters(footageVideoId),
     });
@@ -26,11 +26,11 @@ const RecommendedPlacements = ({ footageVideoId, indexId }: RecommendedPlacement
           if (!footageVideoId) {
             throw new Error("Footage Video ID is missing");
           }
-          return fetchVideoDetails(footageVideoId, indexId);
+          return fetchVideoDetails(footageVideoId, footageIndexId);
         },
         staleTime: 600000,
         gcTime: 900000,
-        enabled: !!indexId && (!!footageVideoId),
+        enabled: !!footageIndexId && (!!footageVideoId),
       });
 
       const handleProgress = (state: { playedSeconds: number }) => {
@@ -66,7 +66,7 @@ const RecommendedPlacements = ({ footageVideoId, indexId }: RecommendedPlacement
 
     return (
 		<div>
-        <h2 className="text-2xl text-center font-bold mb-6">Recommended Placements</h2>
+        <h2 className="text-2xl text-center font-bold mb-10">Recommended Placements</h2>
         <div className="grid grid-cols-3 items-center gap-4">
             {chaptersData?.chapters?.map((chapter, index) => (
                 <div
@@ -80,7 +80,7 @@ const RecommendedPlacements = ({ footageVideoId, indexId }: RecommendedPlacement
                 >
                     <div className="absolute inset-0">
                         <VideoThumbnail
-                            indexId={indexId}
+                            footageIndexId={footageIndexId}
                             videoId={footageVideoId}
                             time={Math.round(chapter.end - 2)}
                         />

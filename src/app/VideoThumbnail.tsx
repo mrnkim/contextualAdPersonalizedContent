@@ -6,15 +6,15 @@ import { getThumbnail } from '@/hooks/apiHooks'
 interface VideoThumbnailProps {
 	videoId: string
 	time?: number
-    indexId: string
+    footageIndexId: string
 }
 
-const VideoThumbnail = ({ videoId, time = 0, indexId}: VideoThumbnailProps): JSX.Element | null => {
+const VideoThumbnail = ({ videoId, time = 0, footageIndexId}: VideoThumbnailProps): JSX.Element | null => {
 
 	const { data } = useQuery({
-        queryKey: ['video', 'thumbnail', indexId, videoId, time],
-		queryFn: () => getThumbnail(indexId, videoId, time),
-		enabled: !!indexId && !!videoId
+        queryKey: ['video', 'thumbnail', footageIndexId, videoId, time],
+		queryFn: () => getThumbnail(footageIndexId, videoId, time),
+		enabled: !!footageIndexId && !!videoId
 	})
 
 	return <img src={data?.thumbnail} className="w-full h-full"/>

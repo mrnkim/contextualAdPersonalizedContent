@@ -4,7 +4,6 @@ import { useState, useRef, useEffect } from 'react';
 import Footage from './Footage';
 import Ads from './Ads';
 import RecommendedAds from './RecommendedAds'
-import RecommendedPlacements from './RecommendedPlacements';
 import { useQuery } from "@tanstack/react-query";
 import { generateGist, generateCustomTexts } from '@/hooks/apiHooks';
 import { GistData } from './types';
@@ -99,20 +98,13 @@ export default function Page() {
             hashtags={hashtags}
             setHashtags={setHashtags}
             footageVideoId={footageVideoId}
-            indexId={adsIndexId ?? ''}
+            footageIndexId={footageIndexId ?? ''}
+            adsIndexId={adsIndexId ?? ''}
             selectedFile={selectedFile}
             setIsRecommendClicked={setIsRecommendClicked}
             searchOptionRef={searchOptionRef}
             customQueryRef={customQueryRef}
             emotions={emotions}
-          />
-        </div>
-      )}
-      {isRecommendClicked && !selectedFile && (
-        <div className="w-3/4 mt-4 mx-auto">
-          <RecommendedPlacements
-            indexId={footageIndexId ?? ''}
-            footageVideoId ={footageVideoId}
           />
         </div>
       )}
