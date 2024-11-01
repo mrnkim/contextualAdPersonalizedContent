@@ -115,10 +115,10 @@ function AdsContent({
           <Video key={video._id} videoId={video._id} indexId={indexId || ''} />
         ))}
       </div>
-      <div className={clsx("w-full", "flex", "justify-center", "mt-8")}>
+      <div className={clsx("w-full", "flex", "justify-center", "mt-3")}>
         <PageNav page={page} setPage={setPage} totalPage={totalPage} />
       </div>
-      <div className="flex flex-col items-center gap-4">
+      <div className="flex flex-col items-center gap-4 my-5">
         <form ref={searchOptionRef} onSubmit={handleFormSubmit}>
           <div className="flex gap-4 items-center">
             <label className="flex items-center gap-2">
@@ -174,7 +174,7 @@ function AdsContent({
               type="text"
               ref={customQueryRef}
               placeholder="Enter custom search query"
-              className="border px-2 py-1 flex-1"
+              className="border px-2 py-1 flex-1 mt-2"
               onChange={handleSearchOptionChange}
               onFocus={() => {
                 const customRadio = document.getElementById('customRadio') as HTMLInputElement;
@@ -189,39 +189,26 @@ function AdsContent({
             />
           </div>
         </form>
-        <div className="w-fit">
-									<span className="text-xs font-bold mb-0.5 text-left block">Step 2</span>
+        <div className="w-fit my-5">
+					<span className="text-xs font-bold mb-0.5 text-left block">Step 2</span>
           <div className="flex gap-2">
-            <Button
-              type="button"
-              size="sm"
-              appearance="primary"
-            onClick={() => setIsRecommendClicked(true)}
-            disabled={!!selectedFile || isRecommendClicked || isAnalysisLoading}
-          >
-            <img
-              src={selectedFile || isRecommendClicked || isAnalysisLoading ? "/magicDisabled.svg" : "/magic.svg"}
-              alt="Magic wand icon"
-              className="w-4 h-4"
-              />
-            Recommend
-          </Button>
+              <Button
+                type="button"
+                size="sm"
+                appearance="primary"
+              onClick={() => setIsRecommendClicked(true)}
+              disabled={!!selectedFile || isRecommendClicked || isAnalysisLoading}
+            >
+              <img
+                src={selectedFile || isRecommendClicked || isAnalysisLoading ? "/magicDisabled.svg" : "/magic.svg"}
+                alt="Magic wand icon"
+                className="w-4 h-4"
+                />
+              Recommend
+            </Button>
           </div>
         </div>
       </div>
-      {/* {isRecommendClicked && !selectedFile && (
-        <RecommendedAds
-          hashtags={hashtags}
-          setHashtags={setHashtags}
-          footageVideoId={footageVideoId}
-          indexId={indexId}
-          selectedFile={selectedFile}
-          setIsRecommendClicked={setIsRecommendClicked}
-          searchOptionRef={searchOptionRef}
-          customQueryRef={customQueryRef}
-          emotions={emotions}
-        />
-      )} */}
     </>
   );
 }

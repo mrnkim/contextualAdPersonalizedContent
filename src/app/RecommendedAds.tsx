@@ -99,7 +99,7 @@ const RecommendedAds = ({ hashtags, setHashtags, footageVideoId, adsIndexId, sel
 
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
-      <div className="flex flex-col w-full my-20">
+      <div className="flex flex-col w-full my-10">
         <h2 className="text-center text-2xl font-bold my-10"> Recommended Ads </h2>
 
         {(isGistLoading || isSearchLoading) && (

@@ -93,7 +93,7 @@ export default function Page() {
         </div>
       </div>
       {isRecommendClicked && !selectedFile && (
-        <div className="w-3/4 mt-4 mx-auto">
+        <div className="w-3/4 mx-auto">
           <RecommendedAds
             hashtags={hashtags}
             setHashtags={setHashtags}
