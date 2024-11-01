@@ -60,7 +60,7 @@ export default function Page() {
             hashtags={hashtags}
             setHashtags={setHashtags}
             footageVideoId={footageVideoId}
-            indexId={footageIndexId ?? ''}
+            indexId={adsIndexId ?? ''}
             selectedFile={selectedFile}
             setIsRecommendClicked={setIsRecommendClicked}
             searchOptionRef={searchOptionRef}

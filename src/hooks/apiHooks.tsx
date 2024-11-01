@@ -24,6 +24,14 @@ export const generateGist = async (videoId: string) => {
     return response.json();
   };
 
+  export const generateChapters = async (videoId: string) => {
+    const response = await fetch(`/api/generateChapters?videoId=${videoId}`);
+    if (!response.ok) {
+      throw new Error("Failed to search videos");
+    }
+    return response.json();
+  };
+
  export const fetchVideos = async (page: number, indexId: string) => {
 	if (!indexId) {
 		throw new Error("ads index ID is required");
@@ -45,6 +53,14 @@ export const generateGist = async (videoId: string) => {
 
  export const fetchTaskDetails = async (taskId: string) => {
     const response = await fetch(`/api/getTask?taskId=${taskId}`);
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+    return response.json();
+  };
+
+ export const getThumbnail = async (indexId: string, videoId: string, time: number ) => {
+    const response = await fetch(`/api/getThumbnail?indexId=${indexId}&videoId=${videoId}&time=${time}`)
     if (!response.ok) {
       throw new Error("Network response was not ok");
     }
@@ -84,3 +100,5 @@ export const uploadFootage = async (file: File, indexId: string) => {
   const data = await response.json();
   return data;
 };
+
+

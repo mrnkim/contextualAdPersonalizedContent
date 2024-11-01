@@ -63,7 +63,7 @@ const RecommendedAdsContent = ({ hashtags, setHashtags, footageVideoId, indexId,
   }, [searchOptionRef]);
 
   const { data: searchData, error: searchError, isLoading: isSearchLoading } = useQuery<SearchData, Error>({
-    queryKey: ["search", footageVideoId, searchQuery, searchOptions],
+    queryKey: ["search", indexId, searchQuery, searchOptions],
     queryFn: () => textToVideoSearch(indexId, searchQuery, searchOptions),
     enabled: searchQuery.length > 0 && searchOptions.length > 0 && !selectedFile,
   });
