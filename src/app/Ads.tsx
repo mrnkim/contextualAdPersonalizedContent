@@ -12,7 +12,6 @@ import clsx from 'clsx'
 import { fetchVideos } from '@/hooks/apiHooks';
 import { ErrorBoundary } from 'react-error-boundary';
 import { AdsProps } from './types';
-import { is } from '../../.next/static/webpack/main.ed2b4069190f5e6e.hot-update';
 
 type VideoType = {
   _id: string;

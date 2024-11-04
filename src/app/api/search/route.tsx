@@ -2,12 +2,7 @@ import { NextResponse } from "next/server";
 
 const API_KEY = process.env.TWELVELABS_API_KEY;
 const TWELVELABS_API_BASE_URL = process.env.TWELVELABS_API_BASE_URL;
-// const SEARH_OPTIONS=[
-//     "visual",
-//     "conversation",
-//     "text_in_video",
-//     "logo"
-//   ]
+const PAGE_LIMIT =  4;
 
 export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
@@ -37,7 +32,7 @@ export async function GET(req: Request) {
               "Content-Type": "application/json",
               "x-api-key": `${API_KEY}`,
             },
-            body: JSON.stringify({query: query, index_id: indexId, search_options: searchOptions, group_by: "video"})
+            body: JSON.stringify({query: query, index_id: indexId, search_options: searchOptions, group_by: "video", page_limit: PAGE_LIMIT})
         };
 
       try {

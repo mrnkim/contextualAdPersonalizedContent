@@ -51,6 +51,14 @@ export const generateGist = async (videoId: string) => {
     return response.json();
   };
 
+ export const fetchSearchPage = async (pageToken: string) => {
+    const response = await fetch(`/api/getSearchPage?pageToken=${pageToken}`);
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+    return response.json();
+  };
+
  export const fetchTaskDetails = async (taskId: string) => {
     const response = await fetch(`/api/getTask?taskId=${taskId}`);
     if (!response.ok) {

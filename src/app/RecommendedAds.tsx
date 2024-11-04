@@ -1,5 +1,5 @@
 import React, { Suspense, useEffect, useMemo, useState } from 'react'
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
 import { generateGist, textToVideoSearch, fetchVideoDetails } from '@/hooks/apiHooks';
 import RecommendedAd from './RecommendedAd';
 import { ErrorBoundary } from 'react-error-boundary';
@@ -7,6 +7,8 @@ import LoadingSpinner from './LoadingSpinner';
 import ErrorFallback from './ErrorFallback';
 import { RecommendedAdsProps, GistData, SearchData, VideoDetails, RecommendedAdProps } from './types';
 import RecommendedPlacements from './RecommendedPlacements';
+import { fetchSearchPage } from '@/hooks/apiHooks';
+import Button from './Button'
 
 export enum SearchOption {
   VISUAL = 'visual',
@@ -88,11 +90,28 @@ const RecommendedAds = ({ hashtags, setHashtags, footageVideoId, adsIndexId, sel
     }
   }, [searchOptionRef]);
 
-  const { data: searchData, error: searchError, isLoading: isSearchLoading } = useQuery<SearchData, Error>({
+  const {
+    data: searchData,
+    error: searchError,
+    isLoading: isSearchLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage
+  } = useInfiniteQuery({
     queryKey: ["search", adsIndexId, searchQuery, searchOptions],
-    queryFn: () => textToVideoSearch(adsIndexId, searchQuery, searchOptions),
+    initialPageParam: null,
+    queryFn: async ({ pageParam = null }) => {
+      if (pageParam) {
+        return fetchSearchPage(pageParam);
+      }
+      return textToVideoSearch(adsIndexId, searchQuery, searchOptions);
+    },
+    getNextPageParam: (lastPage) => lastPage.page_info?.next_page_token || null,
     enabled: searchQuery.length > 0 && searchOptions.length > 0 && !selectedFile,
   });
+    console.log("🚀 > RecommendedAds > searchData,=", searchData,)
+    console.log("🚀 > RecommendedAds > hasNextPage=", hasNextPage)
+    console.log("🚀 > RecommendedAds >  isFetchingNextPage=",  isFetchingNextPage)
 
   if (gistError) return <ErrorFallback error={gistError} />;
   if (searchError) return <ErrorFallback error={searchError} />;
@@ -109,31 +128,48 @@ const RecommendedAds = ({ hashtags, setHashtags, footageVideoId, adsIndexId, sel
         )}
 
         <Suspense fallback={<LoadingSpinner />}>
-          {searchData?.data && searchData.data.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-20">
-              {searchData.data.map((recommendedAd) => (
-                <RecommendedAdItem
-                  key={recommendedAd.id}
-                  recommendedAd={recommendedAd as RecommendedAdProps["recommendedAd"]}
-                  adsIndexId={adsIndexId}
-                />
-              ))}
-            </div>
-          ) : (
-            searchData && <div className='flex justify-center items-center h-full my-5'>No search results found 😿 </div>
-          )}
-        </Suspense>
+          <div>
+            {searchData?.pages[0]?.data && searchData.pages[0].data.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-20">
+                {searchData.pages.map((page) =>
+                  page.data.map((recommendedAd: RecommendedAdProps["recommendedAd"]) => (
+                    <RecommendedAdItem
+                      key={recommendedAd.id}
+                      recommendedAd={recommendedAd}
+                      adsIndexId={adsIndexId}
+                    />
+                  ))
+                )}
+              </div>
+            ) : (
+              searchData && <div className='flex justify-center items-center h-full my-5'>No search results found 😿 </div>
+            )}
 
-        {searchData?.data && searchData.data.length > 0 && (
-          <div className="my-20">
-            <Suspense fallback={<LoadingSpinner />}>
-            <RecommendedPlacements
-              footageIndexId={footageIndexId ?? ''}
-              footageVideoId={footageVideoId}
-            />
-            </Suspense>
+            {hasNextPage && (
+              <div className="flex justify-center mt-10">
+                <Button
+                type="button"
+                size="sm"
+                appearance="secondary"
+                onClick={() => fetchNextPage()}
+                disabled={isFetchingNextPage}
+                >
+<img
+													src={"/more.svg"}
+													alt="more options icon"
+													className="w-4 h-4 mr-1"
+												/>
+              Show More
+            </Button>
+              </div>
+            )}
+
+            {searchData?.pages[0]?.data && searchData.pages[0].data.length > 0 && (
+             <RecommendedPlacements footageVideoId={footageVideoId} footageIndexId={footageIndexId} />
+            )}
+
           </div>
-        )}
+        </Suspense>
       </div>
     </ErrorBoundary>
   );
