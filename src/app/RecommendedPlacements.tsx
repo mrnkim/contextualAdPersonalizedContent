@@ -41,7 +41,6 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId }: RecommendedPl
         enabled: !!footageIndexId && (!!footageVideoId),
     });
 
-    console.log("🚀 > RecommendedPlacements > videoDetail=", videoDetail)
     const handleProgress = (state: { playedSeconds: number }) => {
         if (playingState.chapterIndex !== null && chaptersData?.chapters && videoDetail?.metadata?.duration) {
             const chapter = chaptersData.chapters[playingState.chapterIndex];
@@ -108,8 +107,8 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId }: RecommendedPl
                 <ErrorFallback error={error} />
             }
         >
-            <div>
-                <h2 className="text-2xl text-center font-bold my-20">Recommended Ad Placements</h2>
+            <div className="mt-32">
+                <h2 className="text-2xl text-center font-bold mt-20 mb-10">Recommended Ad Placements</h2>
                 <div className="grid grid-cols-3 items-center gap-4">
                     {isChaptersLoading ? (
                         <div className="col-span-3 flex justify-center items-center">
@@ -117,6 +116,11 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId }: RecommendedPl
                         </div>
                     ) : chaptersData?.chapters?.map((chapter, index) => (
                         <div key={`chapter-${index}`}>
+                                             <div className="mt-2">
+                            <h3 className="mb-2 text-lg font-medium">
+                            {displayTimeRange(chapter.end)}
+                                </h3>
+                            </div>
                             <div
                                 className="w-full h-0 pb-[56.25%] relative overflow-hidden rounded cursor-pointer"
                                 onClick={(e) => {
@@ -168,11 +172,6 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId }: RecommendedPl
                                         />
                                     )}
                                 </div>
-                            </div>
-                            <div className="mt-2">
-                                <p className="text-body3 text-grey-700 text-center">
-                                    {displayTimeRange(chapter.end)}
-                                </p>
                             </div>
                         </div>
                     ))}

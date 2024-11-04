@@ -109,9 +109,6 @@ const RecommendedAds = ({ hashtags, setHashtags, footageVideoId, adsIndexId, sel
     getNextPageParam: (lastPage) => lastPage.page_info?.next_page_token || null,
     enabled: searchQuery.length > 0 && searchOptions.length > 0 && !selectedFile,
   });
-    console.log("🚀 > RecommendedAds > searchData,=", searchData,)
-    console.log("🚀 > RecommendedAds > hasNextPage=", hasNextPage)
-    console.log("🚀 > RecommendedAds >  isFetchingNextPage=",  isFetchingNextPage)
 
   if (gistError) return <ErrorFallback error={gistError} />;
   if (searchError) return <ErrorFallback error={searchError} />;
@@ -130,7 +127,7 @@ const RecommendedAds = ({ hashtags, setHashtags, footageVideoId, adsIndexId, sel
         <Suspense fallback={<LoadingSpinner />}>
           <div>
             {searchData?.pages[0]?.data && searchData.pages[0].data.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-20">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-20 mb-20">
                 {searchData.pages.map((page) =>
                   page.data.map((recommendedAd: RecommendedAdProps["recommendedAd"]) => (
                     <RecommendedAdItem
@@ -146,7 +143,7 @@ const RecommendedAds = ({ hashtags, setHashtags, footageVideoId, adsIndexId, sel
             )}
 
             {hasNextPage && (
-              <div className="flex justify-center mt-10">
+              <div className="flex justify-center">
                 <Button
                 type="button"
                 size="sm"

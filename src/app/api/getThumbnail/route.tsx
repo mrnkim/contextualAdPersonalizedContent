@@ -6,11 +6,8 @@ const TWELVELABS_API_BASE_URL = process.env.TWELVELABS_API_BASE_URL;
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const indexId = searchParams.get("indexId");
-  console.log("🚀 > GET > indexId=", indexId)
   const videoId = searchParams.get("videoId");
-  console.log("🚀 > GET > videoId=", videoId)
   const time = searchParams.get("time");
-  console.log("🚀 > GET > time=", time)
 
   if (!indexId || !videoId) {
     return NextResponse.json(
@@ -37,7 +34,6 @@ export async function GET(req: Request) {
     }
 
     const responseData = await response.json();
-    console.log("🚀 > GET > responseData=", responseData)
 
     return NextResponse.json(responseData);
   } catch (error) {

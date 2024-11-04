@@ -19,24 +19,12 @@ function FootageSummary({
   error,
   setShowAnalysis
 }: FootageSummaryProps) {
-  console.log("🚀 > customTextsData=", customTextsData)
 
   useEffect(() => {
     if (gistData?.hashtags) {
       setHashtags(gistData.hashtags);
     }
   }, [gistData]);
-
-  // useEffect(() => {
-  //   if (customTextsData) {
-  //     const emotionalToneRegex = /Emotional Tone:\s*([^.]+)\./;
-  //     const match = (customTextsData as string).match(emotionalToneRegex);
-  //     if (match && match[1]) {
-  //       const firstThreeWords = match[1]?.trim()?.split(/\s+/)?.slice(0, 3);
-  //       setEmotions(firstThreeWords);
-  //     }
-  //   }
-  // }, [customTextsData, setEmotions]);
 
   const formatCustomTexts = (data: string) => {
     const sections = ["Event Type", "Main Content", "Emotional Tone"];
