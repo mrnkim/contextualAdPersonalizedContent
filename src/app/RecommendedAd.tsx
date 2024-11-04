@@ -32,10 +32,10 @@ const RecommendedAd: React.FC<RecommendedAdProps> = ({ recommendedAd, indexId, v
   });
 
   function parseAdCopy(adCopyText: string) {
-    const suggestions = adCopyText.split('Headline:').filter(Boolean);
+    const suggestions = adCopyText?.split('Headline:').filter(Boolean);
     return suggestions.map(suggestion => {
-      const [headline, rest] = suggestion.split('Ad Copy:');
-      const [adCopy, hashtag] = rest.split('Hashtag:');
+      const [headline, rest] = suggestion?.split('Ad Copy:');
+      const [adCopy, hashtag] = rest?.split('Hashtag:');
       return {
         headline: headline?.trim(),
         adCopy: adCopy?.trim(),

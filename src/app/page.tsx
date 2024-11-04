@@ -46,7 +46,7 @@ export default function Page() {
       const emotionalToneRegex = /Emotional Tone:\s*([^.]+)\./;
       const match = (customTextsData as string).match(emotionalToneRegex);
       if (match && match[1]) {
-        const firstThreeWords = match[1].trim().split(/\s+/).slice(0, 3);
+        const firstThreeWords = match[1]?.trim()?.split(/\s+/)?.slice(0, 3);
         setEmotions(firstThreeWords);
       }
     }

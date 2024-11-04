@@ -194,10 +194,8 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 			)}
 			{!selectedFile && isAnalyzeClicked && showAnalysis && hasVideoData && (
 				<FootageSummary
-					videoId={footageVideoId}
 					hashtags={hashtags}
 					setHashtags={setHashtags}
-					setEmotions={setEmotions}
 					gistData={gistData}
 					customTextsData={customTextsData}
 					isLoading={isLoading}

@@ -13,7 +13,6 @@ import CloseIcon from '@mui/icons-material/Close';
 function FootageSummary({
   hashtags,
   setHashtags,
-  setEmotions,
   gistData,
   customTextsData,
   isLoading,
@@ -28,16 +27,16 @@ function FootageSummary({
     }
   }, [gistData]);
 
-  useEffect(() => {
-    if (customTextsData) {
-      const emotionalToneRegex = /Emotional Tone:\s*([^.]+)\./;
-      const match = (customTextsData as string).match(emotionalToneRegex);
-      if (match && match[1]) {
-        const firstThreeWords = match[1].trim().split(/\s+/).slice(0, 3);
-        setEmotions(firstThreeWords);
-      }
-    }
-  }, [customTextsData, setEmotions]);
+  // useEffect(() => {
+  //   if (customTextsData) {
+  //     const emotionalToneRegex = /Emotional Tone:\s*([^.]+)\./;
+  //     const match = (customTextsData as string).match(emotionalToneRegex);
+  //     if (match && match[1]) {
+  //       const firstThreeWords = match[1]?.trim()?.split(/\s+/)?.slice(0, 3);
+  //       setEmotions(firstThreeWords);
+  //     }
+  //   }
+  // }, [customTextsData, setEmotions]);
 
   const formatCustomTexts = (data: string) => {
     const sections = ["Event Type", "Main Content", "Emotional Tone"];

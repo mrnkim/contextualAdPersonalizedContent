@@ -50,9 +50,7 @@ export interface AdsProps {
 
 export interface FootageSummaryProps {
   hashtags: string[];
-  videoId: string;
   setHashtags: (hashtags: string[]) => void;
-  setEmotions: (emotions: string[]) => void;
   gistData: GistData;
   customTextsData: string;
   isLoading: boolean;
