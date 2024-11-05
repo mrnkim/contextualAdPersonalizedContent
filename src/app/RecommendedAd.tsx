@@ -61,24 +61,10 @@ const RecommendedAd: React.FC<RecommendedAdProps> = ({ recommendedAd, indexId, v
           <ErrorFallback error={error} />
         }
       >
-        <div className="flex flex-col w-full">
-          <div className="flex flex-row gap-4 mb-4">
-            <div className="w-1/2">
+        <div className="flex flex-col w-full items-center">
               <Suspense fallback={<div className="flex justify-center items-center h-full"><LoadingSpinner /></div>}>
                 <Video videoId={recommendedAd.id} indexId={indexId} showTitle={false}/>
               </Suspense>
-            </div>
-            <div className="w-1/2">
-              <Suspense fallback={<div className="flex justify-center items-center h-full"><LoadingSpinner /></div>}>
-                {videoDetails && (
-                  <Clips
-                    clips={recommendedAd.clips as Clip[]}
-                    videoDetails={videoDetails}
-                  />
-                )}
-              </Suspense>
-            </div>
-          </div>
           <div className="flex justify-center mt-4">
             <Button
               type="button"
