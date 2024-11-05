@@ -44,14 +44,14 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId }: RecommendedPl
     const handleProgress = (state: { playedSeconds: number }) => {
         if (playingState.chapterIndex !== null && chaptersData?.chapters && videoDetail?.metadata?.duration) {
             const chapter = chaptersData.chapters[playingState.chapterIndex];
-            const endTime = Math.min(chapter.end + 2, videoDetail.metadata.duration);
+            const endTime = Math.min(chapter.end, videoDetail.metadata.duration);
             if (state.playedSeconds >= endTime) {
                 setPlayingState({
                     isPlaying: false,
                     chapterIndex: null
                 });
                 if (playerRef.current) {
-                    playerRef.current.seekTo(chapter.end - 2, 'seconds');
+                    playerRef.current.seekTo(chapter.end, 'seconds');
                 }
             }
         }
@@ -60,7 +60,7 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId }: RecommendedPl
     useEffect(() => {
         if (playingState.chapterIndex !== null && playerRef.current && chaptersData?.chapters) {
             const chapter = chaptersData.chapters[playingState.chapterIndex];
-            const seekTime = chapter.end - 2;
+            const seekTime = chapter.end;
             playerRef.current.seekTo(seekTime, 'seconds');
         }
     }, [playingState.chapterIndex, chaptersData]);
@@ -81,10 +81,9 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId }: RecommendedPl
     };
 
     const displayTimeRange = (chapterEnd: number) => {
-        const start = Math.max(0, chapterEnd - 2);
         const end = videoDetail?.metadata?.duration
-            ? Math.min(chapterEnd + 2, videoDetail.metadata?.duration)
-            : chapterEnd + 2;
+            ? Math.min(chapterEnd, videoDetail.metadata?.duration)
+            : chapterEnd;
 
         const formatTime = (seconds: number): string => {
             const hours = Math.floor(seconds / 3600);
@@ -98,83 +97,62 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId }: RecommendedPl
             ].join(":");
         };
 
-        return `${formatTime(start)} - ${formatTime(end)}`;
+        return `${formatTime(end)}`;
+    };
+
+    const handleChapterClick = (time: number) => {
+        if (playerRef.current) {
+            playerRef.current.seekTo(time, 'seconds');
+            setPlayingState({
+                isPlaying: true,
+                chapterIndex: null
+            });
+        }
     };
 
     return (
-        <ErrorBoundary
-            FallbackComponent={({ error }) =>
-                <ErrorFallback error={error} />
-            }
-        >
+        <ErrorBoundary FallbackComponent={ErrorFallback}>
             <div className="mt-32">
-                <h2 className="text-2xl text-center font-bold mt-20 mb-10">Recommended Ad Placements</h2>
-                <div className="grid grid-cols-3 items-center gap-4">
-                    {isChaptersLoading ? (
-                        <div className="col-span-3 flex justify-center items-center">
-                            <LoadingSpinner />
-                        </div>
-                    ) : chaptersData?.chapters?.map((chapter, index) => (
-                        <div key={`chapter-${index}`}>
-                                             <div className="mt-2">
-                            <h3 className="mb-2 text-lg font-medium">
-                            {displayTimeRange(chapter.end)}
-                                </h3>
-                            </div>
-                            <div
-                                className="w-full h-0 pb-[56.25%] relative overflow-hidden rounded cursor-pointer"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    handlePlay(index);
-                                }}
-                            >
-                                <div className="absolute inset-0">
-                                    {!videoDetail ? (
-                                        <div className="flex justify-center items-center h-full bg-gray-100">
-                                            <LoadingSpinner />
-                                        </div>
-                                    ) : (
-                                        <VideoThumbnail
-                                            footageIndexId={footageIndexId}
-                                            videoId={footageVideoId}
-                                            time={Math.round(chapter.end - 2)}
-                                        />
-                                    )}
-                                </div>
+                <h2 className="text-2xl text-center font-bold mt-20 mb-10">Video Timeline</h2>
 
-                                <div className={`absolute inset-0 transition-opacity duration-300 ${playingState.chapterIndex === index && playingState.isPlaying ? 'opacity-100' : 'opacity-0'}`}>
-                                    {!videoDetail ? (
-                                        <div className="flex justify-center items-center h-full bg-gray-100">
-                                            <LoadingSpinner />
-                                        </div>
-                                    ) : (
-                                        <ReactPlayer
-                                            key={`player-${index}`}
-                                            ref={index === playingState.chapterIndex ? playerRef : null}
-                                            url={videoDetail?.hls?.video_url}
-                                            controls
-                                            width="100%"
-                                            height="100%"
-                                            style={{ position: 'absolute', top: 0, left: 0 }}
-                                            playing={playingState.chapterIndex === index && playingState.isPlaying}
-                                            config={{
-                                                file: {
-                                                    forceHLS: true,
-                                                    hlsOptions: {},
-                                                    attributes: {
-                                                        preload: "auto",
-                                                    }
-                                                },
-                                            }}
-                                            progressInterval={100}
-                                            onProgress={handleProgress}
-                                        />
-                                    )}
+                <div className="w-full aspect-video relative mb-8">
+                    {videoDetail && (
+                        <ReactPlayer
+                            ref={playerRef}
+                            url={videoDetail?.hls?.video_url}
+                            controls
+                            width="100%"
+                            height="100%"
+                            playing={playingState.isPlaying}
+                            config={{
+                                file: {
+                                    forceHLS: true,
+                                    hlsOptions: {},
+                                    attributes: { preload: "auto" }
+                                },
+                            }}
+                        />
+                    )}
+                </div>
+
+                <div className="relative w-full h-16 bg-gray-100 rounded">
+                    <div className="absolute w-full h-1 bg-gray-300 top-1/2 -translate-y-1/2">
+                        {chaptersData?.chapters?.map((chapter, index) => (
+                            <div
+                                key={`timeline-${index}`}
+                                className="absolute w-4 h-4 bg-blue-500 rounded-full -translate-y-1/2 -translate-x-1/2 cursor-pointer hover:scale-110 transition-transform"
+                                style={{
+                                    left: `${(chapter.end / (videoDetail?.metadata?.duration || 1)) * 100}%`,
+                                    top: '50%'
+                                }}
+                                onClick={() => handleChapterClick(chapter.end)}
+                            >
+                                <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-sm whitespace-nowrap">
+                                    {displayTimeRange(chapter.end)}
                                 </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
             </div>
         </ErrorBoundary>
