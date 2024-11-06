@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { ChaptersData, VideoDetails } from './types';
+import { ChaptersData, RecommendedAdProps, VideoDetails } from './types';
 import { generateChapters, fetchVideoDetails } from '@/hooks/apiHooks';
 import React, {useState, useRef, useEffect, Suspense} from 'react'
 import ReactPlayer from 'react-player';
@@ -11,17 +11,37 @@ import LoadingSpinner from './LoadingSpinner';
 interface RecommendedPlacementsProps {
   footageVideoId: string;
   footageIndexId: string;
+  selectedAd: RecommendedAdProps["recommendedAd"] | null;
+  adsIndexId: string;
 }
 
-const RecommendedPlacements = ({ footageVideoId, footageIndexId }: RecommendedPlacementsProps) => {
-    const [playingState, setPlayingState] = useState<{
-        isPlaying: boolean;
-        chapterIndex: number | null;
-    }>({
-        isPlaying: false,
-        chapterIndex: null
-    });
+const displayTimeRange = (seconds: number): string => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const remainingSeconds = Math.floor(seconds % 60);
+
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+};
+
+const RecommendedPlacements = ({ footageVideoId, footageIndexId, selectedAd, adsIndexId }: RecommendedPlacementsProps) => {
     const playerRef = useRef<ReactPlayer>(null);
+    const [playbackSequence, setPlaybackSequence] = useState<'footage' | 'ad'>('footage');
+    const [selectedChapter, setSelectedChapter] = useState<number | null>(null);
+    const [returnToTime, setReturnToTime] = useState<number | null>(null);
+    const [hasPlayedAd, setHasPlayedAd] = useState<boolean>(false);
+    const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
+
+    useEffect(() => {
+        // footage로 전환 시 returnToTime으로 이동
+        if (playbackSequence === 'footage' && returnToTime !== null && !isTransitioning) {
+            setIsTransitioning(true);
+            if (playerRef.current) {
+                console.log('Seeking to return time:', returnToTime);
+                playerRef.current.seekTo(returnToTime, 'seconds');
+            }
+            setIsTransitioning(false);
+        }
+    }, [playbackSequence, returnToTime]);
 
     const { data: chaptersData, isLoading: isChaptersLoading } = useQuery<ChaptersData, Error>({
         queryKey: ["chapters", footageVideoId],
@@ -41,97 +61,89 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId }: RecommendedPl
         enabled: !!footageIndexId && (!!footageVideoId),
     });
 
+    const { data: adVideoDetails } = useQuery<VideoDetails, Error>({
+        queryKey: ["videoDetails", selectedAd?.id],
+        queryFn: () => fetchVideoDetails(selectedAd!.id!, adsIndexId),
+        enabled: !!selectedAd?.id && !!adsIndexId
+    });
+
     const handleProgress = (state: { playedSeconds: number }) => {
-        if (playingState.chapterIndex !== null && chaptersData?.chapters && videoDetail?.metadata?.duration) {
-            const chapter = chaptersData.chapters[playingState.chapterIndex];
-            const endTime = Math.min(chapter.end, videoDetail.metadata.duration);
-            if (state.playedSeconds >= endTime) {
-                setPlayingState({
-                    isPlaying: false,
-                    chapterIndex: null
-                });
-                if (playerRef.current) {
-                    playerRef.current.seekTo(chapter.end, 'seconds');
-                }
-            }
-        }
-    };
-
-    useEffect(() => {
-        if (playingState.chapterIndex !== null && playerRef.current && chaptersData?.chapters) {
-            const chapter = chaptersData.chapters[playingState.chapterIndex];
-            const seekTime = chapter.end;
-            playerRef.current.seekTo(seekTime, 'seconds');
-        }
-    }, [playingState.chapterIndex, chaptersData]);
-
-    const handlePlay = (index: number) => {
-        setPlayingState(prev => {
-            if (prev.chapterIndex === index) {
-                return {
-                    ...prev,
-                    isPlaying: !prev.isPlaying
-                };
-            }
-            return {
-                isPlaying: true,
-                chapterIndex: index
-            };
+        console.log('Progress State:', {
+            playedSeconds: state.playedSeconds,
+            playbackSequence,
+            selectedChapter,
+            returnToTime,
+            hasPlayedAd,
+            hasAdVideoDetails: !!adVideoDetails
         });
-    };
 
-    const displayTimeRange = (chapterEnd: number) => {
-        const end = videoDetail?.metadata?.duration
-            ? Math.min(chapterEnd, videoDetail.metadata?.duration)
-            : chapterEnd;
+        if (selectedChapter === null || !chaptersData || !adVideoDetails) return;
 
-        const formatTime = (seconds: number): string => {
-            const hours = Math.floor(seconds / 3600);
-            const minutes = Math.floor((seconds % 3600) / 60);
-            const secs = Math.floor(seconds % 60);
+        const chapter = chaptersData.chapters[selectedChapter];
 
-            return [
-                hours.toString().padStart(2, "0"),
-                minutes.toString().padStart(2, "0"),
-                secs.toString().padStart(2, "0"),
-            ].join(":");
-        };
-
-        return `${formatTime(end)}`;
-    };
-
-    const handleChapterClick = (time: number) => {
-        if (playerRef.current) {
-            playerRef.current.seekTo(time, 'seconds');
-            setPlayingState({
-                isPlaying: true,
-                chapterIndex: null
-            });
+        // footage 재생 중이고 chapter 종료 지점에 도달했고 아직 광고를 재생하지 않았을 때
+        if (playbackSequence === 'footage' &&
+            Math.abs(state.playedSeconds - chapter.end) < 0.5 &&
+            !hasPlayedAd) {
+            console.log('Reached chapter end point, switching to ad');
+            setPlaybackSequence('ad');
+            setReturnToTime(chapter.end);  // 광고 후 같은 지점으로 돌아옴
+            setHasPlayedAd(true);
         }
+    };
+
+    const handleChapterClick = (index: number) => {
+        if (!selectedAd) {
+            alert("Please select an ad first");
+            return;
+        }
+        if (!chaptersData) return;
+
+        const chapter = chaptersData.chapters[index];
+        console.log('Selected chapter:', chapter);
+
+        setSelectedChapter(index);
+        setHasPlayedAd(false);
+
+        if (playerRef.current) {
+            playerRef.current.seekTo(chapter.start, 'seconds');
+        }
+    };
+
+    const handleAdEnded = () => {
+        console.log('Ad ended naturally');
+        setPlaybackSequence('footage');
+        // returnToTime은 이미 설정되어 있으므로 useEffect에서 처리됨
     };
 
     return (
         <ErrorBoundary FallbackComponent={ErrorFallback}>
             <div className="mt-32">
-                <h2 className="text-2xl text-center font-bold mt-20 mb-10">Video Timeline</h2>
+                <h2 className="text-2xl text-center font-bold mt-20 mb-10">Recommended Placements</h2>
 
                 <div className="w-full aspect-video relative mb-8">
-                    {videoDetail && (
+                    {playbackSequence === 'ad' && adVideoDetails ? (
                         <ReactPlayer
-                            ref={playerRef}
-                            url={videoDetail?.hls?.video_url}
+                            url={adVideoDetails.hls.video_url}
                             controls
                             width="100%"
                             height="100%"
-                            playing={playingState.isPlaying}
-                            config={{
-                                file: {
-                                    forceHLS: true,
-                                    hlsOptions: {},
-                                    attributes: { preload: "auto" }
-                                },
-                            }}
+                            playing={true}
+                            onProgress={handleProgress}
+                            onEnded={handleAdEnded}
                         />
+                    ) : (
+                        videoDetail && (
+                            <ReactPlayer
+                                ref={playerRef}
+                                url={videoDetail.hls.video_url}
+                                controls
+                                width="100%"
+                                height="100%"
+                                playing={true}
+                                onProgress={handleProgress}
+                            />
+                        )
                     )}
                 </div>
 
@@ -140,12 +152,13 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId }: RecommendedPl
                         {chaptersData?.chapters?.map((chapter, index) => (
                             <div
                                 key={`timeline-${index}`}
-                                className="absolute w-4 h-4 bg-blue-500 rounded-full -translate-y-1/2 -translate-x-1/2 cursor-pointer hover:scale-110 transition-transform"
+                                className={`absolute w-4 h-4 rounded-full -translate-y-1/2 -translate-x-1/2 cursor-pointer hover:scale-110 transition-transform
+                                    ${selectedChapter === index ? 'bg-green-500' : 'bg-blue-500'}`}
                                 style={{
                                     left: `${(chapter.end / (videoDetail?.metadata?.duration || 1)) * 100}%`,
                                     top: '50%'
                                 }}
-                                onClick={() => handleChapterClick(chapter.end)}
+                                onClick={() => handleChapterClick(index)}
                             >
                                 <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-sm whitespace-nowrap">
                                     {displayTimeRange(chapter.end)}

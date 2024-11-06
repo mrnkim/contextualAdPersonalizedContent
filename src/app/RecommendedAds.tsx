@@ -44,6 +44,7 @@ const RecommendedAdItem = ({ recommendedAd, adsIndexId }: { recommendedAd: Recom
 
 const RecommendedAds = ({ hashtags, setHashtags, footageVideoId, adsIndexId, selectedFile, setIsRecommendClicked, searchOptionRef, customQueryRef, emotions, footageIndexId }: RecommendedAdsProps) => {
   const [searchOptions, setSearchOptions] = useState<SearchOption[]>([]);
+  const [selectedAd, setSelectedAd] = useState<RecommendedAdProps["recommendedAd"] | null>(null);
 
   const { data: gistData, error: gistError, isLoading: isGistLoading } = useQuery<GistData, Error>({
     queryKey: ["gist", footageVideoId],
@@ -115,58 +116,73 @@ const RecommendedAds = ({ hashtags, setHashtags, footageVideoId, adsIndexId, sel
 
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
-      <div className="flex flex-col w-full my-5">
-        <h2 className="text-center text-2xl font-bold my-10"> Recommended Ads </h2>
-
-        {(isGistLoading || isSearchLoading) && (
-          <div className="flex justify-center items-center h-full my-5">
-            <LoadingSpinner />
+      <div className="flex flex-row w-full my-5 gap-8">
+        {/* Left side - RecommendedPlacements */}
+        {searchData?.pages[0]?.data && searchData.pages[0].data.length > 0 && (
+          <div className="w-2/3">
+            <RecommendedPlacements
+              footageVideoId={footageVideoId}
+              footageIndexId={footageIndexId}
+              selectedAd={selectedAd}
+              adsIndexId={adsIndexId}
+            />
           </div>
         )}
 
-        <Suspense fallback={<LoadingSpinner />}>
-          <div>
-            {searchData?.pages[0]?.data && searchData.pages[0].data.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-20 mb-20">
-                {searchData.pages.map((page) =>
-                  page.data.map((recommendedAd: RecommendedAdProps["recommendedAd"]) => (
-                    <RecommendedAdItem
-                      key={recommendedAd.id}
-                      recommendedAd={recommendedAd}
-                      adsIndexId={adsIndexId}
+        {/* Right side - Recommended Ads */}
+        <div className="flex flex-col w-1/3">
+          <h2 className="text-center text-2xl font-bold my-10">Recommended Ads</h2>
+
+          {(isGistLoading || isSearchLoading) && (
+            <div className="flex justify-center items-center h-full my-5">
+              <LoadingSpinner />
+            </div>
+          )}
+
+          <Suspense fallback={<LoadingSpinner />}>
+            <div>
+              {searchData?.pages[0]?.data && searchData.pages[0].data.length > 0 ? (
+                <div className="flex flex-col gap-10 overflow-y-auto max-h-[calc(100vh-200px)]">
+                  {searchData.pages.map((page) =>
+                    page.data.map((recommendedAd: RecommendedAdProps["recommendedAd"]) => (
+                      <div
+                        key={recommendedAd.id}
+                        onClick={() => setSelectedAd(recommendedAd)}
+                        className={`cursor-pointer ${selectedAd?.id === recommendedAd.id ? 'ring-2 ring-blue-500 rounded-lg' : ''}`}
+                      >
+                        <RecommendedAdItem
+                          recommendedAd={recommendedAd}
+                          adsIndexId={adsIndexId}
+                        />
+                      </div>
+                    ))
+                  )}
+                </div>
+              ) : (
+                searchData && <div className='flex justify-center items-center h-full my-5'>No search results found 😿 </div>
+              )}
+
+              {hasNextPage && (
+                <div className="flex justify-center mt-4">
+                  <Button
+                    type="button"
+                    size="sm"
+                    appearance="secondary"
+                    onClick={() => fetchNextPage()}
+                    disabled={isFetchingNextPage}
+                  >
+                    <img
+                      src={"/more.svg"}
+                      alt="more options icon"
+                      className="w-4 h-4 mr-1"
                     />
-                  ))
-                )}
-              </div>
-            ) : (
-              searchData && <div className='flex justify-center items-center h-full my-5'>No search results found 😿 </div>
-            )}
-
-            {hasNextPage && (
-              <div className="flex justify-center">
-                <Button
-                type="button"
-                size="sm"
-                appearance="secondary"
-                onClick={() => fetchNextPage()}
-                disabled={isFetchingNextPage}
-                >
-<img
-													src={"/more.svg"}
-													alt="more options icon"
-													className="w-4 h-4 mr-1"
-												/>
-              Show More
-            </Button>
-              </div>
-            )}
-
-            {searchData?.pages[0]?.data && searchData.pages[0].data.length > 0 && (
-             <RecommendedPlacements footageVideoId={footageVideoId} footageIndexId={footageIndexId} />
-            )}
-
-          </div>
-        </Suspense>
+                    Show More
+                  </Button>
+                </div>
+              )}
+            </div>
+          </Suspense>
+        </div>
       </div>
     </ErrorBoundary>
   );
