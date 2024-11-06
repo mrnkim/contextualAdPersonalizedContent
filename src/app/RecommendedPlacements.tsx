@@ -43,6 +43,20 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId, selectedAd, ads
         }
     }, [playbackSequence, returnToTime]);
 
+    useEffect(() => {
+        // Reset states when ad changes
+        setPlaybackSequence('footage');
+        setSelectedChapter(null);
+        setReturnToTime(null);
+        setHasPlayedAd(false);
+        setIsTransitioning(false);
+
+        // Reset video to start
+        if (playerRef.current) {
+            playerRef.current.seekTo(0, 'seconds');
+        }
+    }, [selectedAd]);
+
     const { data: chaptersData, isLoading: isChaptersLoading } = useQuery<ChaptersData, Error>({
         queryKey: ["chapters", footageVideoId],
         queryFn: () => generateChapters(footageVideoId),
