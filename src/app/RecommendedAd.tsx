@@ -34,13 +34,27 @@ const RecommendedAd: React.FC<RecommendedAdProps> = ({ recommendedAd, indexId, v
   function parseAdCopy(adCopyText: string) {
     const suggestions = adCopyText?.split('Headline:').filter(Boolean);
     return suggestions.map(suggestion => {
-      const [headline, rest] = suggestion?.split('Ad Copy:');
-      const [adCopy, hashtag] = rest?.split('Hashtag:');
-      return {
-        headline: headline?.trim(),
-        adCopy: adCopy?.trim(),
-        hashtag: hashtag?.trim(),
-      };
+      try {
+        const headlineParts = suggestion?.split('Ad Copy:');
+        const headline = headlineParts?.[0] || '';
+
+        const remainingParts = headlineParts?.[1]?.split('Hashtag:') || [];
+        const adCopy = remainingParts[0] || '';
+        const hashtag = remainingParts[1] || '';
+
+        return {
+          headline: headline.trim(),
+          adCopy: adCopy.trim(),
+          hashtag: hashtag.trim(),
+        };
+      } catch (error) {
+        // Return empty strings if parsing fails
+        return {
+          headline: '',
+          adCopy: '',
+          hashtag: '',
+        };
+      }
     });
   }
 

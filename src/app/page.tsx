@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import Footage from './Footage';
 import Ads from './Ads';
 import RecommendedAds from './RecommendedAds'
@@ -29,11 +29,14 @@ export default function Page() {
     enabled: !!footageVideoId
   });
 
-  const { data: customTextsData, isLoading: isCustomTextsLoading, error: customTextsError } = useQuery<string, Error>({
+  const { data: rawCustomTextsData, isLoading: isCustomTextsLoading, error: customTextsError } = useQuery<string, Error>({
     queryKey: ["customTexts", footageVideoId],
     queryFn: () => generateCustomTexts(footageVideoId, PROMPT),
-    enabled: !!footageVideoId
+    enabled: !!footageVideoId,
+    refetchOnWindowFocus: false,
   });
+
+  const customTextsData = useMemo(() => rawCustomTextsData, [rawCustomTextsData]);
 
   useEffect(() => {
     if (gistData?.hashtags) {
@@ -101,6 +104,7 @@ export default function Page() {
             footageIndexId={footageIndexId ?? ''}
             adsIndexId={adsIndexId ?? ''}
             selectedFile={selectedFile}
+            isRecommendClicked={isRecommendClicked}
             setIsRecommendClicked={setIsRecommendClicked}
             searchOptionRef={searchOptionRef}
             customQueryRef={customQueryRef}
