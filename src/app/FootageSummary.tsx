@@ -29,9 +29,9 @@ function FootageSummary({
   const formatCustomTexts = (data: string) => {
     const sections = ["Event Type", "Main Content", "Emotional Tone"];
     return sections.map((section, index) => {
-      const regex = new RegExp(`${section}:\\s*(.+?)(?=\\n(?:Event Type|Main Content|Emotional Tone):|$)`, 's');
+      const regex = new RegExp(`${section}:\\s*(.+?)(?=\\s*(?:Event Type:|Main Content:|Emotional Tone:)|$)`, 's');
       const match = data.match(regex);
-      const content = match ? match[1]?.trim() : '';
+      const content = match ? match[1]?.trim().replace(/\*/g, '') : '';
       return (
         <div key={index} className="mb-6">
           <h3 className="font-bold text-lg mb-2">{section}</h3>
