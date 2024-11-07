@@ -30,6 +30,7 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId, selectedAd, ads
     const [returnToTime, setReturnToTime] = useState<number | null>(null);
     const [hasPlayedAd, setHasPlayedAd] = useState<boolean>(false);
     const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
+    const [autoPlay, setAutoPlay] = useState<boolean>(false);
 
     useEffect(() => {
         // footage로 전환 시 returnToTime으로 이동
@@ -50,6 +51,7 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId, selectedAd, ads
         setReturnToTime(null);
         setHasPlayedAd(false);
         setIsTransitioning(false);
+        setAutoPlay(false);
 
         // Reset video to start
         if (playerRef.current) {
@@ -118,7 +120,7 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId, selectedAd, ads
     const handleAdEnded = () => {
         console.log('Ad ended naturally');
         setPlaybackSequence('footage');
-        // returnToTime은 이미 설정되어 있으므로 useEffect에서 처리됨
+        setAutoPlay(true);
     };
 
     return (
@@ -145,7 +147,7 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId, selectedAd, ads
                                 controls
                                 width="100%"
                                 height="100%"
-                                playing={true}
+                                playing={autoPlay}
                                 onProgress={handleProgress}
                             />
                         )
