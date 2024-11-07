@@ -46,6 +46,8 @@ export interface AdsProps {
   searchOptionRef: React.RefObject<HTMLFormElement>;
   customQueryRef: React.RefObject<HTMLInputElement>;
   isAnalysisLoading: boolean;
+  setIsRecommendClickedEver: (isRecommendClickedEver: boolean) => void;
+  isRecommendClickedEver: boolean;
 }
 
 export interface FootageSummaryProps {
@@ -74,6 +76,7 @@ export interface RecommendedAdsProps {
   adsIndexId: string;
   footageIndexId: string;
   selectedFile: File | null;
+  isRecommendClicked: boolean;
   setIsRecommendClicked: (isRecommendClicked: boolean) => void;
   searchOptionRef: React.RefObject<HTMLFormElement>;
   customQueryRef: React.RefObject<HTMLInputElement>;

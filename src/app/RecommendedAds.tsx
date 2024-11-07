@@ -42,54 +42,58 @@ const RecommendedAdItem = ({ recommendedAd, adsIndexId }: { recommendedAd: Recom
   );
 };
 
-const RecommendedAds = ({ hashtags, setHashtags, footageVideoId, adsIndexId, selectedFile, setIsRecommendClicked, searchOptionRef, customQueryRef, emotions, footageIndexId }: RecommendedAdsProps) => {
+const RecommendedAds = ({ hashtags, setHashtags, footageVideoId, adsIndexId, selectedFile, setIsRecommendClicked, searchOptionRef, customQueryRef, emotions, footageIndexId, isRecommendClicked }: RecommendedAdsProps) => {
   const [searchOptions, setSearchOptions] = useState<SearchOption[]>([]);
   const [selectedAd, setSelectedAd] = useState<RecommendedAdProps["recommendedAd"] | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [currentSearchOption, setCurrentSearchOption] = useState<string>('');
 
-  const { data: gistData, error: gistError, isLoading: isGistLoading } = useQuery<GistData, Error>({
-    queryKey: ["gist", footageVideoId],
-    queryFn: () => generateGist(footageVideoId),
-    enabled: hashtags.length === 0 && !selectedFile,
-  });
-
+  // Update search parameters when Recommend button is clicked
   useEffect(() => {
-    if (selectedFile) {
-      setHashtags([]);
-      setIsRecommendClicked(false);
-    } else if (gistData?.hashtags && hashtags.length === 0) {
-      setHashtags(gistData.hashtags);
-    }
-  }, [gistData, setHashtags, hashtags, selectedFile, setIsRecommendClicked]);
+    if (!isRecommendClicked) return;
 
-  const searchQuery: string = useMemo(() => {
-    if ((searchOptionRef.current?.[0] as HTMLInputElement)?.checked || (searchOptionRef.current?.[2] as HTMLInputElement)?.checked || (searchOptionRef.current?.[3] as HTMLInputElement)?.checked) {
-      return hashtags.slice(0, 3).join(' ');
-    }
-    if ((searchOptionRef.current?.[1] as HTMLInputElement)?.checked) {
-      return emotions.join(' ');
-    }
-    if ((searchOptionRef.current?.[4] as HTMLInputElement)?.checked) {
-      return [...hashtags.slice(0,2), customQueryRef.current?.value].join(' ');
-    }
-    return '';
-  }, [hashtags, emotions, searchOptionRef]);
+    console.log('Recommend clicked, updating search with:', {
+      hashtags,
+      emotions,
+      currentSearchOption,
+      customQueryValue: customQueryRef.current?.value
+    });
 
-  useEffect(() => {
-    if ((searchOptionRef.current?.[0] as HTMLInputElement)?.checked || (searchOptionRef.current?.[1] as HTMLInputElement)?.checked || (searchOptionRef.current?.[4] as HTMLInputElement)?.checked) {
-      setSearchOptions([
+    let newQuery = '';
+    const radioInputs = Array.from(searchOptionRef.current?.elements || [])
+      .filter(el => el.getAttribute('type') === 'radio') as HTMLInputElement[];
+
+    if (radioInputs[0]?.checked || radioInputs[2]?.checked || radioInputs[3]?.checked) {
+      newQuery = hashtags.slice(0, 3).join(' ');
+    } else if (radioInputs[1]?.checked) {
+      newQuery = emotions.join(' ');
+    } else if (radioInputs[4]?.checked) {
+      newQuery = [...hashtags.slice(0,2), customQueryRef.current?.value].join(' ');
+    }
+
+    console.log('New search query:', newQuery);
+    setSearchQuery(newQuery);
+
+    let newSearchOptions: SearchOption[] = [];
+    if (radioInputs[0]?.checked || radioInputs[1]?.checked || radioInputs[4]?.checked) {
+      newSearchOptions = [
         SearchOption.VISUAL,
         SearchOption.CONVERSATION,
         SearchOption.TEXT_IN_VIDEO,
         SearchOption.LOGO
-      ]);
+      ];
+    } else if (radioInputs[2]?.checked) {
+      newSearchOptions = [SearchOption.VISUAL];
+    } else if (radioInputs[3]?.checked) {
+      newSearchOptions = [SearchOption.CONVERSATION];
     }
-    if ((searchOptionRef.current?.[2] as HTMLInputElement)?.checked) {
-      setSearchOptions([SearchOption.VISUAL]);
-    }
-    if ((searchOptionRef.current?.[3] as HTMLInputElement)?.checked) {
-      setSearchOptions([SearchOption.CONVERSATION]);
-    }
-  }, [searchOptionRef]);
+
+    console.log('New search options:', newSearchOptions);
+    setSearchOptions(newSearchOptions);
+
+    // Reset isRecommendClicked after updating search
+    setIsRecommendClicked(false);
+  }, [isRecommendClicked, hashtags, emotions]);
 
   const {
     data: searchData,
@@ -102,6 +106,13 @@ const RecommendedAds = ({ hashtags, setHashtags, footageVideoId, adsIndexId, sel
     queryKey: ["search", adsIndexId, searchQuery, searchOptions],
     initialPageParam: null,
     queryFn: async ({ pageParam = null }) => {
+      console.log('Executing search with:', {
+        adsIndexId,
+        searchQuery,
+        searchOptions,
+        pageParam
+      });
+
       if (pageParam) {
         return fetchSearchPage(pageParam);
       }
@@ -111,14 +122,22 @@ const RecommendedAds = ({ hashtags, setHashtags, footageVideoId, adsIndexId, sel
     enabled: searchQuery.length > 0 && searchOptions.length > 0 && !selectedFile,
   });
 
-  if (gistError) return <ErrorFallback error={gistError} />;
+  useEffect(() => {
+    console.log('Query state:', {
+      isSearchLoading,
+      hasData: !!searchData,
+      searchQuery,
+      searchOptions,
+      enabled: searchQuery.length > 0 && searchOptions.length > 0 && !selectedFile
+    });
+  }, [isSearchLoading, searchData, searchQuery, searchOptions, selectedFile]);
+
   if (searchError) return <ErrorFallback error={searchError} />;
 
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <div className="flex flex-row w-full my-5 gap-8">
         {/* Left side - RecommendedPlacements */}
-        {searchData?.pages[0]?.data && searchData.pages[0].data.length > 0 && (
           <div className="w-2/3">
             <RecommendedPlacements
               footageVideoId={footageVideoId}
@@ -127,13 +146,12 @@ const RecommendedAds = ({ hashtags, setHashtags, footageVideoId, adsIndexId, sel
               adsIndexId={adsIndexId}
             />
           </div>
-        )}
 
         {/* Right side - Recommended Ads */}
         <div className="flex flex-col w-1/3">
           <h2 className="text-center text-2xl font-bold my-10">Recommended Ads</h2>
 
-          {(isGistLoading || isSearchLoading) && (
+          {(isSearchLoading) && (
             <div className="flex justify-center items-center h-full my-5">
               <LoadingSpinner />
             </div>

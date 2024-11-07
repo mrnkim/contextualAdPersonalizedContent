@@ -82,15 +82,6 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId, selectedAd, ads
     });
 
     const handleProgress = (state: { playedSeconds: number }) => {
-        console.log('Progress State:', {
-            playedSeconds: state.playedSeconds,
-            playbackSequence,
-            selectedChapter,
-            returnToTime,
-            hasPlayedAd,
-            hasAdVideoDetails: !!adVideoDetails
-        });
-
         if (selectedChapter === null || !chaptersData || !adVideoDetails) return;
 
         const chapter = chaptersData.chapters[selectedChapter];

@@ -19,6 +19,7 @@ export default function Page() {
   const [footageVideoId, setFootageVideoId] = useState<string>('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isRecommendClicked, setIsRecommendClicked] = useState(false);
+  const [isRecommendClickedEver, setIsRecommendClickedEver] = useState(false);
 
   const searchOptionRef = useRef<HTMLFormElement>(null);
   const customQueryRef = useRef<HTMLInputElement>(null);
@@ -92,10 +93,12 @@ export default function Page() {
             searchOptionRef={searchOptionRef}
             customQueryRef={customQueryRef}
             isAnalysisLoading={isGistLoading || isCustomTextsLoading}
+            setIsRecommendClickedEver={setIsRecommendClickedEver}
+            isRecommendClickedEver={isRecommendClickedEver}
           />
         </div>
       </div>
-      {isRecommendClicked && !selectedFile && (
+      {isRecommendClickedEver && !selectedFile && (
         <div className="w-3/4 mx-auto">
           <RecommendedAds
             hashtags={hashtags}

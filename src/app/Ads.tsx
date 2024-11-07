@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, Suspense } from 'react'
+import React, { useState, Suspense, useEffect } from 'react'
 import Video from './Video';
 import LoadingSpinner from './LoadingSpinner';
 import ErrorFallback from './ErrorFallback';
@@ -18,8 +18,10 @@ type VideoType = {
   title: string;
 };
 
-function Ads({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVideoId, selectedFile, isRecommendClicked, setIsRecommendClicked, emotions, searchOptionRef, customQueryRef, isAnalysisLoading }: AdsProps) {
+function Ads({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVideoId, selectedFile, isRecommendClicked, setIsRecommendClicked, emotions, searchOptionRef, customQueryRef, isAnalysisLoading, setIsRecommendClickedEver, isRecommendClickedEver }: AdsProps) {
   const [page, setPage] = useState(1);
+  const [hasSearchOptionChanged, setHasSearchOptionChanged] = useState(false);
+  console.log("🚀 > Ads > hasSearchOptionChanged=", hasSearchOptionChanged)
 
   const { data: videosData, isLoading } = useQuery({
     queryKey: ["videos", page, indexId],
@@ -31,13 +33,20 @@ function Ads({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVideoId,
   const hasVideoData = videosData && videosData.data && videosData.data.length > 0;
 
   const handleSearchOptionChange = () => {
-    setIsRecommendClicked(false);
+    console.log('Search option changed');
+    setHasSearchOptionChanged(true);
   };
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsRecommendClicked(true);
   };
+
+  useEffect(() => {
+    if (isRecommendClicked) {
+      setHasSearchOptionChanged(false);
+    }
+  }, [isRecommendClicked]);
 
   return (
     <div className="flex flex-col items-center gap-4">
@@ -136,8 +145,11 @@ function Ads({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVideoId,
                       type="button"
                       size="sm"
                       appearance="primary"
-                      onClick={() => setIsRecommendClicked(true)}
-                      disabled={!!selectedFile || isRecommendClicked || isAnalysisLoading}
+                      onClick={() => {
+                        setIsRecommendClicked(true);
+                        setIsRecommendClickedEver(true);
+                      }}
+                      disabled={!!selectedFile || isRecommendClicked || isAnalysisLoading || (!hasSearchOptionChanged && isRecommendClickedEver)}
                     >
                       <img
                         src={selectedFile || isRecommendClicked || isAnalysisLoading ? "/magicDisabled.svg" : "/magic.svg"}
