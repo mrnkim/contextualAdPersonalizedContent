@@ -19,6 +19,7 @@ function FootageSummary({
   error,
   setShowAnalysis
 }: FootageSummaryProps) {
+  console.log("🚀 > customTextsData=", customTextsData)
 
   useEffect(() => {
     if (gistData?.hashtags) {
@@ -28,17 +29,26 @@ function FootageSummary({
 
   const formatCustomTexts = (data: string) => {
     const sections = ["Event Type", "Main Content", "Emotional Tone"];
-    return sections.map((section, index) => {
-      const regex = new RegExp(`${section}:\\s*(.+?)(?=\\s*(?:Event Type:|Main Content:|Emotional Tone:)|$)`, 's');
-      const match = data.match(regex);
-      const content = match ? match[1]?.trim().replace(/\*/g, '') : '';
-      return (
-        <div key={index} className="mb-6">
-          <h3 className="font-bold text-lg mb-2">{section}</h3>
-          <p>{content}</p>
-        </div>
-      );
-    });
+
+    const sectionPattern = sections.join('|');
+
+    const sectionRegex = new RegExp(`(?:\\*{0,2})(${sectionPattern})(?:\\*{0,2})\\s*:?\\s*([\\s\\S]*?)(?=(?:\\*{0,2})(?:${sectionPattern})|$)`, 'gi');
+
+    const sectionContents: { [key: string]: string } = {};
+
+    let match;
+    while ((match = sectionRegex.exec(data)) !== null) {
+      const sectionName = match[1].trim();
+      const content = match[2].trim().replace(/^:\s*/, '');
+      sectionContents[sectionName] = content;
+    }
+
+    return sections.map((section, index) => (
+      <div key={index} className="mb-6">
+        <h3 className="font-bold text-lg mb-2">{section}</h3>
+        <p className="whitespace-pre-wrap">{sectionContents[section] || ''}</p>
+      </div>
+    ));
   };
 
   const renderGistData = () => {
