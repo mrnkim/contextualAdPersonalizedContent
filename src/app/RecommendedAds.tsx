@@ -25,7 +25,7 @@ const RecommendedAdItem = ({ recommendedAd, adsIndexId }: { recommendedAd: Recom
   });
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col p-2">
       {videoDetails?.metadata.filename && (
         <h3 className="mb-2 text-lg font-medium">
           {videoDetails.metadata.filename.split('.')[0]}
@@ -160,7 +160,7 @@ const RecommendedAds = ({ hashtags, setHashtags, footageVideoId, adsIndexId, sel
           <Suspense fallback={<LoadingSpinner />}>
             <div>
               {searchData?.pages[0]?.data && searchData.pages[0].data.length > 0 ? (
-                <div className="flex flex-col gap-10 overflow-y-auto max-h-[calc(100vh-200px)]">
+                <div className="flex flex-col gap-12 p-2 overflow-y-auto max-h-[calc(100vh-200px)]">
                   {searchData.pages.map((page) =>
                     page.data.map((recommendedAd: RecommendedAdProps["recommendedAd"]) => (
                       <div

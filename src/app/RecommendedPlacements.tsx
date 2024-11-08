@@ -125,8 +125,8 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId, selectedAd, ads
 
     return (
         <ErrorBoundary FallbackComponent={ErrorFallback}>
-            <div className="mt-32">
-                <h2 className="text-2xl text-center font-bold mt-20 mb-10">Recommended Placements</h2>
+            <div className="mt-10">
+                <h2 className="text-2xl text-center font-bold mt-6 mb-12">Recommended Placements</h2>
 
                 <div className="w-full aspect-video relative mb-8">
                     {playbackSequence === 'ad' && adVideoDetails ? (
