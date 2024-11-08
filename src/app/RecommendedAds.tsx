@@ -166,7 +166,7 @@ const RecommendedAds = ({ hashtags, setHashtags, footageVideoId, adsIndexId, sel
                       <div
                         key={recommendedAd.id}
                         onClick={() => setSelectedAd(recommendedAd)}
-                        className={`cursor-pointer ${selectedAd?.id === recommendedAd.id ? 'ring-2 ring-blue-500 rounded-lg' : ''}`}
+                        className={`cursor-pointer ${selectedAd?.id === recommendedAd.id ? 'ring-2 ring-green-600 rounded-lg' : ''}`}
                       >
                         <RecommendedAdItem
                           recommendedAd={recommendedAd}

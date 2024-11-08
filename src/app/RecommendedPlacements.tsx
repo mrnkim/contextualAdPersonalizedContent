@@ -100,6 +100,10 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId, selectedAd, ads
     };
 
     const handleChapterClick = (index: number) => {
+        if (playbackSequence === 'ad') {
+            return;
+        }
+
         if (!selectedAd) {
             alert("Please select an ad first");
             return;
@@ -113,7 +117,8 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId, selectedAd, ads
         setHasPlayedAd(false);
 
         if (playerRef.current) {
-            playerRef.current.seekTo(chapter.start, 'seconds');
+            const startTime = Math.max(0, chapter.end - 3);
+            playerRef.current.seekTo(startTime, 'seconds');
         }
     };
 
@@ -155,24 +160,29 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId, selectedAd, ads
                 </div>
 
                 <div className="relative w-full h-16 bg-gray-100 rounded">
-                    <div className="absolute w-full h-1 bg-gray-300 top-1/2 -translate-y-1/2">
-                        {chaptersData?.chapters?.map((chapter, index) => (
-                            <div
-                                key={`timeline-${index}`}
-                                className={`absolute w-4 h-4 rounded-full -translate-y-1/2 -translate-x-1/2 cursor-pointer hover:scale-110 transition-transform
-                                    ${selectedChapter === index ? 'bg-green-500' : 'bg-blue-500'}`}
-                                style={{
-                                    left: `${(chapter.end / (videoDetail?.metadata?.duration || 1)) * 100}%`,
-                                    top: '50%'
-                                }}
-                                onClick={() => handleChapterClick(index)}
-                            >
-                                <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-sm whitespace-nowrap">
-                                    {displayTimeRange(chapter.end)}
-                                </div>
-                            </div>
-                        ))}
+                    <div className="absolute w-full h-1 bg-black top-1/2 -translate-y-1/2 z-0">
                     </div>
+                    {chaptersData?.chapters?.map((chapter, index) => (
+                        <div
+                            key={`timeline-${index}`}
+                            className={`absolute w-4 h-4 rounded-full -translate-y-1/2 -translate-x-1/2 z-10
+                                ${selectedChapter === index
+                                    ? 'bg-green-700 ring-2 ring-black'
+                                    : 'bg-white ring-2 ring-black'}
+                                ${playbackSequence === 'ad'
+                                    ? 'cursor-not-allowed'
+                                    : 'cursor-pointer hover:scale-110 transition-transform'}`}
+                            style={{
+                                left: `${(chapter.end / (videoDetail?.metadata?.duration || 1)) * 100}%`,
+                                top: '50%'
+                            }}
+                            onClick={() => handleChapterClick(index)}
+                        >
+                            <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-sm whitespace-nowrap">
+                                {displayTimeRange(chapter.end)}
+                            </div>
+                        </div>
+                    ))}
                 </div>
             </div>
         </ErrorBoundary>

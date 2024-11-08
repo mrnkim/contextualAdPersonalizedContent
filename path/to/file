@@ -1,0 +1,11 @@
+import React, { useState, useRef } from 'react';
+
+const VideoPlayer: React.FC = () => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const handleTimePlacementSelect = (selectedTime) => {
+    const startTime = selectedTime - 10000; // 선택된 시간에서 10초를 뺌
+    videoRef.current.currentTime = startTime / 1000; // 밀리초를 초 단위로 변환
+ 
