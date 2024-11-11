@@ -169,11 +169,11 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 											size="sm"
 											appearance="primary"
 											onClick={() => setIsAnalyzeClicked(true)}
-											disabled={isAnalyzeClicked|| hashtags.length > 0 || customTextsData?.length > 0}
+											disabled={isAnalyzeClicked || hashtags.length > 0 || customTextsData?.length > 0}
 										>
 											<div className="flex items-center">
 												<img
-													src={isAnalyzeClicked ? "/analyzeDisabled.svg" : "/analyze.svg"}
+													src={isAnalyzeClicked || hashtags.length > 0 || customTextsData?.length > 0 ? "/analyzeDisabled.svg" : "/analyze.svg"}
 													alt="magic stick icon"
 													className="w-4 h-4 mr-1"
 												/>
