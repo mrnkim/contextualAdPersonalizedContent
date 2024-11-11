@@ -31,6 +31,7 @@ export interface FootageProps {
   customTextsData: string;
   isLoading: boolean;
   error: Error | null;
+  setIsRecommendClickedEver: (isRecommendClickedEver: boolean) => void;
 }
 
 export interface AdsProps {

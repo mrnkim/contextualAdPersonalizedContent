@@ -160,29 +160,37 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId, selectedAd, ads
                 </div>
 
                 <div className="relative w-full h-16 bg-gray-100 rounded">
-                    <div className="absolute w-full h-1 bg-black top-1/2 -translate-y-1/2 z-0">
-                    </div>
-                    {chaptersData?.chapters?.map((chapter, index) => (
-                        <div
-                            key={`timeline-${index}`}
-                            className={`absolute w-4 h-4 rounded-full -translate-y-1/2 -translate-x-1/2 z-10
-                                ${selectedChapter === index
-                                    ? 'bg-green-700 ring-2 ring-black'
-                                    : 'bg-white ring-2 ring-black'}
-                                ${playbackSequence === 'ad'
-                                    ? 'cursor-not-allowed'
-                                    : 'cursor-pointer hover:scale-110 transition-transform'}`}
-                            style={{
-                                left: `${(chapter.end / (videoDetail?.metadata?.duration || 1)) * 100}%`,
-                                top: '50%'
-                            }}
-                            onClick={() => handleChapterClick(index)}
-                        >
-                            <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-sm whitespace-nowrap">
-                                {displayTimeRange(chapter.end)}
-                            </div>
+                    {isChaptersLoading ? (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                            <LoadingSpinner />
                         </div>
-                    ))}
+                    ) : (
+                        <>
+                            <div className="absolute w-full h-1 bg-black top-1/2 -translate-y-1/2 z-0">
+                            </div>
+                            {chaptersData?.chapters?.map((chapter, index) => (
+                                <div
+                                    key={`timeline-${index}`}
+                                    className={`absolute w-4 h-4 rounded-full -translate-y-1/2 -translate-x-1/2 z-10
+                                        ${selectedChapter === index
+                                            ? 'bg-green-700 ring-2 ring-black'
+                                            : 'bg-white ring-2 ring-black'}
+                                        ${playbackSequence === 'ad'
+                                            ? 'cursor-not-allowed'
+                                            : 'cursor-pointer hover:scale-110 transition-transform'}`}
+                                    style={{
+                                        left: `${(chapter.end / (videoDetail?.metadata?.duration || 1)) * 100}%`,
+                                        top: '50%'
+                                    }}
+                                    onClick={() => handleChapterClick(index)}
+                                >
+                                    <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-sm whitespace-nowrap">
+                                        {displayTimeRange(chapter.end)}
+                                    </div>
+                                </div>
+                            ))}
+                        </>
+                    )}
                 </div>
             </div>
         </ErrorBoundary>

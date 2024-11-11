@@ -12,7 +12,7 @@ import UploadForm from './UploadForm';
 import Task from './Task';
 import { FootageProps, TaskDetails, VideosData } from './types';
 
-function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVideoId, setFootageVideoId, selectedFile, setSelectedFile, setIsRecommendClicked, setEmotions, gistData, customTextsData, isLoading, error }: FootageProps) {
+function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVideoId, setFootageVideoId, selectedFile, setSelectedFile, setIsRecommendClicked, setEmotions, gistData, customTextsData, isLoading, error, setIsRecommendClickedEver }: FootageProps) {
 	const [isAnalyzeClicked, setIsAnalyzeClicked] = useState(false);
 	const [showAnalysis, setShowAnalysis] = useState(false);
 	const [taskId, setTaskId] = useState<string | null>(null);
@@ -23,6 +23,9 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 		reset();
 		setFootageVideoId(newVideoId);
 		queryClient.invalidateQueries({ queryKey: ['videos'] });
+		queryClient.invalidateQueries({ queryKey: ['search'] });
+		queryClient.invalidateQueries({ queryKey: ['chapters'] });
+		queryClient.invalidateQueries({ queryKey: ['videoDetails'] });
 	};
 
 	const {
@@ -66,7 +69,8 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 		setTaskId(null);
 		setTaskDetails(null);
 		setHashtags([]);
-		setIsRecommendClicked(false)
+		setIsRecommendClicked(false);
+		setIsRecommendClickedEver(false);
 	};
 
 	useEffect(() => {

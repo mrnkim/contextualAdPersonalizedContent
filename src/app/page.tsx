@@ -76,6 +76,7 @@ export default function Page() {
             customTextsData={customTextsData ?? ""}
             isLoading={isGistLoading || isCustomTextsLoading}
             error={gistDataError || customTextsError}
+            setIsRecommendClickedEver={setIsRecommendClickedEver}
           />
         </div>
         <div className="w-1/6"></div>
