@@ -33,8 +33,6 @@ function Ads({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVideoId,
 
   const handleSearchOptionChange = () => {
     setHasSearchOptionChanged(true);
-    setSelectedAd(null);
-    setSelectedChapter(null);
   };
 
   const handleFormSubmit = (e: React.FormEvent) => {
@@ -148,6 +146,8 @@ function Ads({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVideoId,
                       onClick={() => {
                         setIsRecommendClicked(true);
                         setIsRecommendClickedEver(true);
+                        setSelectedAd(null);
+                        setSelectedChapter(null);
                       }}
                       disabled={!!selectedFile || isRecommendClicked || isAnalysisLoading || (!hasSearchOptionChanged && isRecommendClickedEver)}
                     >
