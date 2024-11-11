@@ -42,9 +42,8 @@ const RecommendedAdItem = ({ recommendedAd, adsIndexId }: { recommendedAd: Recom
   );
 };
 
-const RecommendedAds = ({ hashtags, setHashtags, footageVideoId, adsIndexId, selectedFile, setIsRecommendClicked, searchOptionRef, customQueryRef, emotions, footageIndexId, isRecommendClicked }: RecommendedAdsProps) => {
+const RecommendedAds = ({ hashtags, setHashtags, footageVideoId, adsIndexId, selectedFile, setIsRecommendClicked, searchOptionRef, customQueryRef, emotions, footageIndexId, isRecommendClicked, selectedAd, setSelectedAd, selectedChapter, setSelectedChapter }: RecommendedAdsProps) => {
   const [searchOptions, setSearchOptions] = useState<SearchOption[]>([]);
-  const [selectedAd, setSelectedAd] = useState<RecommendedAdProps["recommendedAd"] | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [currentSearchOption, setCurrentSearchOption] = useState<string>('');
 
@@ -118,6 +117,8 @@ const RecommendedAds = ({ hashtags, setHashtags, footageVideoId, adsIndexId, sel
               footageIndexId={footageIndexId}
               selectedAd={selectedAd}
               adsIndexId={adsIndexId}
+              selectedChapter={selectedChapter}
+              setSelectedChapter={setSelectedChapter}
             />
           </div>
 
@@ -154,7 +155,7 @@ const RecommendedAds = ({ hashtags, setHashtags, footageVideoId, adsIndexId, sel
                   )}
                 </div>
               ) : (
-                searchData && <div className='flex justify-center items-center h-full my-5'>No search results found 😿 </div>
+                !isSearchLoading && <div className='flex justify-center items-center h-full my-5'>No search results found 😿 </div>
               )}
 
               {hasNextPage && (

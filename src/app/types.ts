@@ -49,6 +49,8 @@ export interface AdsProps {
   isAnalysisLoading: boolean;
   setIsRecommendClickedEver: (isRecommendClickedEver: boolean) => void;
   isRecommendClickedEver: boolean;
+  setSelectedAd: (selectedAd: RecommendedAdProps["recommendedAd"] | null) => void;
+  setSelectedChapter: (selectedChapter: number | null) => void;
 }
 
 export interface FootageSummaryProps {
@@ -82,6 +84,19 @@ export interface RecommendedAdsProps {
   searchOptionRef: React.RefObject<HTMLFormElement>;
   customQueryRef: React.RefObject<HTMLInputElement>;
   emotions: string[];
+  selectedAd: RecommendedAdProps["recommendedAd"] | null;
+  setSelectedAd: (selectedAd: RecommendedAdProps["recommendedAd"] | null) => void;
+  selectedChapter: number | null;
+  setSelectedChapter: (selectedChapter: number | null) => void;
+}
+
+export interface RecommendedPlacementsProps {
+  footageVideoId: string;
+  footageIndexId: string;
+  selectedAd: RecommendedAdProps["recommendedAd"] | null;
+  adsIndexId: string;
+  selectedChapter: number | null;
+  setSelectedChapter: (selectedChapter: number | null) => void;
 }
 
 export interface UploadFormProps {

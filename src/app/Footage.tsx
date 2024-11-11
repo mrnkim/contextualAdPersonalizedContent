@@ -12,7 +12,7 @@ import UploadForm from './UploadForm';
 import Task from './Task';
 import { FootageProps, TaskDetails, VideosData } from './types';
 
-function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVideoId, setFootageVideoId, selectedFile, setSelectedFile, setIsRecommendClicked, setEmotions, gistData, customTextsData, isLoading, error, setIsRecommendClickedEver }: FootageProps) {
+function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVideoId, setFootageVideoId, selectedFile, setSelectedFile, setIsRecommendClicked, gistData, customTextsData, isLoading, error, setIsRecommendClickedEver }: FootageProps) {
 	const [isAnalyzeClicked, setIsAnalyzeClicked] = useState(false);
 	const [showAnalysis, setShowAnalysis] = useState(false);
 	const [taskId, setTaskId] = useState<string | null>(null);

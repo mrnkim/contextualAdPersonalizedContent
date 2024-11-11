@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { ChaptersData, RecommendedAdProps, VideoDetails } from './types';
+import { ChaptersData, RecommendedPlacementsProps, VideoDetails } from './types';
 import { generateChapters, fetchVideoDetails } from '@/hooks/apiHooks';
 import React, {useState, useRef, useEffect, Suspense} from 'react'
 import ReactPlayer from 'react-player';
@@ -9,13 +9,6 @@ import ErrorFallback from './ErrorFallback'
 import LoadingSpinner from './LoadingSpinner';
 import { Toaster, toast } from 'react-hot-toast';
 
-interface RecommendedPlacementsProps {
-  footageVideoId: string;
-  footageIndexId: string;
-  selectedAd: RecommendedAdProps["recommendedAd"] | null;
-  adsIndexId: string;
-}
-
 const displayTimeRange = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
@@ -24,10 +17,9 @@ const displayTimeRange = (seconds: number): string => {
     return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
 };
 
-const RecommendedPlacements = ({ footageVideoId, footageIndexId, selectedAd, adsIndexId }: RecommendedPlacementsProps) => {
+const RecommendedPlacements = ({ footageVideoId, footageIndexId, selectedAd, adsIndexId, selectedChapter, setSelectedChapter }: RecommendedPlacementsProps) => {
     const playerRef = useRef<ReactPlayer>(null);
     const [playbackSequence, setPlaybackSequence] = useState<'footage' | 'ad'>('footage');
-    const [selectedChapter, setSelectedChapter] = useState<number | null>(null);
     const [returnToTime, setReturnToTime] = useState<number | null>(null);
     const [hasPlayedAd, setHasPlayedAd] = useState<boolean>(false);
     const [isTransitioning, setIsTransitioning] = useState<boolean>(false);

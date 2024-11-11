@@ -18,7 +18,7 @@ type VideoType = {
   title: string;
 };
 
-function Ads({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVideoId, selectedFile, isRecommendClicked, setIsRecommendClicked, emotions, searchOptionRef, customQueryRef, isAnalysisLoading, setIsRecommendClickedEver, isRecommendClickedEver }: AdsProps) {
+function Ads({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVideoId, selectedFile, isRecommendClicked, setIsRecommendClicked, emotions, searchOptionRef, customQueryRef, isAnalysisLoading, setIsRecommendClickedEver, isRecommendClickedEver, setSelectedAd, setSelectedChapter }: AdsProps) {
   const [page, setPage] = useState(1);
   const [hasSearchOptionChanged, setHasSearchOptionChanged] = useState(false);
 
@@ -33,6 +33,8 @@ function Ads({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVideoId,
 
   const handleSearchOptionChange = () => {
     setHasSearchOptionChanged(true);
+    setSelectedAd(null);
+    setSelectedChapter(null);
   };
 
   const handleFormSubmit = (e: React.FormEvent) => {

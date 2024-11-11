@@ -6,7 +6,7 @@ import Ads from './Ads';
 import RecommendedAds from './RecommendedAds'
 import { useQuery } from "@tanstack/react-query";
 import { generateGist, generateCustomTexts } from '@/hooks/apiHooks';
-import { GistData } from './types';
+import { GistData, RecommendedAdProps } from './types';
 
 const footageIndexId = process.env.NEXT_PUBLIC_FOOTAGE_INDEX_ID;
 const adsIndexId = process.env.NEXT_PUBLIC_ADS_INDEX_ID;
@@ -20,6 +20,8 @@ export default function Page() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isRecommendClicked, setIsRecommendClicked] = useState(false);
   const [isRecommendClickedEver, setIsRecommendClickedEver] = useState(false);
+  const [selectedAd, setSelectedAd] = useState<RecommendedAdProps["recommendedAd"] | null>(null);
+  const [selectedChapter, setSelectedChapter] = useState<number | null>(null);
 
   const searchOptionRef = useRef<HTMLFormElement>(null);
   const customQueryRef = useRef<HTMLInputElement>(null);
@@ -96,6 +98,8 @@ export default function Page() {
             isAnalysisLoading={isGistLoading || isCustomTextsLoading}
             setIsRecommendClickedEver={setIsRecommendClickedEver}
             isRecommendClickedEver={isRecommendClickedEver}
+            setSelectedAd={setSelectedAd}
+            setSelectedChapter={setSelectedChapter}
           />
         </div>
       </div>
@@ -113,6 +117,10 @@ export default function Page() {
             searchOptionRef={searchOptionRef}
             customQueryRef={customQueryRef}
             emotions={emotions}
+            selectedAd={selectedAd}
+            setSelectedAd={setSelectedAd}
+            selectedChapter={selectedChapter}
+            setSelectedChapter={setSelectedChapter}
           />
         </div>
       )}
