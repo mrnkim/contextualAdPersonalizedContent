@@ -52,13 +52,6 @@ const RecommendedAds = ({ hashtags, setHashtags, footageVideoId, adsIndexId, sel
   useEffect(() => {
     if (!isRecommendClicked) return;
 
-    console.log('Recommend clicked, updating search with:', {
-      hashtags,
-      emotions,
-      currentSearchOption,
-      customQueryValue: customQueryRef.current?.value
-    });
-
     let newQuery = '';
     const radioInputs = Array.from(searchOptionRef.current?.elements || [])
       .filter(el => el.getAttribute('type') === 'radio') as HTMLInputElement[];
@@ -71,7 +64,6 @@ const RecommendedAds = ({ hashtags, setHashtags, footageVideoId, adsIndexId, sel
       newQuery = [...hashtags.slice(0,2), customQueryRef.current?.value].join(' ');
     }
 
-    console.log('New search query:', newQuery);
     setSearchQuery(newQuery);
 
     let newSearchOptions: SearchOption[] = [];
@@ -88,7 +80,6 @@ const RecommendedAds = ({ hashtags, setHashtags, footageVideoId, adsIndexId, sel
       newSearchOptions = [SearchOption.CONVERSATION];
     }
 
-    console.log('New search options:', newSearchOptions);
     setSearchOptions(newSearchOptions);
 
     // Reset isRecommendClicked after updating search
@@ -106,14 +97,7 @@ const RecommendedAds = ({ hashtags, setHashtags, footageVideoId, adsIndexId, sel
     queryKey: ["search", adsIndexId, searchQuery, searchOptions],
     initialPageParam: null,
     queryFn: async ({ pageParam = null }) => {
-      console.log('Executing search with:', {
-        adsIndexId,
-        searchQuery,
-        searchOptions,
-        pageParam
-      });
-
-      if (pageParam) {
+        if (pageParam) {
         return fetchSearchPage(pageParam);
       }
       return textToVideoSearch(adsIndexId, searchQuery, searchOptions);
@@ -121,16 +105,6 @@ const RecommendedAds = ({ hashtags, setHashtags, footageVideoId, adsIndexId, sel
     getNextPageParam: (lastPage) => lastPage.page_info?.next_page_token || null,
     enabled: searchQuery.length > 0 && searchOptions.length > 0 && !selectedFile,
   });
-
-  useEffect(() => {
-    console.log('Query state:', {
-      isSearchLoading,
-      hasData: !!searchData,
-      searchQuery,
-      searchOptions,
-      enabled: searchQuery.length > 0 && searchOptions.length > 0 && !selectedFile
-    });
-  }, [isSearchLoading, searchData, searchQuery, searchOptions, selectedFile]);
 
   if (searchError) return <ErrorFallback error={searchError} />;
 
@@ -157,6 +131,9 @@ const RecommendedAds = ({ hashtags, setHashtags, footageVideoId, adsIndexId, sel
             </div>
           )}
 
+          {searchData?.pages[0]?.data && searchData.pages[0].data.length > 0 && (
+            <span className="text-xs font-bold mb-0.5 text-left block">Step 3: Choose an ad</span>
+          )}
           <Suspense fallback={<LoadingSpinner />}>
             <div>
               {searchData?.pages[0]?.data && searchData.pages[0].data.length > 0 ? (

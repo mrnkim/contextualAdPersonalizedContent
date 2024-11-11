@@ -7,6 +7,7 @@ import VideoThumbnail from './VideoThumbnail';
 import { ErrorBoundary } from 'react-error-boundary'
 import ErrorFallback from './ErrorFallback'
 import LoadingSpinner from './LoadingSpinner';
+import { Toaster, toast } from 'react-hot-toast';
 
 interface RecommendedPlacementsProps {
   footageVideoId: string;
@@ -37,7 +38,6 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId, selectedAd, ads
         if (playbackSequence === 'footage' && returnToTime !== null && !isTransitioning) {
             setIsTransitioning(true);
             if (playerRef.current) {
-                console.log('Seeking to return time:', returnToTime);
                 playerRef.current.seekTo(returnToTime, 'seconds');
             }
             setIsTransitioning(false);
@@ -45,19 +45,21 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId, selectedAd, ads
     }, [playbackSequence, returnToTime]);
 
     useEffect(() => {
-        // Reset states when ad changes
-        setPlaybackSequence('footage');
-        setSelectedChapter(null);
-        setReturnToTime(null);
-        setHasPlayedAd(false);
-        setIsTransitioning(false);
-        setAutoPlay(false);
+        // selectedAd가 null이 아닐 때만 리셋
+        if (selectedAd) {
+            setPlaybackSequence('footage');
+            setSelectedChapter(null);
+            setReturnToTime(null);
+            setHasPlayedAd(false);
+            setIsTransitioning(false);
+            setAutoPlay(false);
 
-        // Reset video to start
-        if (playerRef.current) {
-            playerRef.current.seekTo(0, 'seconds');
+            // Reset video to start
+            if (playerRef.current) {
+                playerRef.current.seekTo(0, 'seconds');
+            }
         }
-    }, [selectedAd]);
+    }, [selectedAd?.id]);
 
     const { data: chaptersData, isLoading: isChaptersLoading } = useQuery<ChaptersData, Error>({
         queryKey: ["chapters", footageVideoId],
@@ -84,18 +86,24 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId, selectedAd, ads
     });
 
     const handleProgress = (state: { playedSeconds: number }) => {
-        if (selectedChapter === null || !chaptersData || !adVideoDetails) return;
+        if (selectedChapter === null || !chaptersData || !adVideoDetails) {
+            return;
+        }
 
         const chapter = chaptersData.chapters[selectedChapter];
+        const timeDiff = state.playedSeconds - chapter.end;
 
-        // footage 재생 중이고 chapter 종료 지점에 도달했고 아직 광고를 재생하지 않았을 때
+        // 챕터 끝 시점을 지나쳤고, 아직 광고를 재생하지 않았다면
         if (playbackSequence === 'footage' &&
-            Math.abs(state.playedSeconds - chapter.end) < 0.5 &&
+            timeDiff >= 0 &&  // 챕터 끝 시점을 지났거나 도달했을 때
             !hasPlayedAd) {
-            console.log('Reached chapter end point, switching to ad');
             setPlaybackSequence('ad');
-            setReturnToTime(chapter.end);  // 광고 후 같은 지점으로 돌아옴
             setHasPlayedAd(true);
+
+            // 광고 재생 전에 현재 챕터의 끝 시점으로 이동
+            if (playerRef.current) {
+                playerRef.current.seekTo(chapter.end, 'seconds');
+            }
         }
     };
 
@@ -105,16 +113,17 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId, selectedAd, ads
         }
 
         if (!selectedAd) {
-            alert("Please select an ad first");
+            toast.error("Please select an ad first");
             return;
         }
         if (!chaptersData) return;
 
         const chapter = chaptersData.chapters[index];
-        console.log('Selected chapter:', chapter);
 
         setSelectedChapter(index);
         setHasPlayedAd(false);
+        setPlaybackSequence('footage');
+        setAutoPlay(true);
 
         if (playerRef.current) {
             const startTime = Math.max(0, chapter.end - 3);
@@ -123,13 +132,25 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId, selectedAd, ads
     };
 
     const handleAdEnded = () => {
-        console.log('Ad ended naturally');
+        if (selectedChapter === null || !chaptersData) return;
+
+        const chapter = chaptersData.chapters[selectedChapter];
+        const isLastChapter = selectedChapter === chaptersData.chapters.length - 1;
+
         setPlaybackSequence('footage');
-        setAutoPlay(true);
+
+        if (isLastChapter) {
+            setReturnToTime(0);
+            setAutoPlay(false);
+        } else {
+            setReturnToTime(chapter.end);
+            setAutoPlay(true);
+        }
     };
 
     return (
         <ErrorBoundary FallbackComponent={ErrorFallback}>
+            <Toaster position="top-center" />
             <div className="mt-10">
                 <h2 className="text-2xl text-center font-bold mt-6 mb-12">Recommended Placements</h2>
 
@@ -166,6 +187,7 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId, selectedAd, ads
                         </div>
                     ) : (
                         <>
+                    {selectedAd && <span className="text-xs font-bold mb-0.5 text-left block">Step 4. Select a placement</span>}
                             <div className="absolute w-full h-1 bg-black top-1/2 -translate-y-1/2 z-0">
                             </div>
                             {chaptersData?.chapters?.map((chapter, index) => (

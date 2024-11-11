@@ -21,7 +21,6 @@ type VideoType = {
 function Ads({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVideoId, selectedFile, isRecommendClicked, setIsRecommendClicked, emotions, searchOptionRef, customQueryRef, isAnalysisLoading, setIsRecommendClickedEver, isRecommendClickedEver }: AdsProps) {
   const [page, setPage] = useState(1);
   const [hasSearchOptionChanged, setHasSearchOptionChanged] = useState(false);
-  console.log("🚀 > Ads > hasSearchOptionChanged=", hasSearchOptionChanged)
 
   const { data: videosData, isLoading } = useQuery({
     queryKey: ["videos", page, indexId],
@@ -33,7 +32,6 @@ function Ads({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVideoId,
   const hasVideoData = videosData && videosData.data && videosData.data.length > 0;
 
   const handleSearchOptionChange = () => {
-    console.log('Search option changed');
     setHasSearchOptionChanged(true);
   };
 
