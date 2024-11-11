@@ -32,6 +32,10 @@ export interface FootageProps {
   isLoading: boolean;
   error: Error | null;
   setIsRecommendClickedEver: (isRecommendClickedEver: boolean) => void;
+  setSelectedAd: (selectedAd: RecommendedAdProps["recommendedAd"] | null) => void;
+  setSelectedChapter: (selectedChapter: number | null) => void;
+  isAnalyzeClicked: boolean;
+  setIsAnalyzeClicked: (isAnalyzeClicked: boolean) => void;
 }
 
 export interface AdsProps {

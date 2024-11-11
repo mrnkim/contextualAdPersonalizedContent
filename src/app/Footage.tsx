@@ -12,8 +12,7 @@ import UploadForm from './UploadForm';
 import Task from './Task';
 import { FootageProps, TaskDetails, VideosData } from './types';
 
-function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVideoId, setFootageVideoId, selectedFile, setSelectedFile, setIsRecommendClicked, gistData, customTextsData, isLoading, error, setIsRecommendClickedEver }: FootageProps) {
-	const [isAnalyzeClicked, setIsAnalyzeClicked] = useState(false);
+function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVideoId, setFootageVideoId, selectedFile, setSelectedFile, setIsRecommendClicked, gistData, customTextsData, isLoading, error, setIsRecommendClickedEver, setSelectedAd, setSelectedChapter, isAnalyzeClicked, setIsAnalyzeClicked }: FootageProps) {
 	const [showAnalysis, setShowAnalysis] = useState(false);
 	const [taskId, setTaskId] = useState<string | null>(null);
 	const [taskDetails, setTaskDetails] = useState<TaskDetails | null>(null);
@@ -71,6 +70,8 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 		setHashtags([]);
 		setIsRecommendClicked(false);
 		setIsRecommendClickedEver(false);
+		setSelectedAd(null);
+		setSelectedChapter(null);
 	};
 
 	useEffect(() => {
@@ -168,7 +169,7 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 											size="sm"
 											appearance="primary"
 											onClick={() => setIsAnalyzeClicked(true)}
-											disabled={isAnalyzeClicked}
+											disabled={isAnalyzeClicked|| hashtags.length > 0 || customTextsData?.length > 0}
 										>
 											<div className="flex items-center">
 												<img
@@ -179,14 +180,18 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 												Analyze
 											</div>
 										</Button>
-										{isAnalyzeClicked && (
+										{(isAnalyzeClicked || hashtags.length > 0 || customTextsData?.length > 0) && (
 											<Button
 												type="button"
 												size="sm"
 												appearance="secondary"
-												onClick={() => setShowAnalysis(!showAnalysis)}
+												onClick={() => {
+													if (isAnalyzeClicked || (hashtags.length > 0 || customTextsData?.length > 0)) {
+														setShowAnalysis(!showAnalysis);
+													}
+												}}
 											>
-												{isLoading ? <LoadingSpinner /> : 'View Analysis'}
+												{isAnalyzeClicked && isLoading ? <LoadingSpinner /> : 'View Analysis'}
 											</Button>
 										)}
 									</div>
@@ -196,7 +201,7 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 					)}
 				</>
 			)}
-			{!selectedFile && isAnalyzeClicked && showAnalysis && hasVideoData && (
+			{!selectedFile && showAnalysis && hasVideoData && (
 				<FootageSummary
 					hashtags={hashtags}
 					setHashtags={setHashtags}

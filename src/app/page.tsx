@@ -14,14 +14,14 @@ const adsIndexId = process.env.NEXT_PUBLIC_ADS_INDEX_ID;
 const PROMPT = "Summarize the video focusing on the event type, main content, and the emotional tone. Provide the titles (Event Type, Main Content, Emotional Tone) before each summary. Do not include any introductory text or comments. Start straight away with the summary. For Emotional Tone, start with three words and a period then add more as needed."
 
 export default function Page() {
-  const [hashtags, setHashtags] = useState<string[]>([]);
-  const [emotions, setEmotions] = useState<string[]>([]);
+  const [hashtags, setHashtags] = useState<string[]>([]);  const [emotions, setEmotions] = useState<string[]>([]);
   const [footageVideoId, setFootageVideoId] = useState<string>('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isRecommendClicked, setIsRecommendClicked] = useState(false);
   const [isRecommendClickedEver, setIsRecommendClickedEver] = useState(false);
   const [selectedAd, setSelectedAd] = useState<RecommendedAdProps["recommendedAd"] | null>(null);
   const [selectedChapter, setSelectedChapter] = useState<number | null>(null);
+  const [isAnalyzeClicked, setIsAnalyzeClicked] = useState(false);
 
   const searchOptionRef = useRef<HTMLFormElement>(null);
   const customQueryRef = useRef<HTMLInputElement>(null);
@@ -29,13 +29,13 @@ export default function Page() {
   const { data: gistData, isLoading: isGistLoading, error: gistDataError } = useQuery<GistData, Error>({
     queryKey: ["gist", footageVideoId],
     queryFn: () => generateGist(footageVideoId),
-    enabled: !!footageVideoId
+    enabled: !!footageVideoId && !!isAnalyzeClicked
   });
 
   const { data: rawCustomTextsData, isLoading: isCustomTextsLoading, error: customTextsError } = useQuery<string, Error>({
     queryKey: ["customTexts", footageVideoId],
     queryFn: () => generateCustomTexts(footageVideoId, PROMPT),
-    enabled: !!footageVideoId,
+    enabled: !!footageVideoId && !!isAnalyzeClicked,
     refetchOnWindowFocus: false,
   });
 
@@ -79,6 +79,10 @@ export default function Page() {
             isLoading={isGistLoading || isCustomTextsLoading}
             error={gistDataError || customTextsError}
             setIsRecommendClickedEver={setIsRecommendClickedEver}
+            setSelectedAd={setSelectedAd}
+            setSelectedChapter={setSelectedChapter}
+            isAnalyzeClicked={isAnalyzeClicked}
+            setIsAnalyzeClicked={setIsAnalyzeClicked}
           />
         </div>
         <div className="w-1/6"></div>
