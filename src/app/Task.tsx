@@ -2,10 +2,10 @@ import React, { JSX } from 'react'
 import LoadingSpinner from './LoadingSpinner';
 import ReactPlayer from "react-player";
 import clsx from "clsx";
-import { TaskDetails } from './types';
+import { TaskProps } from './types';
 import VideoSkeleton from './VideoSkeleton';
 
-const Task = ({ taskDetails, playing, setPlaying }: { taskDetails: TaskDetails, playing: boolean, setPlaying: (playing: boolean) => void }): JSX.Element => {
+const Task = ({ taskDetails, playing, setPlaying }: TaskProps): JSX.Element => {
   return (
     <div className="flex flex-col w-full max-w-sm gap-4 items-center">
 		{taskDetails && <div className="capitalize text-center">{taskDetails.status}...</div>}

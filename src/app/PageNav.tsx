@@ -1,10 +1,6 @@
 import React, { useMemo, useCallback } from "react";
 import clsx from "clsx";
 
-/**
- *
- * Videos -> PageNav
- */
 const PageNav: React.FC<{
   page: number;
   setPage: React.Dispatch<React.SetStateAction<number>>;

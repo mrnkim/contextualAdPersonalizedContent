@@ -1,9 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { ChaptersData, RecommendedPlacementsProps, VideoDetails } from './types';
 import { generateChapters, fetchVideoDetails } from '@/hooks/apiHooks';
-import React, {useState, useRef, useEffect, Suspense} from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import ReactPlayer from 'react-player';
-import VideoThumbnail from './VideoThumbnail';
 import { ErrorBoundary } from 'react-error-boundary'
 import ErrorFallback from './ErrorFallback'
 import LoadingSpinner from './LoadingSpinner';
@@ -26,7 +25,6 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId, selectedAd, ads
     const [autoPlay, setAutoPlay] = useState<boolean>(false);
 
     useEffect(() => {
-        // footage로 전환 시 returnToTime으로 이동
         if (playbackSequence === 'footage' && returnToTime !== null && !isTransitioning) {
             setIsTransitioning(true);
             if (playerRef.current) {
@@ -37,7 +35,6 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId, selectedAd, ads
     }, [playbackSequence, returnToTime]);
 
     useEffect(() => {
-        // selectedAd가 null이 아닐 때만 리셋
         if (selectedAd) {
             setPlaybackSequence('footage');
             setSelectedChapter(null);
@@ -46,7 +43,6 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId, selectedAd, ads
             setIsTransitioning(false);
             setAutoPlay(false);
 
-            // Reset video to start
             if (playerRef.current) {
                 playerRef.current.seekTo(0, 'seconds');
             }
@@ -58,8 +54,8 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId, selectedAd, ads
         queryFn: () => generateChapters(footageVideoId),
     });
 
-    const { data: videoDetail } = useQuery<VideoDetails, Error>({
-        queryKey: ["videoDetail", footageVideoId],
+    const { data: footageVideoDetail } = useQuery<VideoDetails, Error>({
+        queryKey: ["footageVideoDetail", footageVideoId],
         queryFn: () => {
             if (!footageVideoId) {
                 throw new Error("Footage Video ID is missing");
@@ -71,14 +67,14 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId, selectedAd, ads
         enabled: !!footageIndexId && (!!footageVideoId),
     });
 
-    const { data: adVideoDetails } = useQuery<VideoDetails, Error>({
-        queryKey: ["videoDetails", selectedAd?.id],
+    const { data: adVideoDetail } = useQuery<VideoDetails, Error>({
+        queryKey: ["adVideoDetail", selectedAd?.id],
         queryFn: () => fetchVideoDetails(selectedAd!.id!, adsIndexId),
         enabled: !!selectedAd?.id && !!adsIndexId
     });
 
     const handleProgress = (state: { playedSeconds: number }) => {
-        if (selectedChapter === null || !chaptersData || !adVideoDetails) {
+        if (selectedChapter === null || !chaptersData || !adVideoDetail) {
             return;
         }
 
@@ -156,9 +152,9 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId, selectedAd, ads
                 <h2 className="text-2xl text-center font-bold mt-6 mb-12">Recommended Placements</h2>
 
                 <div className="w-full aspect-video relative mb-8">
-                    {playbackSequence === 'ad' && adVideoDetails ? (
+                    {playbackSequence === 'ad' && adVideoDetail ? (
                         <ReactPlayer
-                            url={adVideoDetails.hls.video_url}
+                            url={adVideoDetail.hls.video_url}
                             controls
                             width="100%"
                             height="100%"
@@ -167,10 +163,10 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId, selectedAd, ads
                             onEnded={handleAdEnded}
                         />
                     ) : (
-                        videoDetail && (
+                        footageVideoDetail && (
                             <ReactPlayer
                                 ref={playerRef}
-                                url={videoDetail.hls.video_url}
+                                url={footageVideoDetail.hls.video_url}
                                 controls
                                 width="100%"
                                 height="100%"
@@ -202,7 +198,7 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId, selectedAd, ads
                                             ? 'cursor-not-allowed'
                                             : 'cursor-pointer hover:scale-110 transition-transform'}`}
                                     style={{
-                                        left: `${(chapter.end / (videoDetail?.metadata?.duration || 1)) * 100}%`,
+                                        left: `${(chapter.end / (footageVideoDetail?.metadata?.duration || 1)) * 100}%`,
                                         top: '50%'
                                     }}
                                     onClick={() => handleChapterClick(index)}

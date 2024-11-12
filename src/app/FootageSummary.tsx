@@ -28,11 +28,8 @@ function FootageSummary({
 
   const formatCustomTexts = (data: string) => {
     const sections = ["Event Type", "Main Content", "Emotional Tone"];
-
     const sectionPattern = sections.join('|');
-
     const sectionRegex = new RegExp(`(?:\\*{0,2})(${sectionPattern})(?:\\*{0,2})\\s*:?\\s*([\\s\\S]*?)(?=(?:\\*{0,2})(?:${sectionPattern})|$)`, 'gi');
-
     const sectionContents: { [key: string]: string } = {};
 
     let match;

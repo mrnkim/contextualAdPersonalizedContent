@@ -160,7 +160,6 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 					) : (
 						<>
 							<Video videoId={footageVideoId || ''} indexId={indexId || ''} />
-							{/* <div className="flex flex-col w-full items-center"> */}
 								<div className="w-fit">
 									<span className="text-xs font-bold mb-0.5 text-left block">Step 1</span>
 									<div className="flex gap-2">
@@ -196,7 +195,6 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 										)}
 									</div>
 								</div>
-							{/* </div> */}
 						</>
 					)}
 				</>

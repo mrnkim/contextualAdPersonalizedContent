@@ -17,10 +17,10 @@ export default function Page() {
   const [hashtags, setHashtags] = useState<string[]>([]);  const [emotions, setEmotions] = useState<string[]>([]);
   const [footageVideoId, setFootageVideoId] = useState<string>('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [isRecommendClicked, setIsRecommendClicked] = useState(false);
-  const [isRecommendClickedEver, setIsRecommendClickedEver] = useState(false);
   const [selectedAd, setSelectedAd] = useState<RecommendedAdProps["recommendedAd"] | null>(null);
   const [selectedChapter, setSelectedChapter] = useState<number | null>(null);
+  const [isRecommendClicked, setIsRecommendClicked] = useState(false);
+  const [isRecommendClickedEver, setIsRecommendClickedEver] = useState(false);
   const [isAnalyzeClicked, setIsAnalyzeClicked] = useState(false);
 
   const searchOptionRef = useRef<HTMLFormElement>(null);
@@ -88,15 +88,11 @@ export default function Page() {
         <div className="w-1/6"></div>
         <div className="w-2/3 pl-4">
           <Ads
-            hashtags={hashtags}
-            setHashtags={setHashtags}
             indexId={adsIndexId ?? ''}
             isIndexIdLoading={!adsIndexId}
-            footageVideoId ={footageVideoId}
             selectedFile={selectedFile}
             isRecommendClicked={isRecommendClicked}
             setIsRecommendClicked={setIsRecommendClicked}
-            emotions={emotions}
             searchOptionRef={searchOptionRef}
             customQueryRef={customQueryRef}
             isAnalysisLoading={isGistLoading || isCustomTextsLoading}
@@ -111,7 +107,6 @@ export default function Page() {
         <div className="w-3/4 mx-auto">
           <RecommendedAds
             hashtags={hashtags}
-            setHashtags={setHashtags}
             footageVideoId={footageVideoId}
             footageIndexId={footageIndexId ?? ''}
             adsIndexId={adsIndexId ?? ''}

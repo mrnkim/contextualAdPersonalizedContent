@@ -8,17 +8,17 @@ import { useQuery } from "@tanstack/react-query";
 import Button from './Button'
 import PageNav from './PageNav';
 import clsx from 'clsx'
-// import RecommendedAds from './RecommendedAds';
 import { fetchVideos } from '@/hooks/apiHooks';
 import { ErrorBoundary } from 'react-error-boundary';
 import { AdsProps } from './types';
+import RecommendOptionForm from './RecommendOptionForm';
 
 type VideoType = {
   _id: string;
   title: string;
 };
 
-function Ads({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVideoId, selectedFile, isRecommendClicked, setIsRecommendClicked, emotions, searchOptionRef, customQueryRef, isAnalysisLoading, setIsRecommendClickedEver, isRecommendClickedEver, setSelectedAd, setSelectedChapter }: AdsProps) {
+function Ads({ indexId, isIndexIdLoading, selectedFile, isRecommendClicked, setIsRecommendClicked, searchOptionRef, customQueryRef, isAnalysisLoading, setIsRecommendClickedEver, isRecommendClickedEver, setSelectedAd, setSelectedChapter }: AdsProps) {
   const [page, setPage] = useState(1);
   const [hasSearchOptionChanged, setHasSearchOptionChanged] = useState(false);
 
@@ -31,14 +31,7 @@ function Ads({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVideoId,
   const totalPage = videosData?.page_info?.total_page || 1;
   const hasVideoData = videosData && videosData.data && videosData.data.length > 0;
 
-  const handleSearchOptionChange = () => {
-    setHasSearchOptionChanged(true);
-  };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsRecommendClicked(true);
-  };
 
   useEffect(() => {
     if (isRecommendClicked) {
@@ -66,76 +59,7 @@ function Ads({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVideoId,
                 <PageNav page={page} setPage={setPage} totalPage={totalPage} />
               </div>
               <div className="flex flex-col items-center gap-4 my-5">
-                <form ref={searchOptionRef} onSubmit={handleFormSubmit}>
-                  <div className="flex gap-4 items-center">
-                    <label className="flex items-center gap-2">
-                      <input
-                        type="radio"
-                        name="searchOption"
-                        value="general"
-                        defaultChecked
-                        onChange={handleSearchOptionChange}
-                      />
-                      General
-                    </label>
-                    <label className="flex items-center gap-2">
-                      <input
-                        type="radio"
-                        name="searchOption"
-                        value="emotion"
-                        onChange={handleSearchOptionChange}
-                      />
-                      Emotion
-                    </label>
-                    <label className="flex items-center gap-2">
-                      <input
-                        type="radio"
-                        name="searchOption"
-                        value="visual"
-                        onChange={handleSearchOptionChange}
-                      />
-                      Visual
-                    </label>
-                    <label className="flex items-center gap-2">
-                      <input
-                        type="radio"
-                        name="searchOption"
-                        value="conversation"
-                        onChange={handleSearchOptionChange}
-                      />
-                      Conversation
-                    </label>
-                  </div>
-                  <div className="flex items-center gap-2 w-full max-w-md">
-                    <label className="flex items-center gap-2 shrink-0">
-                      <input
-                        type="radio"
-                        name="searchOption"
-                        value="custom"
-                        id="customRadio"
-                        onChange={handleSearchOptionChange}
-                      />
-                      Custom
-                    </label>
-                    <input
-                      type="text"
-                      ref={customQueryRef}
-                      placeholder="Enter custom search query"
-                      className="border px-2 py-1 flex-1 mt-2"
-                      onChange={handleSearchOptionChange}
-                      onFocus={() => {
-                        const customRadio = document.getElementById('customRadio') as HTMLInputElement;
-                        if (customRadio) customRadio.checked = true;
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault();
-                          setIsRecommendClicked(true);
-                        }
-                      }}
-                    />
-                  </div>
-                </form>
+                <RecommendOptionForm searchOptionRef={searchOptionRef} customQueryRef={customQueryRef} setIsRecommendClicked={setIsRecommendClicked} setHasSearchOptionChanged={setHasSearchOptionChanged}/>
                 <div className="w-fit my-5">
                   <span className="text-xs font-bold mb-0.5 text-left block">Step 2</span>
                   <div className="flex gap-2">

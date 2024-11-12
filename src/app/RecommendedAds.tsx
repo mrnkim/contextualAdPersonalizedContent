@@ -1,14 +1,14 @@
-import React, { Suspense, useEffect, useMemo, useState } from 'react'
-import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
-import { generateGist, textToVideoSearch, fetchVideoDetails } from '@/hooks/apiHooks';
-import RecommendedAd from './RecommendedAd';
+import React, { Suspense, useEffect, useState } from 'react'
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { textToVideoSearch } from '@/hooks/apiHooks';
 import { ErrorBoundary } from 'react-error-boundary';
 import LoadingSpinner from './LoadingSpinner';
 import ErrorFallback from './ErrorFallback';
-import { RecommendedAdsProps, GistData, SearchData, VideoDetails, RecommendedAdProps } from './types';
+import { RecommendedAdsProps, RecommendedAdProps } from './types';
 import RecommendedPlacements from './RecommendedPlacements';
 import { fetchSearchPage } from '@/hooks/apiHooks';
 import Button from './Button'
+import RecommendedAdItem from './RecommendedAdItem';
 
 export enum SearchOption {
   VISUAL = 'visual',
@@ -17,37 +17,10 @@ export enum SearchOption {
   LOGO = 'logo'
 }
 
-const RecommendedAdItem = ({ recommendedAd, adsIndexId }: { recommendedAd: RecommendedAdProps["recommendedAd"], adsIndexId: string }) => {
-  const { data: videoDetails } = useQuery<VideoDetails, Error>({
-    queryKey: ["videoDetails", recommendedAd.id],
-    queryFn: () => fetchVideoDetails(recommendedAd.id!, adsIndexId),
-    enabled: !!recommendedAd.id && !!adsIndexId
-  });
-
-  return (
-    <div className="flex flex-col p-2">
-      {videoDetails?.metadata.filename && (
-        <h3 className="mb-2 text-lg font-medium">
-          {videoDetails.metadata.filename.split('.')[0]}
-        </h3>
-      )}
-      {videoDetails && (
-        <RecommendedAd
-          recommendedAd={{ ...recommendedAd, clips: recommendedAd.clips || [] }}
-          indexId={adsIndexId}
-          videoDetails={videoDetails}
-        />
-      )}
-    </div>
-  );
-};
-
-const RecommendedAds = ({ hashtags, setHashtags, footageVideoId, adsIndexId, selectedFile, setIsRecommendClicked, searchOptionRef, customQueryRef, emotions, footageIndexId, isRecommendClicked, selectedAd, setSelectedAd, selectedChapter, setSelectedChapter }: RecommendedAdsProps) => {
+const RecommendedAds = ({ hashtags, footageVideoId, adsIndexId, selectedFile, setIsRecommendClicked, searchOptionRef, customQueryRef, emotions, footageIndexId, isRecommendClicked, selectedAd, setSelectedAd, selectedChapter, setSelectedChapter }: RecommendedAdsProps) => {
   const [searchOptions, setSearchOptions] = useState<SearchOption[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [currentSearchOption, setCurrentSearchOption] = useState<string>('');
 
-  // Update search parameters when Recommend button is clicked
   useEffect(() => {
     if (!isRecommendClicked) return;
 
@@ -81,7 +54,6 @@ const RecommendedAds = ({ hashtags, setHashtags, footageVideoId, adsIndexId, sel
 
     setSearchOptions(newSearchOptions);
 
-    // Reset isRecommendClicked after updating search
     setIsRecommendClicked(false);
   }, [isRecommendClicked, hashtags, emotions]);
 

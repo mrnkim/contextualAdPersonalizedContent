@@ -39,15 +39,11 @@ export interface FootageProps {
 }
 
 export interface AdsProps {
-  hashtags: string[];
-  setHashtags: (hashtags: string[]) => void;
   indexId: string;
   isIndexIdLoading: boolean;
-  footageVideoId: string;
   selectedFile: File | null;
   isRecommendClicked: boolean;
   setIsRecommendClicked: (isRecommendClicked: boolean) => void;
-  emotions: string[];
   searchOptionRef: React.RefObject<HTMLFormElement>;
   customQueryRef: React.RefObject<HTMLInputElement>;
   isAnalysisLoading: boolean;
@@ -67,6 +63,28 @@ export interface FootageSummaryProps {
   setShowAnalysis: (showAnalysis: boolean) => void;
 }
 
+export interface VideosDropDownProps {
+  indexId: string;
+  onVideoChange: (footageVideoId: string) => void;
+  videosData: {
+    pages: VideoPage[];
+    pageParams: number[];
+  };
+  fetchNextPage: () => void;
+  hasNextPage: boolean;
+  isFetchingNextPage: boolean;
+  isLoading: boolean;
+  selectedFile: File | null;
+  taskId: string | null;
+  footageVideoId: string | null;
+}
+
+export interface TaskProps {
+  taskDetails: TaskDetails;
+  playing: boolean;
+  setPlaying: (playing: boolean) => void;
+ }
+
 export interface RecommendedAdProps {
   recommendedAd: {
     id?: string
@@ -78,10 +96,9 @@ export interface RecommendedAdProps {
 
 export interface RecommendedAdsProps {
   hashtags: string[];
-  setHashtags: (hashtags: string[]) => void;
   footageVideoId: string;
-  adsIndexId: string;
   footageIndexId: string;
+  adsIndexId: string;
   selectedFile: File | null;
   isRecommendClicked: boolean;
   setIsRecommendClicked: (isRecommendClicked: boolean) => void;
@@ -101,6 +118,13 @@ export interface RecommendedPlacementsProps {
   adsIndexId: string;
   selectedChapter: number | null;
   setSelectedChapter: (selectedChapter: number | null) => void;
+}
+
+export interface RecommendOptionFormProps {
+  searchOptionRef: React.RefObject<HTMLFormElement>;
+  customQueryRef: React.RefObject<HTMLInputElement>;
+  setIsRecommendClicked: (isRecommendClicked: boolean) => void;
+  setHasSearchOptionChanged: (hasSearchOptionChanged: boolean) => void;
 }
 
 export interface UploadFormProps {
@@ -130,7 +154,15 @@ export interface VideoProps {
   showTitle?: boolean;
 }
 
-// Data Structures
+export interface AdCopyProps {
+  recommendedAd: RecommendedAdProps["recommendedAd"];
+  videoDetails: VideoDetails;
+  isAdCopyClicked: boolean;
+  isDialogOpen: boolean;
+  setIsDialogOpen: (isDialogOpen: boolean) => void;
+}
+
+
 export interface Index {
   _id: string;
   index_name: string;

@@ -13,7 +13,6 @@ import { VideoProps, VideoDetails } from "./types";
 const Video: React.FC<VideoProps> = ({ videoId, indexId, showTitle = true }) => {
   const [playing, setPlaying] = useState(false);
 
-  /** Formats a duration in seconds into a "HH:MM:SS" string format */
   const formatDuration = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
@@ -26,7 +25,6 @@ const Video: React.FC<VideoProps> = ({ videoId, indexId, showTitle = true }) => 
     ].join(":");
   };
 
-  /** Queries the detailed information of a video using React Query */
   const { data: videoDetail } = useQuery<VideoDetails, Error>({
     queryKey: ["videoDetail", videoId],
     queryFn: () => {
@@ -87,7 +85,7 @@ const Video: React.FC<VideoProps> = ({ videoId, indexId, showTitle = true }) => 
               className={clsx(
                 "bg-grey-1000/60",
                 "px-2",
-                "py-1", 
+                "py-1",
                 "rounded-sm"
               )}
             >

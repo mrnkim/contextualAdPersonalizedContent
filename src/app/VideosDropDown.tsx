@@ -1,24 +1,9 @@
 import React from 'react';
-import { Video, VideoPage } from './types';
+import { Video, VideosDropDownProps } from './types';
 import { MenuItem, Select, Skeleton, SelectChangeEvent } from '@mui/material'
 import clsx from 'clsx';
 import LoadingSpinner from './LoadingSpinner';
 
-interface VideosDropDownProps {
-  indexId: string;
-  onVideoChange: (footageVideoId: string) => void;
-  videosData: {
-    pages: VideoPage[];
-    pageParams: number[];
-  };
-  fetchNextPage: () => void;
-  hasNextPage: boolean;
-  isFetchingNextPage: boolean;
-  isLoading: boolean;
-  selectedFile: File | null;
-  taskId: string | null;
-  footageVideoId: string | null;
-}
 
 const VideosDropDown: React.FC<VideosDropDownProps> = ({
   onVideoChange,
@@ -31,6 +16,7 @@ const VideosDropDown: React.FC<VideosDropDownProps> = ({
   taskId,
   footageVideoId
 }) => {
+
   const handleChange = (event: SelectChangeEvent<string>) => {
     const newVideoId = event.target.value;
     onVideoChange(newVideoId);
