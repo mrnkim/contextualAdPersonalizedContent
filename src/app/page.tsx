@@ -14,7 +14,8 @@ const adsIndexId = process.env.NEXT_PUBLIC_ADS_INDEX_ID;
 const PROMPT = "Summarize the video focusing on the event type, main content, and the emotional tone. Provide the titles (Event Type, Main Content, Emotional Tone) before each summary. Do not include any introductory text or comments. Start straight away with the summary. For Emotional Tone, start with three words and a period then add more as needed."
 
 export default function Page() {
-  const [hashtags, setHashtags] = useState<string[]>([]);  const [emotions, setEmotions] = useState<string[]>([]);
+  const [hashtags, setHashtags] = useState<string[]>([]);
+  const [emotions, setEmotions] = useState<string[]>([]);
   const [footageVideoId, setFootageVideoId] = useState<string>('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedAd, setSelectedAd] = useState<RecommendedAdProps["recommendedAd"] | null>(null);
