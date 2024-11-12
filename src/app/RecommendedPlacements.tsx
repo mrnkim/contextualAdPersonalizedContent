@@ -84,15 +84,15 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId, selectedAd, ads
 
         const chapter = chaptersData.chapters[selectedChapter];
         const timeDiff = state.playedSeconds - chapter.end;
+        const isLastChapter = selectedChapter === chaptersData.chapters.length - 1;
 
-        // 챕터 끝 시점을 지나쳤고, 아직 광고를 재생하지 않았다면
         if (playbackSequence === 'footage' &&
-            timeDiff >= 0 &&  // 챕터 끝 시점을 지났거나 도달했을 때
-            !hasPlayedAd) {
+            !hasPlayedAd &&
+            ((isLastChapter && Math.abs(timeDiff) < 0.5) ||
+             (!isLastChapter && timeDiff >= 0))) {
             setPlaybackSequence('ad');
             setHasPlayedAd(true);
 
-            // 광고 재생 전에 현재 챕터의 끝 시점으로 이동
             if (playerRef.current) {
                 playerRef.current.seekTo(chapter.end, 'seconds');
             }
@@ -142,7 +142,16 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId, selectedAd, ads
 
     return (
         <ErrorBoundary FallbackComponent={ErrorFallback}>
-            <Toaster position="top-center" />
+            <Toaster
+                position="top-center"
+                toastOptions={{
+                    duration: 1000,
+                    style: {
+                        marginTop: '50vh',
+                        transform: 'translateY(-50%)'
+                    }
+                }}
+            />
             <div className="mt-10">
                 <h2 className="text-2xl text-center font-bold mt-6 mb-12">Recommended Placements</h2>
 
