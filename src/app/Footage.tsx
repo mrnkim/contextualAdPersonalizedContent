@@ -118,7 +118,7 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 
 	return (
 		<div className="flex flex-col items-center gap-4 w-full">
-			<h2 className="text-2xl font-bold">News Footage</h2>
+			<h2 className="text-2xl font-bold">Source Footage</h2>
 			<div className="flex items-center justify-center w-full">
 				<div className="flex-grow mr-4 w-64">
 					<VideosDropDown

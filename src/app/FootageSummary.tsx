@@ -82,13 +82,16 @@ function FootageSummary({
     >
       <DialogTitle>
         <div className="flex justify-between items-center">
-          <span>News Footage Analysis</span>
-          <IconButton
-            onClick={() => setShowAnalysis(false)}
-            size="small"
-          >
-            <CloseIcon />
-          </IconButton>
+          <div className="flex-1" />
+          <span className="flex-1 text-center">Source Footage Analysis</span>
+          <div className="flex-1 flex justify-end">
+            <IconButton
+              onClick={() => setShowAnalysis(false)}
+              size="small"
+            >
+              <CloseIcon />
+            </IconButton>
+          </div>
         </div>
       </DialogTitle>
       <DialogContent>
