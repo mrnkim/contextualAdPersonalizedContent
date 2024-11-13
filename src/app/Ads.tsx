@@ -18,7 +18,7 @@ type VideoType = {
   title: string;
 };
 
-function Ads({ indexId, isIndexIdLoading, selectedFile, isRecommendClicked, setIsRecommendClicked, searchOptionRef, customQueryRef, isAnalysisLoading, setIsRecommendClickedEver, isRecommendClickedEver, setSelectedAd, setSelectedChapter }: AdsProps) {
+function Ads({ indexId, isIndexIdLoading, selectedFile, isRecommendClicked, setIsRecommendClicked, searchOptionRef, customQueryRef, isAnalysisLoading, setIsRecommendClickedEver, isRecommendClickedEver, setSelectedAd, setSelectedChapter, customTextsData }: AdsProps) {
   const [page, setPage] = useState(1);
   const [hasSearchOptionChanged, setHasSearchOptionChanged] = useState(false);
 
@@ -45,7 +45,7 @@ function Ads({ indexId, isIndexIdLoading, selectedFile, isRecommendClicked, setI
       <ErrorBoundary FallbackComponent={ErrorFallback}>
         <Suspense fallback={<LoadingSpinner />}>
           {isIndexIdLoading || isLoading ? (
-            <LoadingSpinner />
+            <LoadingSpinner /> 
           ) : !hasVideoData ? (
             <div className="text-center py-8">There are no videos in this index</div>
           ) : (
@@ -73,7 +73,7 @@ function Ads({ indexId, isIndexIdLoading, selectedFile, isRecommendClicked, setI
                         setSelectedAd(null);
                         setSelectedChapter(null);
                       }}
-                      disabled={!!selectedFile || isRecommendClicked || isAnalysisLoading || (!hasSearchOptionChanged && isRecommendClickedEver)}
+                      disabled={!customTextsData || !!selectedFile || isRecommendClicked || isAnalysisLoading || (!hasSearchOptionChanged && isRecommendClickedEver)}
                     >
                       <img
                         src={selectedFile || isRecommendClicked || isAnalysisLoading ? "/magicDisabled.svg" : "/magic.svg"}

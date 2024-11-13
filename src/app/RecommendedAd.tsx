@@ -1,4 +1,4 @@
-import React, {useState, Suspense} from 'react'
+import React, {useState, Suspense, useMemo} from 'react'
 import Video from './Video'
 import Button from './Button'
 import AdCopy from './AdCopy';
@@ -6,12 +6,23 @@ import { ErrorBoundary } from 'react-error-boundary'
 import ErrorFallback from './ErrorFallback'
 import LoadingSpinner from './LoadingSpinner';
 import { RecommendedAdProps } from './types';
+import { useQuery } from "@tanstack/react-query"
+import { generateCustomTexts } from "@/hooks/apiHooks";
 
+const AD_COPY_PROMPT = "Generate three sets of ad copy details based on the video. Each set should include: Headline, Ad Copy, and Hashtags. For each set, start with the headline, followed directly by the ad copy, and then the hashtags. Label each section with 'Headline:', 'Ad Copy:', and 'Hashtags:' respectively. Present the sets in sequence (e.g., Set 1, Set 2), rather than grouping all headlines, ad copies, and hashtags separately. Don't provide any introductory text or comments."
 
 const RecommendedAd: React.FC<RecommendedAdProps> = ({ recommendedAd, indexId, videoDetails }) => {
   const [isAdCopyClicked, setIsAdCopyClicked] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+
+  const { data: rawAdCopyData } = useQuery({
+    queryKey: ["adCopy", recommendedAd.id],
+    queryFn: () => generateCustomTexts(recommendedAd.id!, AD_COPY_PROMPT),
+    enabled: !!recommendedAd.id && isAdCopyClicked,
+  });
+
+  const adCopyData = useMemo(() => rawAdCopyData, [rawAdCopyData]);
 
   const handleGenerateClick = () => {
     setIsGenerating(true);
@@ -32,7 +43,7 @@ const RecommendedAd: React.FC<RecommendedAdProps> = ({ recommendedAd, indexId, v
                 size="sm"
                 appearance="primary"
                 onClick={handleGenerateClick}
-                disabled={isAdCopyClicked}
+                disabled={isAdCopyClicked || adCopyData}
               >
                 <div className="flex items-center">
                   <img
@@ -43,26 +54,25 @@ const RecommendedAd: React.FC<RecommendedAdProps> = ({ recommendedAd, indexId, v
                   Generate Ad Copy
                 </div>
               </Button>
-              {(isAdCopyClicked || isGenerating) && (
+              {(isAdCopyClicked || isGenerating || adCopyData) && (
                 <Button
                   type="button"
                   size="sm"
                   appearance="secondary"
                   onClick={() => setIsDialogOpen(true)}
                 >
-                  {isGenerating ? <LoadingSpinner /> : 'View Ad Copy'}
+                  {!adCopyData ? <LoadingSpinner /> : 'View Ad Copy'}
                 </Button>
               )}
             </div>
           </div>
           <ErrorBoundary FallbackComponent={({ error }) => <ErrorFallback error={error} />}>
             <AdCopy
-              recommendedAd={recommendedAd}
               videoDetails={videoDetails}
-              isAdCopyClicked={isAdCopyClicked}
               isDialogOpen={isDialogOpen}
               setIsDialogOpen={setIsDialogOpen}
               setIsGenerating={setIsGenerating}
+              adCopyData={adCopyData}
             />
           </ErrorBoundary>
         </div>

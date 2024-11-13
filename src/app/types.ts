@@ -51,6 +51,7 @@ export interface AdsProps {
   isRecommendClickedEver: boolean;
   setSelectedAd: (selectedAd: RecommendedAdProps["recommendedAd"] | null) => void;
   setSelectedChapter: (selectedChapter: number | null) => void;
+  customTextsData: string;
 }
 
 export interface FootageSummaryProps {
@@ -156,12 +157,11 @@ export interface VideoProps {
 }
 
 export interface AdCopyProps {
-  recommendedAd: RecommendedAdProps["recommendedAd"];
   videoDetails: VideoDetails;
-  isAdCopyClicked: boolean;
   isDialogOpen: boolean;
   setIsDialogOpen: (isDialogOpen: boolean) => void;
   setIsGenerating: (isGenerating: boolean) => void;
+  adCopyData: string | null;
 }
 
 

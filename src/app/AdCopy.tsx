@@ -9,20 +9,13 @@ import {
   import LoadingSpinner from './LoadingSpinner';
   import { ErrorBoundary } from 'react-error-boundary'
   import ErrorFallback from './ErrorFallback';
-  import { useQuery } from "@tanstack/react-query"
-  import { generateCustomTexts } from "@/hooks/apiHooks";
   import { AdCopyProps } from './types';
 
-  const AD_COPY_PROMPT = "Generate three sets of ad copy details based on the video. Each set should include: Headline, Ad Copy, and Hashtags. For each set, start with the headline, followed directly by the ad copy, and then the hashtags. Label each section with 'Headline:', 'Ad Copy:', and 'Hashtags:' respectively. Present the sets in sequence (e.g., Set 1, Set 2), rather than grouping all headlines, ad copies, and hashtags separately. Don't provide any introductory text or comments."
-  const AdCopy = ({ recommendedAd, videoDetails, isAdCopyClicked, isDialogOpen, setIsDialogOpen, setIsGenerating }: AdCopyProps) => {
+  const AdCopy = ({ videoDetails, isDialogOpen, setIsDialogOpen, setIsGenerating, adCopyData }: AdCopyProps) => {
     const [currentSuggestionIndex, setCurrentSuggestionIndex] = useState(0);
 
 
-    const { data: adCopyData } = useQuery({
-      queryKey: ["adCopy", recommendedAd.id],
-      queryFn: () => generateCustomTexts(recommendedAd.id!, AD_COPY_PROMPT),
-      enabled: !!recommendedAd.id && isAdCopyClicked,
-    });
+
 
     useEffect(() => {
       if (adCopyData) {
