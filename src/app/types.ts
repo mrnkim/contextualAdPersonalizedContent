@@ -149,9 +149,10 @@ export interface ClipsProps {
 }
 
 export interface VideoProps {
-  videoId?: string;
+  videoId: string;
   indexId: string;
   showTitle?: boolean;
+  videoDetails?: VideoDetails;
 }
 
 export interface AdCopyProps {

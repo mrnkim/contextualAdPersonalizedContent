@@ -23,11 +23,10 @@ const RecommendedAd: React.FC<RecommendedAdProps> = ({ recommendedAd, indexId, v
       <ErrorBoundary FallbackComponent={({ error }) => <ErrorFallback error={error} />}>
         <div className="flex flex-col w-full items-center">
           <Suspense fallback={<div className="flex justify-center items-center h-full"><LoadingSpinner /></div>}>
-            <Video videoId={recommendedAd.id} indexId={indexId} showTitle={false}/>
+            <Video videoId={recommendedAd.id ?? ''} indexId={indexId} showTitle={false} videoDetails={videoDetails}/>
           </Suspense>
           <div className="w-fit">
-            <span className="text-xs font-bold mb-0.5 text-left block">Step 2</span>
-            <div className="flex gap-2">
+            <div className="flex gap-2 mt-2">
               <Button
                 type="button"
                 size="sm"

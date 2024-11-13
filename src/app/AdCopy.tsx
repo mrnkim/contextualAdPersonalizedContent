@@ -6,8 +6,6 @@ import {
     DialogTitle
   } from "@mui/material";
   import CloseIcon from '@mui/icons-material/Close';
-  import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-  import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
   import LoadingSpinner from './LoadingSpinner';
   import { ErrorBoundary } from 'react-error-boundary'
   import ErrorFallback from './ErrorFallback';
@@ -42,23 +40,23 @@ import {
 
       function parseAdCopy(adCopyText: string) {
         try {
-          // Split the text into sets
-          const sets = adCopyText.split(/Set \d+:/g).filter(Boolean);
+          const sets = adCopyText.split(/[Ss]et \d+:?/g).filter(Boolean);
 
           return sets.map(set => {
-            const lines = set.trim().split('\n');
             let headline = '';
             let adCopy = '';
             let hashtags = '';
 
-            lines.forEach(line => {
-              const trimmedLine = line.trim();
-              if (trimmedLine.startsWith('Headline:')) {
-                headline = trimmedLine.replace('Headline:', '').trim();
-              } else if (trimmedLine.startsWith('Ad Copy:')) {
-                adCopy = trimmedLine.replace('Ad Copy:', '').trim();
-              } else if (trimmedLine.startsWith('Hashtags:')) {
-                hashtags = trimmedLine.replace('Hashtags:', '').trim();
+            const parts = set.split(/(?=Headline:|Ad Copy:|Hashtags:)/);
+
+            parts.forEach(part => {
+              const trimmedPart = part.trim();
+              if (trimmedPart.startsWith('Headline:')) {
+                headline = trimmedPart.replace('Headline:', '').trim();
+              } else if (trimmedPart.startsWith('Ad Copy:')) {
+                adCopy = trimmedPart.replace('Ad Copy:', '').trim();
+              } else if (trimmedPart.startsWith('Hashtags:')) {
+                hashtags = trimmedPart.replace('Hashtags:', '').trim();
               }
             });
 
