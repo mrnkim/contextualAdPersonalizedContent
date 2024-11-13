@@ -11,46 +11,60 @@ import { RecommendedAdProps } from './types';
 const RecommendedAd: React.FC<RecommendedAdProps> = ({ recommendedAd, indexId, videoDetails }) => {
   const [isAdCopyClicked, setIsAdCopyClicked] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
 
+  const handleGenerateClick = () => {
+    setIsGenerating(true);
+    setIsAdCopyClicked(true);
+  };
 
   return (
     <div className="w-full">
-      <ErrorBoundary
-        FallbackComponent={({ error }) =>
-          <ErrorFallback error={error} />
-        }
-      >
+      <ErrorBoundary FallbackComponent={({ error }) => <ErrorFallback error={error} />}>
         <div className="flex flex-col w-full items-center">
-              <Suspense fallback={<div className="flex justify-center items-center h-full"><LoadingSpinner /></div>}>
-                <Video videoId={recommendedAd.id} indexId={indexId} showTitle={false}/>
-              </Suspense>
-          <div className="flex justify-center mt-4">
-            <Button
-              type="button"
-              size="sm"
-              appearance="primary"
-              onClick={() => {
-                setIsAdCopyClicked(true);
-                setIsDialogOpen(true);
-              }}
-            >
-              <img src="/chat.svg" alt="chat icon" className="w-4 h-4" />
-              Generate Ad Copy
-            </Button>
+          <Suspense fallback={<div className="flex justify-center items-center h-full"><LoadingSpinner /></div>}>
+            <Video videoId={recommendedAd.id} indexId={indexId} showTitle={false}/>
+          </Suspense>
+          <div className="w-fit">
+            <span className="text-xs font-bold mb-0.5 text-left block">Step 2</span>
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                size="sm"
+                appearance="primary"
+                onClick={handleGenerateClick}
+                disabled={isAdCopyClicked}
+              >
+                <div className="flex items-center">
+                  <img
+                    src={isAdCopyClicked ? "/chatDisabled.svg" : "/chat.svg"}
+                    alt="chat icon"
+                    className="w-4 h-4 mr-1"
+                  />
+                  Generate Ad Copy
+                </div>
+              </Button>
+              {(isAdCopyClicked || isGenerating) && (
+                <Button
+                  type="button"
+                  size="sm"
+                  appearance="secondary"
+                  onClick={() => setIsDialogOpen(true)}
+                >
+                  {isGenerating ? <LoadingSpinner /> : 'View Ad Copy'}
+                </Button>
+              )}
+            </div>
           </div>
-          <ErrorBoundary
-            FallbackComponent={({ error }) =>
-              <ErrorFallback error={error} />
-            }
-          >
+          <ErrorBoundary FallbackComponent={({ error }) => <ErrorFallback error={error} />}>
             <AdCopy
               recommendedAd={recommendedAd}
               videoDetails={videoDetails}
               isAdCopyClicked={isAdCopyClicked}
               isDialogOpen={isDialogOpen}
               setIsDialogOpen={setIsDialogOpen}
+              setIsGenerating={setIsGenerating}
             />
-
           </ErrorBoundary>
         </div>
       </ErrorBoundary>

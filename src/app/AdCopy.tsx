@@ -1,4 +1,4 @@
-import React, { Suspense, useState } from 'react'
+import React, { Suspense, useState, useEffect } from 'react'
 import {
     Dialog,
     DialogContent,
@@ -14,17 +14,23 @@ import {
   import { useQuery } from "@tanstack/react-query"
   import { generateCustomTexts } from "@/hooks/apiHooks";
   import { AdCopyProps } from './types';
-  const AD_COPY_PROMPT = "Based on the ad video, provide the headlines, ad copies, and hashtags. Provide the titles (Headline, Ad Copy, Hashtag) before each. Do not include any introductory text or comments. Start straight away with Headlines."
 
-const AdCopy = ({ recommendedAd, videoDetails, isAdCopyClicked, isDialogOpen, setIsDialogOpen }: AdCopyProps) => {
+  const AD_COPY_PROMPT = "Generate three sets of ad copy details based on the video. Each set should include: Headline, Ad Copy, and Hashtags. For each set, start with the headline, followed directly by the ad copy, and then the hashtags. Label each section with 'Headline:', 'Ad Copy:', and 'Hashtags:' respectively. Present the sets in sequence (e.g., Set 1, Set 2), rather than grouping all headlines, ad copies, and hashtags separately. Don't provide any introductory text or comments."
+  const AdCopy = ({ recommendedAd, videoDetails, isAdCopyClicked, isDialogOpen, setIsDialogOpen, setIsGenerating }: AdCopyProps) => {
     const [currentSuggestionIndex, setCurrentSuggestionIndex] = useState(0);
 
 
-    const { data: AdCopyData } = useQuery({
-        queryKey: ["adCopy", recommendedAd.id],
-        queryFn: () => generateCustomTexts(recommendedAd.id!, AD_COPY_PROMPT),
-        enabled: !!recommendedAd.id && isAdCopyClicked
-      });
+    const { data: adCopyData } = useQuery({
+      queryKey: ["adCopy", recommendedAd.id],
+      queryFn: () => generateCustomTexts(recommendedAd.id!, AD_COPY_PROMPT),
+      enabled: !!recommendedAd.id && isAdCopyClicked,
+    });
+
+    useEffect(() => {
+      if (adCopyData) {
+        setIsGenerating(false);
+      }
+    }, [adCopyData]);
 
       const handlePreviousSuggestion = () => {
         setCurrentSuggestionIndex((prevIndex: number) => (prevIndex - 1 + parsedAdCopy.length) % parsedAdCopy.length);
@@ -36,69 +42,30 @@ const AdCopy = ({ recommendedAd, videoDetails, isAdCopyClicked, isDialogOpen, se
 
       function parseAdCopy(adCopyText: string) {
         try {
-          // Check if text contains section indicators (Headlines/Ad Copy/Hashtags)
-          if (adCopyText.match(/headlines|ad copy|hashtags/i)) {
-            // Split by any combination of ### or newlines
-            const cleanText = adCopyText.replace(/#{3,}/g, '\n').trim();
-            const sections = cleanText.split(/\n+/);
+          // Split the text into sets
+          const sets = adCopyText.split(/Set \d+:/g).filter(Boolean);
 
-            const headlines: string[] = [];
-            const adCopies: string[] = [];
-            const hashtags: string[] = [];
+          return sets.map(set => {
+            const lines = set.trim().split('\n');
+            let headline = '';
+            let adCopy = '';
+            let hashtags = '';
 
-            let currentSection: 'headlines' | 'adcopy' | 'hashtags' | null = null;
-
-            sections.forEach(section => {
-              const trimmedSection = section.trim();
-
-              // Determine section type
-              if (trimmedSection.toLowerCase().includes('headline')) {
-                currentSection = 'headlines';
-              } else if (trimmedSection.toLowerCase().includes('ad copy')) {
-                currentSection = 'adcopy';
-              } else if (trimmedSection.toLowerCase().includes('hashtag')) {
-                currentSection = 'hashtags';
-              } else if (trimmedSection && currentSection) {
-                // Process content based on current section
-                const items = trimmedSection.split('-').map(item => item.trim()).filter(Boolean);
-
-                switch (currentSection) {
-                  case 'headlines':
-                    headlines.push(...items);
-                    break;
-                  case 'adcopy':
-                    adCopies.push(...items);
-                    break;
-                  case 'hashtags':
-                    hashtags.push(...items);
-                    break;
-                }
+            lines.forEach(line => {
+              const trimmedLine = line.trim();
+              if (trimmedLine.startsWith('Headline:')) {
+                headline = trimmedLine.replace('Headline:', '').trim();
+              } else if (trimmedLine.startsWith('Ad Copy:')) {
+                adCopy = trimmedLine.replace('Ad Copy:', '').trim();
+              } else if (trimmedLine.startsWith('Hashtags:')) {
+                hashtags = trimmedLine.replace('Hashtags:', '').trim();
               }
             });
 
-            // Create combinations of headlines, ad copies, and hashtags
-            const maxLength = Math.max(headlines.length, adCopies.length, 1);
-            return Array.from({ length: maxLength }, (_, i) => ({
-              headline: headlines[i] || headlines[0] || '',
-              adCopy: adCopies[i] || adCopies[0] || '',
-              hashtag: hashtags.join(' ') || ''
-            }));
-          }
-
-          // Fallback to original parsing logic for "Headline:" format
-          const suggestions = adCopyText.split('Headline:').filter(Boolean);
-          return suggestions.map(suggestion => {
-            const headlineParts = suggestion.split('Ad Copy:');
-            const headline = headlineParts[0] || '';
-
-            const remainingParts = headlineParts[1]?.split('Hashtag:') || [];
-            const adCopy = remainingParts[0] || '';
-            const hashtag = remainingParts[1] || '';
-
             return {
-              headline: headline.trim(),
-              adCopy: adCopy.trim(),
-              hashtag: hashtag.trim(),
+              headline,
+              adCopy,
+              hashtag: hashtags
             };
           });
         } catch (error) {
@@ -111,7 +78,7 @@ const AdCopy = ({ recommendedAd, videoDetails, isAdCopyClicked, isDialogOpen, se
         }
       }
 
-    const parsedAdCopy = AdCopyData ? parseAdCopy(AdCopyData) : [];
+    const parsedAdCopy = adCopyData ? parseAdCopy(adCopyData) : [];
 
   return (
     <ErrorBoundary FallbackComponent={({ error }) => <ErrorFallback error={error} />}>
@@ -134,42 +101,47 @@ const AdCopy = ({ recommendedAd, videoDetails, isAdCopyClicked, isDialogOpen, se
       </IconButton>
     </DialogTitle>
     <DialogContent>
-      {AdCopyData ? (
+      {adCopyData ? (
         <div className="p-4">
           {parsedAdCopy.length > 0 && (
-            <div className="relative px-8">
-              <p className="mb-2"><strong>Headline:</strong></p>
-              <h2 className="mb-4">{parsedAdCopy[currentSuggestionIndex].headline}</h2>
-              <p className="mb-2"><strong>Ad Copy:</strong></p>
-              <p className="mb-4">{parsedAdCopy[currentSuggestionIndex].adCopy}</p>
-              <p className="mb-2"><strong>Hashtags:</strong></p>
-              <p className="text-blue-500">{parsedAdCopy[currentSuggestionIndex].hashtag}</p>
-              {parsedAdCopy.length > 1 && (
-                <>
-                  <IconButton
-                    onClick={handlePreviousSuggestion}
-                    sx={{
-                      position: 'absolute',
-                      left: -20,
-                      top: '50%',
-                      transform: 'translateY(-50%)',
-                    }}
-                  >
-                    <ArrowBackIosIcon />
-                  </IconButton>
-                  <IconButton
-                    onClick={handleNextSuggestion}
-                    sx={{
-                      position: 'absolute',
-                      right: -20,
-                      top: '50%',
-                      transform: 'translateY(-50%)',
-                    }}
-                  >
-                    <ArrowForwardIosIcon />
-                  </IconButton>
-                </>
-              )}
+            <div className="relative">
+              <div className="flex items-center justify-between">
+                <button
+                  onClick={handlePreviousSuggestion}
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                  disabled={parsedAdCopy.length <= 1}
+                >
+                  <img
+                    src={parsedAdCopy.length <= 1 ? "/ChevronLeftDisabled.svg" : "/ChevronLeft.svg"}
+                    alt="Previous"
+                  />
+                </button>
+                <div className="flex-1 px-8">
+                  <div className="text-center">
+                    <span className="text-sm text-gray-500">
+                      {currentSuggestionIndex + 1} / {parsedAdCopy.length}
+                    </span>
+                  </div>
+                  <div className="mt-4">
+                    <p className="mb-2"><strong>Headline:</strong></p>
+                    <h2 className="mb-4">{parsedAdCopy[currentSuggestionIndex].headline}</h2>
+                    <p className="mb-2"><strong>Ad Copy:</strong></p>
+                    <p className="mb-4">{parsedAdCopy[currentSuggestionIndex].adCopy}</p>
+                    <p className="mb-2"><strong>Hashtags:</strong></p>
+                    <p className="text-blue-500">{parsedAdCopy[currentSuggestionIndex].hashtag}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={handleNextSuggestion}
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                  disabled={parsedAdCopy.length <= 1}
+                >
+                  <img
+                    src={parsedAdCopy.length <= 1 ? "/ChevronRightDisabled.svg" : "/ChevronRight.svg"}
+                    alt="Next"
+                  />
+                </button>
+              </div>
             </div>
           )}
         </div>

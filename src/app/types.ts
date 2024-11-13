@@ -160,6 +160,7 @@ export interface AdCopyProps {
   isAdCopyClicked: boolean;
   isDialogOpen: boolean;
   setIsDialogOpen: (isDialogOpen: boolean) => void;
+  setIsGenerating: (isGenerating: boolean) => void;
 }
 
 
