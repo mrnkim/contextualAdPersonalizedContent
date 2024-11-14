@@ -101,7 +101,6 @@ export default function Page() {
             isRecommendClickedEver={isRecommendClickedEver}
             setSelectedAd={setSelectedAd}
             setSelectedChapter={setSelectedChapter}
-            customTextsData={customTextsData ?? ""}
           />
         </div>
       </div>

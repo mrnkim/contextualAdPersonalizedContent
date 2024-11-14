@@ -51,7 +51,6 @@ export interface AdsProps {
   isRecommendClickedEver: boolean;
   setSelectedAd: (selectedAd: RecommendedAdProps["recommendedAd"] | null) => void;
   setSelectedChapter: (selectedChapter: number | null) => void;
-  customTextsData: string;
 }
 
 export interface FootageSummaryProps {

@@ -18,7 +18,7 @@ type VideoType = {
   title: string;
 };
 
-function Ads({ indexId, isIndexIdLoading, selectedFile, isRecommendClicked, setIsRecommendClicked, searchOptionRef, customQueryRef, isAnalysisLoading, setIsRecommendClickedEver, isRecommendClickedEver, setSelectedAd, setSelectedChapter, customTextsData }: AdsProps) {
+function Ads({ indexId, isIndexIdLoading, selectedFile, isRecommendClicked, setIsRecommendClicked, searchOptionRef, customQueryRef, isAnalysisLoading, setIsRecommendClickedEver, isRecommendClickedEver, setSelectedAd, setSelectedChapter}: AdsProps) {
   const [page, setPage] = useState(1);
   const [hasSearchOptionChanged, setHasSearchOptionChanged] = useState(false);
 
