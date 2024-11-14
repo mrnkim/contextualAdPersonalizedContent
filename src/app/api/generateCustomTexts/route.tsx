@@ -3,6 +3,8 @@ import { NextResponse } from "next/server";
 const API_KEY = process.env.TWELVELABS_API_KEY;
 const TWELVELABS_API_BASE_URL = process.env.TWELVELABS_API_BASE_URL;
 
+export const maxDuration = 60;
+
 export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const videoId = searchParams.get("videoId");

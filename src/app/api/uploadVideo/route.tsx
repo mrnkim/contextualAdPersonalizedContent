@@ -3,6 +3,8 @@ import { NextResponse } from "next/server";
 import { writeFile, unlink } from 'fs/promises';
 import path from 'path';
 
+export const maxDuration = 60;
+
 const API_KEY = process.env.TWELVELABS_API_KEY;
 if (!API_KEY) throw new Error('TWELVELABS_API_KEY is not defined');
 
