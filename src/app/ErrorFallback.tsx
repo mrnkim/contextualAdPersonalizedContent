@@ -1,12 +1,12 @@
 import React from "react";
 import { Alert } from "@mui/material";
 import clsx from "clsx";
-import Button from "./Button";
+// import Button from "./Button";
 
 function ErrorFallback({ error }: { error: Error }) {
-  const handleRefresh = () => {
-    window.location.reload();
-  };
+  // const handleRefresh = () => {
+  //   window.location.reload();
+  // };
 
   return (
     <div
@@ -30,9 +30,9 @@ function ErrorFallback({ error }: { error: Error }) {
           {error instanceof Error ? error.message : String(error)}
         </span>
       </Alert>
-      <Button type="button" size="sm" onClick={handleRefresh}>
+      {/* <Button type="button" size="sm" onClick={handleRefresh}>
         Back to Home
-      </Button>
+      </Button> */}
     </div>
   );
 }
