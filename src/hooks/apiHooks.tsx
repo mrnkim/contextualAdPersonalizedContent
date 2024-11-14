@@ -7,7 +7,7 @@ export const generateGist = async (videoId: string) => {
     return data;
   };
 
-  export const generateCustomTexts = async (videoId: string, prompt: string) => {
+export const generateCustomTexts = async (videoId: string, prompt: string) => {
     const response = await fetch(`/api/generateCustomTexts?videoId=${videoId}&prompt=${prompt}`);
     if (!response.ok) {
       throw new Error("Failed to generate gist");
@@ -16,7 +16,7 @@ export const generateGist = async (videoId: string) => {
     return data;
   };
 
-  export const textToVideoSearch = async (indexId: string, query: string, searchOptions: string[]) => {
+export const textToVideoSearch = async (indexId: string, query: string, searchOptions: string[]) => {
     const response = await fetch(`/api/search?indexId=${indexId}&query=${query}&searchOptions=${searchOptions}`);
     if (!response.ok) {
       throw new Error("Failed to search videos");
@@ -24,7 +24,7 @@ export const generateGist = async (videoId: string) => {
     return response.json();
   };
 
-  export const generateChapters = async (videoId: string) => {
+export const generateChapters = async (videoId: string) => {
     const response = await fetch(`/api/generateChapters?videoId=${videoId}`);
     if (!response.ok) {
       throw new Error("Failed to search videos");
@@ -32,7 +32,7 @@ export const generateGist = async (videoId: string) => {
     return response.json();
   };
 
- export const fetchVideos = async (page: number, indexId: string) => {
+export const fetchVideos = async (page: number, indexId: string) => {
 	if (!indexId) {
 		throw new Error("ads index ID is required");
 	}
@@ -43,7 +43,7 @@ export const generateGist = async (videoId: string) => {
 	return response.json();
 };
 
- export const fetchVideoDetails = async (videoId: string, indexId: string) => {
+export const fetchVideoDetails = async (videoId: string, indexId: string) => {
     const response = await fetch(`/api/getVideo?videoId=${videoId}&indexId=${indexId}`);
     if (!response.ok) {
       throw new Error("Network response was not ok");
@@ -51,7 +51,7 @@ export const generateGist = async (videoId: string) => {
     return response.json();
   };
 
- export const fetchSearchPage = async (pageToken: string) => {
+export const fetchSearchPage = async (pageToken: string) => {
     const response = await fetch(`/api/getSearchPage?pageToken=${pageToken}`);
     if (!response.ok) {
       throw new Error("Network response was not ok");
@@ -59,37 +59,13 @@ export const generateGist = async (videoId: string) => {
     return response.json();
   };
 
- export const fetchTaskDetails = async (taskId: string) => {
+export const fetchTaskDetails = async (taskId: string) => {
     const response = await fetch(`/api/getTask?taskId=${taskId}`);
     if (!response.ok) {
       throw new Error("Network response was not ok");
     }
     return response.json();
   };
-
- export const getThumbnail = async (indexId: string, videoId: string, time: number ) => {
-    const response = await fetch(`/api/getThumbnail?indexId=${indexId}&videoId=${videoId}&time=${time}`)
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-    return response.json();
-  };
-
-export async function fetchAdsIndexId() {
-  const response = await fetch('/api/getAdsIndexId');
-  if (!response.ok) {
-    throw new Error("Failed to fetch ads index ID");
-  }
-  return await response.json();
-}
-
-export async function fetchFootageIndexId() {
-  const response = await fetch('/api/getFootageIndexId');
-  if (!response.ok) {
-    throw new Error("Failed to fetch footage index ID");
-  }
-  return await response.json();
-}
 
 export const uploadFootage = async (file: File, indexId: string) => {
   const formData = new FormData();
