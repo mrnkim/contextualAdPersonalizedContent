@@ -16,17 +16,11 @@ Contextual Ad is a tool that allows you to analyze your source footage, generate
   </a>
 </div>
 
-By starting the app, the first step is to upload new source footage that you'd like to analyze and receive ad recommendations for.
-
-If you choose not to upload new footage, the app will automatically display the latest footage from the footage index.
-
-The next step is to analyze the footage. The analysis will provide a summary that includes the main emotions, relevant hashtags, and a brief overview of the content.
-
-Following the analysis, you can receive ad recommendations that are best suited for the footage. You have several options for recommendations: general, emotional, visual, conversational, or you can customize your own by providing a keyword to include in the ad recommendations.
-
-Additionally, you can generate ad copies, headlines, and hashtags for each recommended ad.
-
-The subsequent step is to select an ad from the recommendations list and choose a placement from the recommended placement list. The placement list will show a preview of the ad and the footage together.
+1. Upload new footage or use existing content from the footage index
+2. Get a summary of a footage on Event Type, Main Content, and Emotional Tone. 
+3. Get AI-powered ad recommendations based on your preferred criteria (general, emotional, visual, or custom)
+4. Generate matching ad copy, headlines, and hashtags
+5. Preview recommended ad placements within your footage
 
 ## 🛠️ Built With
 
