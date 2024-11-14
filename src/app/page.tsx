@@ -11,7 +11,7 @@ import { GistData, RecommendedAdProps } from './types';
 const footageIndexId = process.env.NEXT_PUBLIC_FOOTAGE_INDEX_ID;
 const adsIndexId = process.env.NEXT_PUBLIC_ADS_INDEX_ID;
 
-const PROMPT = "Summarize the video focusing on the event type, main content, and the emotional tone. Provide the titles (Event Type, Main Content, Emotional Tone) before each summary. Do not include any introductory text or comments. Start straight away with the summary. For Emotional Tone, start with three words and a period then add more as needed."
+const PROMPT = "Summarize the video focusing on the event type, main content, and the emotional tone. Provide the titles (Event Type, Main Content, Emotional Tone) before each summary. Do not include any introductory text or comments. For Emotional Tone, start with three words and a period."
 
 export default function Page() {
   const [hashtags, setHashtags] = useState<string[]>([]);

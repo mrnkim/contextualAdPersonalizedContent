@@ -12,8 +12,6 @@ import { VideoProps, VideoDetails } from "./types";
 
 const Video: React.FC<VideoProps> = ({ videoId, indexId, showTitle = true, videoDetails: providedVideoDetails }) => {
   const [playing, setPlaying] = useState(false);
-  console.log("🚀 > providedVideoDetails=", providedVideoDetails)
-
 
   const formatDuration = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600);
