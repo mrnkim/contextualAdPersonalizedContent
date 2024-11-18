@@ -2,10 +2,7 @@
 
 Contextual Ad is a tool that allows you to analyze your source footage, generate a summary, and receive ad recommendations based on the content and emotional tone of the footage. It also suggests optimal ad placements, enabling you to preview how the footage and ads work together. Additionally, you can generate ad copies, headlines, and hashtags for each ad!
 
-<div align="center">
-    <img src="public/appScreenShot.png" alt="app screenshot" />
-  </a>
-</div>
+https://github.com/user-attachments/assets/7a406f6c-d100-4942-bb80-a4d7e7c3b4c2
 
 ## 📍 Process Map
 
