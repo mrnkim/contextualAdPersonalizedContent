@@ -1,17 +1,11 @@
-import { TwelveLabs } from 'twelvelabs-js';
 import { NextResponse } from "next/server";
-import { writeFile, unlink } from 'fs/promises';
-import path from 'path';
 
 export const maxDuration = 60;
 
 const API_KEY = process.env.TWELVELABS_API_KEY;
 if (!API_KEY) throw new Error('TWELVELABS_API_KEY is not defined');
 
-const client = new TwelveLabs({ apiKey: API_KEY});
-
 export async function POST(req: Request) {
-  let tempFilePath: string | null = null;
   try {
     const formData = await req.formData();
     const file = formData.get('file') as File;
@@ -24,33 +18,35 @@ export async function POST(req: Request) {
       );
     }
 
-    // Save the file temporarily
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    tempFilePath = path.join('/tmp', file.name);
-    await writeFile(tempFilePath, buffer);
+    const apiFormData = new FormData();
+    apiFormData.append('index_id', indexId);
+    apiFormData.append('video_file', file);
 
-    const task = await client.task.create({
-      indexId: indexId,
-      file: tempFilePath,
+    const response = await fetch('https://api.twelvelabs.io/v1.2/tasks', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'x-api-key': API_KEY as string,
+      },
+      body: apiFormData
     });
 
-    return NextResponse.json({ status: task.status, taskId: task.id }, { status: 200 });
+    if (!response.ok) {
+      console.error('API Error:', {
+        status: response.status,
+        statusText: response.statusText,
+        text: await response.text()
+      });
+      throw new Error(`API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return NextResponse.json({ taskId: data._id }, { status: 200 });
   } catch (error) {
     console.error("Error in POST function:", error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Internal Server Error" },
       { status: 500 }
     );
-  } finally {
-    // Delete the temporary file if it was created
-    if (tempFilePath) {
-      try {
-        await unlink(tempFilePath);
-        console.log(`Temporary file ${tempFilePath} has been deleted.`);
-      } catch (unlinkError) {
-        console.error(`Failed to delete temporary file ${tempFilePath}:`, unlinkError);
-      }
-    }
   }
 }
