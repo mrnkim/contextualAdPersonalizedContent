@@ -86,28 +86,33 @@ export const fetchTaskDetails = async (taskId: string) => {
 };
 
 export const uploadFootage = async (file: File, indexId: string) => {
-  console.log('Starting uploadFootage:', {
+  console.log('Starting direct upload to TwelveLabs:', {
     fileName: file.name,
     fileSize: file.size,
     fileType: file.type,
     indexId
   });
 
-  const formData = new FormData();
-  formData.append('file', file);
-  formData.append('indexId', indexId);
-
   try {
-    console.log('Sending upload request...');
-    const response = await fetch('/api/uploadVideo', {
+    const keyResponse = await fetch('/api/getApiKey');
+    const { apiKey } = await keyResponse.json();
+
+    const formData = new FormData();
+    formData.append('index_id', indexId);
+    formData.append('video_file', file);
+
+    console.log('Sending direct upload request to TwelveLabs...');
+    const response = await fetch('https://api.twelvelabs.io/v1.2/tasks', {
       method: 'POST',
-      body: formData,
+      headers: {
+        'Accept': 'application/json',
+        'x-api-key': apiKey,
+      },
+      body: formData
     });
 
     console.log('Upload response received:', {
       status: response.status,
-      statusText: response.statusText,
-      headers: Object.fromEntries(response.headers.entries())
     });
 
     if (!response.ok) {
@@ -121,7 +126,7 @@ export const uploadFootage = async (file: File, indexId: string) => {
 
     const data = await response.json();
     console.log('Upload successful:', data);
-    return data;
+    return { taskId: data._id };
   } catch (error) {
     console.error('Upload error:', {
       error,
