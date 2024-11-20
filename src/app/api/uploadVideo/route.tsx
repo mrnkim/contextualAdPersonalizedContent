@@ -7,23 +7,11 @@ if (!API_KEY) throw new Error('TWELVELABS_API_KEY is not defined');
 
 export async function POST(req: Request) {
   try {
-    console.log('POST request received');
     const formData = await req.formData();
-    console.log('FormData received:', {
-      hasFile: formData.has('file'),
-      hasIndexId: formData.has('indexId')
-    });
-
     const file = formData.get('file') as File;
     const indexId = formData.get('indexId') as string;
-    console.log('Extracted data:', {
-      fileSize: file?.size,
-      fileType: file?.type,
-      indexId
-    });
 
     if (!indexId || !file) {
-      console.log('Validation failed: missing required fields');
       return NextResponse.json(
         { error: "indexId and file are required" },
         { status: 400 }
@@ -33,7 +21,6 @@ export async function POST(req: Request) {
     const apiFormData = new FormData();
     apiFormData.append('index_id', indexId);
     apiFormData.append('video_file', file);
-    console.log('Preparing API request to TwelveLabs');
 
     const response = await fetch('https://api.twelvelabs.io/v1.2/tasks', {
       method: 'POST',
@@ -42,12 +29,6 @@ export async function POST(req: Request) {
         'x-api-key': API_KEY as string,
       },
       body: apiFormData
-    });
-
-    console.log('API Response received:', {
-      status: response.status,
-      statusText: response.statusText,
-      headers: Object.fromEntries(response.headers.entries())
     });
 
     if (!response.ok) {
@@ -62,7 +43,6 @@ export async function POST(req: Request) {
     }
 
     const data = await response.json();
-    console.log('API Success response:', data);
     return NextResponse.json({ taskId: data._id }, { status: 200 });
   } catch (error) {
     console.error("Error in POST function:", {

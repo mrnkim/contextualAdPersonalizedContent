@@ -60,21 +60,15 @@ export const fetchSearchPage = async (pageToken: string) => {
   };
 
 export const fetchTaskDetails = async (taskId: string) => {
-  console.log('Fetching task details:', { taskId });
 
   try {
     const response = await fetch(`/api/getTask?taskId=${taskId}`);
-    console.log('Task details response:', {
-      status: response.status,
-      statusText: response.statusText
-    });
 
     if (!response.ok) {
       throw new Error("Network response was not ok");
     }
 
     const data = await response.json();
-    console.log('Task details data:', data);
     return data;
   } catch (error) {
     console.error('Error fetching task details:', {
@@ -85,13 +79,13 @@ export const fetchTaskDetails = async (taskId: string) => {
   }
 };
 
+/**
+ * Uploads footage directly to Twelve Labs API instead of proxying through our backend
+ * to bypass Vercel's 4.5MB payload size limitation. 
+ *
+ * @see https://vercel.com/docs/concepts/limits/overview#serverless-function-payload-size-limit
+ */
 export const uploadFootage = async (file: File, indexId: string) => {
-  console.log('Starting direct upload to TwelveLabs:', {
-    fileName: file.name,
-    fileSize: file.size,
-    fileType: file.type,
-    indexId
-  });
 
   try {
     const keyResponse = await fetch('/api/getApiKey');
@@ -101,7 +95,6 @@ export const uploadFootage = async (file: File, indexId: string) => {
     formData.append('index_id', indexId);
     formData.append('video_file', file);
 
-    console.log('Sending direct upload request to TwelveLabs...');
     const response = await fetch('https://api.twelvelabs.io/v1.2/tasks', {
       method: 'POST',
       headers: {
@@ -109,10 +102,6 @@ export const uploadFootage = async (file: File, indexId: string) => {
         'x-api-key': apiKey,
       },
       body: formData
-    });
-
-    console.log('Upload response received:', {
-      status: response.status,
     });
 
     if (!response.ok) {
@@ -125,7 +114,6 @@ export const uploadFootage = async (file: File, indexId: string) => {
     }
 
     const data = await response.json();
-    console.log('Upload successful:', data);
     return { taskId: data._id };
   } catch (error) {
     console.error('Upload error:', {

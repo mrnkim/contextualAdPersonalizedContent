@@ -51,15 +51,9 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 
 	const uploadMutation = useMutation({
 		mutationFn: (file: File) => {
-			console.log('Starting upload mutation:', {
-				fileName: file.name,
-				fileSize: file.size,
-				indexId
-			});
 			return uploadFootage(file, indexId);
 		},
 		onSuccess: (data) => {
-			console.log('Upload mutation successful:', data);
 			setTaskId(data.taskId);
 		},
 		onError: (error) => {
@@ -71,11 +65,6 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 	});
 
 	const handleFileUpload = (file: File) => {
-		console.log('handleFileUpload called:', {
-			fileName: file.name,
-			fileSize: file.size,
-			fileType: file.type
-		});
 		setSelectedFile(file);
 		uploadMutation.mutate(file);
 	};
@@ -97,17 +86,13 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 		let intervalId: NodeJS.Timeout | null = null;
 
 		if (taskId) {
-			console.log('Task polling started for taskId:', taskId);
 
 			const fetchTask = async () => {
 				try {
-					console.log('Fetching task status...');
 					const details = await fetchTaskDetails(taskId);
-					console.log('Task status received:', details);
 					setTaskDetails(details);
 
 					if (details.status === 'ready' || details.status === 'failed') {
-						console.log('Task completed with status:', details.status);
 						queryClient.invalidateQueries({ queryKey: ['videos', indexId] });
 						if (intervalId) {
 							clearInterval(intervalId);
@@ -129,7 +114,6 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 
 		return () => {
 			if (intervalId) {
-				console.log('Cleaning up task polling interval');
 				clearInterval(intervalId);
 			}
 		};
