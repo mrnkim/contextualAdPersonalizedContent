@@ -76,7 +76,7 @@ function Ads({ indexId, isIndexIdLoading, selectedFile, isRecommendClicked, setI
                       disabled={hashtags.length === 0 || !!selectedFile || isRecommendClicked || isAnalysisLoading || (!hasSearchOptionChanged && isRecommendClickedEver)}
                     >
                       <img
-                        src={selectedFile || isRecommendClicked || isAnalysisLoading ? "/magicDisabled.svg" : "/magic.svg"}
+                        src={hashtags.length === 0 || !!selectedFile || isRecommendClicked || isAnalysisLoading || (!hasSearchOptionChanged && isRecommendClickedEver) ? "/magicDisabled.svg" : "/magic.svg"}
                         alt="Magic wand icon"
                         className="w-4 h-4"
                       />
