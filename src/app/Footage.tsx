@@ -50,13 +50,32 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 	const hasVideoData = videosData?.pages[0]?.data && videosData.pages[0].data.length > 0;
 
 	const uploadMutation = useMutation({
-		mutationFn: (file: File) => uploadFootage(file, indexId),
+		mutationFn: (file: File) => {
+			console.log('Starting upload mutation:', {
+				fileName: file.name,
+				fileSize: file.size,
+				indexId
+			});
+			return uploadFootage(file, indexId);
+		},
 		onSuccess: (data) => {
+			console.log('Upload mutation successful:', data);
 			setTaskId(data.taskId);
+		},
+		onError: (error) => {
+			console.error('Upload mutation failed:', {
+				error,
+				message: error instanceof Error ? error.message : 'Unknown error'
+			});
 		},
 	});
 
 	const handleFileUpload = (file: File) => {
+		console.log('handleFileUpload called:', {
+			fileName: file.name,
+			fileSize: file.size,
+			fileType: file.type
+		});
 		setSelectedFile(file);
 		uploadMutation.mutate(file);
 	};
@@ -78,12 +97,17 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 		let intervalId: NodeJS.Timeout | null = null;
 
 		if (taskId) {
+			console.log('Task polling started for taskId:', taskId);
+
 			const fetchTask = async () => {
 				try {
+					console.log('Fetching task status...');
 					const details = await fetchTaskDetails(taskId);
+					console.log('Task status received:', details);
 					setTaskDetails(details);
 
 					if (details.status === 'ready' || details.status === 'failed') {
+						console.log('Task completed with status:', details.status);
 						queryClient.invalidateQueries({ queryKey: ['videos', indexId] });
 						if (intervalId) {
 							clearInterval(intervalId);
@@ -91,7 +115,10 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 						reset();
 					}
 				} catch (error) {
-					console.error('Error fetching task details:', error);
+					console.error('Error in task polling:', {
+						error,
+						message: error instanceof Error ? error.message : 'Unknown error'
+					});
 					reset();
 				}
 			};
@@ -102,6 +129,7 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 
 		return () => {
 			if (intervalId) {
+				console.log('Cleaning up task polling interval');
 				clearInterval(intervalId);
 			}
 		};
