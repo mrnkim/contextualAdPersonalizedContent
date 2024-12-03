@@ -44,7 +44,7 @@ function IndexVideos({ indexId, isIndexIdLoading}: IndexVideosProps) {
             <div className="text-center py-8">There are no videos in this index</div>
           ) : (
             <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 justify-items-center">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 justify-items-center w-full max-w-6xl">
                 {videosData.data.map((video: VideoType) => (
                   <Video key={video._id} videoId={video._id} indexId={indexId || ''} />
                 ))}
