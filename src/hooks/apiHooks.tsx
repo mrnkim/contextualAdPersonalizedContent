@@ -32,11 +32,11 @@ export const generateChapters = async (videoId: string) => {
     return response.json();
   };
 
-export const fetchVideos = async (page: number, indexId: string) => {
+export const fetchVideos = async (page: number, indexId: string, pageLimit: number=9) => {
 	if (!indexId) {
 		throw new Error("ads index ID is required");
 	}
-	const response = await fetch(`/api/getVideos?indexId=${indexId}&page=${page}`);
+	const response = await fetch(`/api/getVideos?indexId=${indexId}&page=${page}&pageLimit=${pageLimit}`);
 	if (!response.ok) {
 		throw new Error("Network response was not ok");
 	}
@@ -81,7 +81,7 @@ export const fetchTaskDetails = async (taskId: string) => {
 
 /**
  * Uploads footage directly to Twelve Labs API instead of proxying through our backend
- * to bypass Vercel's 4.5MB payload size limitation. 
+ * to bypass Vercel's 4.5MB payload size limitation.
  *
  * @see https://vercel.com/docs/concepts/limits/overview#serverless-function-payload-size-limit
  */

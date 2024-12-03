@@ -7,6 +7,7 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const page = searchParams.get("page") || "1";
   const indexId = searchParams.get("indexId");
+  const pageLimit = searchParams.get("pageLimit");
 
   if (!indexId) {
     return NextResponse.json(
@@ -15,7 +16,7 @@ export async function GET(req: Request) {
     );
   }
 
-  const url = `${TWELVELABS_API_BASE_URL}/indexes/${indexId}/videos?page=${page}&page_limit=9`;
+  const url = `${TWELVELABS_API_BASE_URL}/indexes/${indexId}/videos?page=${page}&page_limit=${pageLimit}`;
 
   const options = {
     method: "GET",

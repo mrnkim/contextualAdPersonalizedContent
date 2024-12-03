@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { generateGist, generateCustomTexts } from '@/hooks/apiHooks';
 import { GistData, RecommendedAdProps } from './types';
 import Button from './Button';
+import IndexVideos from './IndexVideos';
 
 const footageIndexId = process.env.NEXT_PUBLIC_FOOTAGE_INDEX_ID;
 const adsIndexId = process.env.NEXT_PUBLIC_ADS_INDEX_ID;
@@ -157,8 +158,12 @@ export default function Page() {
       ) : (
         <div className="w-full max-w-7xl mx-auto">
           <h1 className="text-3xl font-bold text-center mb-16">Personalized Content</h1>
+          {adsIndexId && <IndexVideos
+            indexId={adsIndexId}
+            isIndexIdLoading={!adsIndexId}
+              />}
           </div>
-      )}
+        )}
     </main>
   );
 }
