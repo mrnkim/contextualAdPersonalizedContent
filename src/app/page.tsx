@@ -7,6 +7,7 @@ import RecommendedAds from './RecommendedAds'
 import { useQuery } from "@tanstack/react-query";
 import { generateGist, generateCustomTexts } from '@/hooks/apiHooks';
 import { GistData, RecommendedAdProps } from './types';
+import Button from './Button';
 
 const footageIndexId = process.env.NEXT_PUBLIC_FOOTAGE_INDEX_ID;
 const adsIndexId = process.env.NEXT_PUBLIC_ADS_INDEX_ID;
@@ -23,6 +24,7 @@ export default function Page() {
   const [isRecommendClicked, setIsRecommendClicked] = useState(false);
   const [isRecommendClickedEver, setIsRecommendClickedEver] = useState(false);
   const [isAnalyzeClicked, setIsAnalyzeClicked] = useState(false);
+  const [selectedApp, setSelectedApp] = useState<'contextual' | 'personalized'>('contextual');
 
   const searchOptionRef = useRef<HTMLFormElement>(null);
   const customQueryRef = useRef<HTMLInputElement>(null);
@@ -60,70 +62,102 @@ export default function Page() {
   }, [customTextsData]);
 
   return (
-    <main className="flex flex-col min-h-screen p-24">
-      <div className="flex w-full max-w-7xl mx-auto">
-        <div className="w-2/3 pr-4">
-          <Footage
-            hashtags={hashtags}
-            setHashtags={setHashtags}
-            indexId={footageIndexId ?? ''}
-            isIndexIdLoading={!footageIndexId}
-            footageVideoId ={footageVideoId}
-            setFootageVideoId={setFootageVideoId}
-            selectedFile={selectedFile}
-            setSelectedFile={setSelectedFile}
-            setIsRecommendClicked={setIsRecommendClicked}
-            emotions={emotions}
-            setEmotions={setEmotions}
-            gistData={gistData || { hashtags: [] }}
-            customTextsData={customTextsData ?? ""}
-            isLoading={isGistLoading || isCustomTextsLoading}
-            error={gistDataError || customTextsError}
-            setIsRecommendClickedEver={setIsRecommendClickedEver}
-            setSelectedAd={setSelectedAd}
-            setSelectedChapter={setSelectedChapter}
-            isAnalyzeClicked={isAnalyzeClicked}
-            setIsAnalyzeClicked={setIsAnalyzeClicked}
-          />
-        </div>
-        <div className="w-1/6"></div>
-        <div className="w-2/3 pl-4">
-          <Ads
-            indexId={adsIndexId ?? ''}
-            isIndexIdLoading={!adsIndexId}
-            selectedFile={selectedFile}
-            isRecommendClicked={isRecommendClicked}
-            setIsRecommendClicked={setIsRecommendClicked}
-            searchOptionRef={searchOptionRef}
-            customQueryRef={customQueryRef}
-            isAnalysisLoading={isGistLoading || isCustomTextsLoading}
-            setIsRecommendClickedEver={setIsRecommendClickedEver}
-            isRecommendClickedEver={isRecommendClickedEver}
-            setSelectedAd={setSelectedAd}
-            setSelectedChapter={setSelectedChapter}
-            hashtags={hashtags}
-          />
-        </div>
+    <main className="flex flex-col min-h-screen p-12">
+      <div className="flex gap-4 mb-8 max-w-7xl mx-auto w-full">
+        <Button
+          onClick={() => setSelectedApp('contextual')}
+          className={`${
+            selectedApp === 'contextual'
+              ? 'text-black'
+              : 'text-gray-300'
+          }`}
+        >
+          Contextual Ads
+        </Button>
+        <Button
+          onClick={() => setSelectedApp('personalized')}
+          className={`${
+            selectedApp === 'personalized'
+            ? 'text-black'
+            : 'text-gray-300'
+          }`}
+        >
+          Personalized Content
+        </Button>
       </div>
-      {isRecommendClickedEver && !selectedFile && (
-        <div className="w-3/4 mx-auto">
-          <RecommendedAds
-            hashtags={hashtags}
-            footageVideoId={footageVideoId}
-            footageIndexId={footageIndexId ?? ''}
-            adsIndexId={adsIndexId ?? ''}
-            selectedFile={selectedFile}
-            isRecommendClicked={isRecommendClicked}
-            setIsRecommendClicked={setIsRecommendClicked}
-            searchOptionRef={searchOptionRef}
-            customQueryRef={customQueryRef}
-            emotions={emotions}
-            selectedAd={selectedAd}
-            setSelectedAd={setSelectedAd}
-            selectedChapter={selectedChapter}
-            setSelectedChapter={setSelectedChapter}
-          />
-        </div>
+
+      {selectedApp === 'contextual' ? (
+        <>
+          <h1 className="text-3xl font-bold text-center mb-16">Contextual Ads</h1>
+          <div className="flex w-full max-w-7xl mx-auto">
+            <div className="w-2/3 pr-4">
+              <Footage
+                hashtags={hashtags}
+                setHashtags={setHashtags}
+                indexId={footageIndexId ?? ''}
+                isIndexIdLoading={!footageIndexId}
+                footageVideoId ={footageVideoId}
+                setFootageVideoId={setFootageVideoId}
+                selectedFile={selectedFile}
+                setSelectedFile={setSelectedFile}
+                setIsRecommendClicked={setIsRecommendClicked}
+                emotions={emotions}
+                setEmotions={setEmotions}
+                gistData={gistData || { hashtags: [] }}
+                customTextsData={customTextsData ?? ""}
+                isLoading={isGistLoading || isCustomTextsLoading}
+                error={gistDataError || customTextsError}
+                setIsRecommendClickedEver={setIsRecommendClickedEver}
+                setSelectedAd={setSelectedAd}
+                setSelectedChapter={setSelectedChapter}
+                isAnalyzeClicked={isAnalyzeClicked}
+                setIsAnalyzeClicked={setIsAnalyzeClicked}
+              />
+            </div>
+            <div className="w-1/6"></div>
+            <div className="w-2/3 pl-4">
+              <Ads
+                indexId={adsIndexId ?? ''}
+                isIndexIdLoading={!adsIndexId}
+                selectedFile={selectedFile}
+                isRecommendClicked={isRecommendClicked}
+                setIsRecommendClicked={setIsRecommendClicked}
+                searchOptionRef={searchOptionRef}
+                customQueryRef={customQueryRef}
+                isAnalysisLoading={isGistLoading || isCustomTextsLoading}
+                setIsRecommendClickedEver={setIsRecommendClickedEver}
+                isRecommendClickedEver={isRecommendClickedEver}
+                setSelectedAd={setSelectedAd}
+                setSelectedChapter={setSelectedChapter}
+                hashtags={hashtags}
+              />
+            </div>
+          </div>
+          {isRecommendClickedEver && !selectedFile && (
+            <div className="w-3/4 mx-auto">
+              <RecommendedAds
+                hashtags={hashtags}
+                footageVideoId={footageVideoId}
+                footageIndexId={footageIndexId ?? ''}
+                adsIndexId={adsIndexId ?? ''}
+                selectedFile={selectedFile}
+                isRecommendClicked={isRecommendClicked}
+                setIsRecommendClicked={setIsRecommendClicked}
+                searchOptionRef={searchOptionRef}
+                customQueryRef={customQueryRef}
+                emotions={emotions}
+                selectedAd={selectedAd}
+                setSelectedAd={setSelectedAd}
+                selectedChapter={selectedChapter}
+                setSelectedChapter={setSelectedChapter}
+              />
+            </div>
+          )}
+        </>
+      ) : (
+        <div className="w-full max-w-7xl mx-auto">
+          <h1 className="text-3xl font-bold text-center mb-16">Personalized Content</h1>
+          </div>
       )}
     </main>
   );
