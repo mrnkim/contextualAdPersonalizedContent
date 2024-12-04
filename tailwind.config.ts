@@ -1,5 +1,5 @@
 import type { Config } from "tailwindcss";
-import colors from "./src/styles/colors"; // colors 파일을 import 합니다
+import colors from "./src/styles/colors"; 
 
 const config: Config = {
   content: [

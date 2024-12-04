@@ -4,13 +4,13 @@ export const maxDuration = 60;
 
 const API_KEY = process.env.TWELVELABS_API_KEY;
 const TWELVELABS_API_BASE_URL = process.env.TWELVELABS_API_BASE_URL;
-const PAGE_LIMIT =  4;
 
 export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const indexId = searchParams.get("indexId");
     const query = searchParams.get("query");
     const searchOptionsString = searchParams.get("searchOptions");
+    const pageLimit = searchParams.get("pageLimit");
     const searchOptions = searchOptionsString ? searchOptionsString.split(',') : [];
 
     if (!indexId) {
@@ -34,8 +34,16 @@ export async function GET(req: Request) {
               "Content-Type": "application/json",
               "x-api-key": `${API_KEY}`,
             },
-            body: JSON.stringify({query: query, index_id: indexId, search_options: searchOptions, group_by: "video", page_limit: PAGE_LIMIT})
-        };
+            body: JSON.stringify({
+                query: query,
+                index_id: indexId,
+                search_options: searchOptions,
+                group_by: "video",
+                page_limit: parseInt(pageLimit ?? "4"),
+                threshold: "medium"
+            })
+          };
+          console.log("🚀 > GET > body=", options.body)
 
       try {
         const response = await fetch(url, options);
