@@ -5,7 +5,7 @@ function UserProfiles({ indexId }: { indexId: string }) {
   const profiles = [
     {
       profilePic: '/profile1.jpg',
-      interests: ['Music', 'Travel'],
+      interests: ['Music', 'Travel', 'Beauty'],
       demographics: {
         name: 'Emily',
         age: 19,
@@ -39,7 +39,7 @@ function UserProfiles({ indexId }: { indexId: string }) {
   ];
 
   return (
-    <div className="max-w-6xl mx-auto flex justify-between gap-2 p-4 mt-16">
+    <div className="max-w-6xl mx-auto flex justify-between gap-1 p-4 mt-16">
       {profiles.map((profile, index) => (
         <UserProfile key={index} {...profile} indexId={indexId} />
       ))}
