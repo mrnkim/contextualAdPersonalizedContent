@@ -40,7 +40,6 @@ export async function GET(req: Request) {
     }
 
     const video = await response.json();
-    console.log("🚀 > GET > video=", video)
 
     return NextResponse.json({
       hls: video.hls,

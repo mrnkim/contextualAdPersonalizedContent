@@ -35,7 +35,6 @@ export async function GET(req: Request) {
         }
 
         const responseText = await response.text();
-        console.log("🚀 > GET > responseText=", responseText)
 
         if (!responseText) {
           throw new Error("Empty response from API");
