@@ -2,13 +2,13 @@ import { NextResponse } from "next/server";
 
 const API_KEY = process.env.TWELVELABS_API_KEY;
 const TWELVELABS_API_BASE_URL = process.env.TWELVELABS_API_BASE_URL;
-const TYPES = ['hashtag']
 
 export const maxDuration = 60;
 
 export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const videoId = searchParams.get("videoId");
+    const prompt = searchParams.get("prompt");
 
     if (!videoId) {
       return NextResponse.json(
@@ -17,14 +17,14 @@ export async function GET(req: Request) {
       );
     }
 
-      const url = `${TWELVELABS_API_BASE_URL}/gist`;
+      const url = `${TWELVELABS_API_BASE_URL}/generate`;
       const options = {
           method: "POST",
           headers: {
               "Content-Type": "application/json",
               "x-api-key": `${API_KEY}`,
             },
-            body: JSON.stringify({types: TYPES, video_id: `${videoId}`})
+            body: JSON.stringify({prompt: prompt, video_id: `${videoId}`, stream: false})
         };
 
       try {
@@ -35,6 +35,7 @@ export async function GET(req: Request) {
         }
 
         const responseText = await response.text();
+        console.log("🚀 > GET > responseText=", responseText)
 
         if (!responseText) {
           throw new Error("Empty response from API");
@@ -42,7 +43,10 @@ export async function GET(req: Request) {
 
         const data = JSON.parse(responseText);
 
-        return NextResponse.json(data, { status: 200 });
+        // Convert the data field to an array by splitting the string
+        const dataArray = data.data.split(" ");
+
+        return NextResponse.json(dataArray, { status: 200 });
       } catch (error) {
         console.error("Error in GET function:", error);
         return NextResponse.json(

@@ -9,6 +9,7 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const indexId = searchParams.get("indexId");
     const query = searchParams.get("query");
+    console.log("🚀 > GET > query=", query)
     const searchOptionsString = searchParams.get("searchOptions");
     const pageLimit = searchParams.get("pageLimit");
     const searchOptions = searchOptionsString ? searchOptionsString.split(',') : [];
@@ -28,31 +29,36 @@ export async function GET(req: Request) {
     }
 
       const url = `${TWELVELABS_API_BASE_URL}/search`;
+      const formData = new FormData();
+      formData.append('query_text', query);
+      formData.append('index_id', indexId);
+      searchOptions.forEach(option => {
+          formData.append('search_options', option);
+      });
+      formData.append('group_by', 'video');
+      formData.append('page_limit', pageLimit ?? '4');
+      formData.append('threshold', 'medium');
+
       const options = {
           method: "POST",
           headers: {
-              "Content-Type": "application/json",
+              "accept": "application/json",
               "x-api-key": `${API_KEY}`,
-            },
-            body: JSON.stringify({
-                query: query,
-                index_id: indexId,
-                search_options: searchOptions,
-                group_by: "video",
-                page_limit: parseInt(pageLimit ?? "4"),
-                threshold: "medium"
-            })
-          };
-          console.log("🚀 > GET > body=", options.body)
+          },
+          body: formData
+      };
 
       try {
         const response = await fetch(url, options);
 
         if (!response.ok) {
+          const errorText = await response.text();
+          console.error(`Network response was not ok: ${response.status} ${response.statusText}. Response body: ${errorText}`);
           throw new Error(`Network response was not ok: ${response.status} ${response.statusText}`);
         }
 
         const responseData = await response.json();
+        console.log("🚀 > GET > responseData=", responseData)
 
         if (!responseData) {
           throw new Error("Empty response from API");

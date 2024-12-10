@@ -51,7 +51,7 @@ const VideosDropDown: React.FC<VideosDropDownProps> = ({
         className={clsx('h-9 w-full tablet:w-[200px]', 'bg-white', 'pl-[1px]', 'truncate text-ellipsis')}
         renderValue={(value) => (
           <div className="truncate">
-            {videosData?.pages.flatMap(page => page.data).find(video => video._id === value)?.metadata.filename || "Select a video"}
+            {videosData?.pages.flatMap(page => page.data).find(video => video._id === value)?.system_metadata.filename || "Select a video"}
           </div>
         )}
         MenuProps={{
@@ -119,7 +119,7 @@ const VideosDropDown: React.FC<VideosDropDownProps> = ({
                 width: '100%'
               }}
             >
-              {video.metadata.filename}
+              {video.system_metadata.filename}
             </MenuItem>
           ))
         )}

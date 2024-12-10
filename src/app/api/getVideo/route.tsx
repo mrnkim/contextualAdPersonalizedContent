@@ -40,10 +40,11 @@ export async function GET(req: Request) {
     }
 
     const video = await response.json();
+    console.log("🚀 > GET > video=", video)
 
     return NextResponse.json({
       hls: video.hls,
-      metadata: video.metadata,
+      metadata: video.system_metadata,
       source: video.source,
     });
   } catch (error) {

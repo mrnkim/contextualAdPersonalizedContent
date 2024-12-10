@@ -7,6 +7,7 @@ import RecommendedAds from './RecommendedAds';
 import { useQuery } from '@tanstack/react-query';
 
 const footageIndexId = process.env.NEXT_PUBLIC_FOOTAGE_INDEX_ID;
+const HASHTAGS_PROMPT = "Generate a list of 3 hashtags that best describe the video. Do not include any introductory text or comments."
 const PROMPT = "Summarize the video focusing on the event type, main content, and the emotional tone. Provide the titles (Event Type, Main Content, Emotional Tone) before each summary. Do not include any introductory text or comments. For Emotional Tone, start with three words and a period."
 
 const ContextualAds = ({ adsIndexId }: { adsIndexId: string }) => {
@@ -23,35 +24,49 @@ const ContextualAds = ({ adsIndexId }: { adsIndexId: string }) => {
     const searchOptionRef = useRef<HTMLFormElement>(null);
     const customQueryRef = useRef<HTMLInputElement>(null);
 
-    const { data: gistData, isLoading: isGistLoading, error: gistDataError } = useQuery<GistData, Error>({
-      queryKey: ["gist", footageVideoId],
-      queryFn: () => generateGist(footageVideoId),
-      enabled: !!footageVideoId && !!isAnalyzeClicked
+    // const { data: gistData, isLoading: isGistLoading, error: gistDataError } = useQuery<GistData, Error>({
+    //   queryKey: ["gist", footageVideoId],
+    //   queryFn: () => generateGist(footageVideoId),
+    //   enabled: !!footageVideoId && !!isAnalyzeClicked
+    // });
+
+    const { data:gistData, isLoading: isGistLoading, error: gistDataError } = useQuery<string, Error>({
+      queryKey: ["hashtags", footageVideoId],
+      queryFn: () => generateCustomTexts(footageVideoId, HASHTAGS_PROMPT),
+      enabled: !!footageVideoId && !!isAnalyzeClicked,
+      refetchOnWindowFocus: false,
     });
+    console.log("🚀 > ContextualAds > gistData=", gistData)
 
     const { data: rawCustomTextsData, isLoading: isCustomTextsLoading, error: customTextsError } = useQuery<string, Error>({
-      queryKey: ["customTexts", footageVideoId],
+      queryKey: ["summary", footageVideoId],
       queryFn: () => generateCustomTexts(footageVideoId, PROMPT),
       enabled: !!footageVideoId && !!isAnalyzeClicked,
       refetchOnWindowFocus: false,
     });
+    console.log("🚀 > ContextualAds > rawCustomTextsData=", rawCustomTextsData)
 
     const customTextsData = useMemo(() => rawCustomTextsData, [rawCustomTextsData]);
 
     useEffect(() => {
-      if (gistData?.hashtags) {
-        setHashtags(gistData.hashtags);
+      if (gistData) {
+        setHashtags(gistData.split("#").filter(tag => tag.trim() !== ""));
       }
     }, [gistData]);
 
     useEffect(() => {
       if (customTextsData) {
-        const emotionalToneRegex = /Emotional Tone:\s*([^.]+)\./;
-        const match = (customTextsData as string).match(emotionalToneRegex);
-        if (match && match[1]) {
-          const firstThreeWords = match[1]?.trim()?.split(/\s+/)?.slice(0, 3);
-          setEmotions(firstThreeWords);
+        const emotionalTones: string[] = [];
+        const matches = customTextsData.matchAll(/Emotional Tone:\s*([^.]+)\./g);
+
+        for (const match of matches) {
+          if (match[1]) {
+            const words = match[1].trim().split(/\s+/).slice(0, 3);
+            emotionalTones.push(...words);
+          }
         }
+
+        setEmotions(emotionalTones);
       }
     }, [customTextsData]);
   return (

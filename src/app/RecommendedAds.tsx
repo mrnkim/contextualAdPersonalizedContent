@@ -12,9 +12,7 @@ import RecommendedAdItem from './RecommendedAdItem';
 
 export enum SearchOption {
   VISUAL = 'visual',
-  CONVERSATION = 'conversation',
-  TEXT_IN_VIDEO = 'text_in_video',
-  LOGO = 'logo'
+  AUDIO = 'audio'
 }
 
 const RecommendedAds = ({ hashtags, footageVideoId, adsIndexId, selectedFile, setIsRecommendClicked, searchOptionRef, customQueryRef, emotions, footageIndexId, isRecommendClicked, selectedAd, setSelectedAd, selectedChapter, setSelectedChapter }: RecommendedAdsProps) => {
@@ -42,14 +40,12 @@ const RecommendedAds = ({ hashtags, footageVideoId, adsIndexId, selectedFile, se
     if (radioInputs[0]?.checked || radioInputs[1]?.checked || radioInputs[4]?.checked) {
       newSearchOptions = [
         SearchOption.VISUAL,
-        SearchOption.CONVERSATION,
-        SearchOption.TEXT_IN_VIDEO,
-        SearchOption.LOGO
+        SearchOption.AUDIO
       ];
     } else if (radioInputs[2]?.checked) {
       newSearchOptions = [SearchOption.VISUAL];
     } else if (radioInputs[3]?.checked) {
-      newSearchOptions = [SearchOption.CONVERSATION];
+      newSearchOptions = [SearchOption.AUDIO];
     }
 
     setSearchOptions(newSearchOptions);

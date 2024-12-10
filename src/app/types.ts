@@ -232,7 +232,7 @@ export interface Video {
   created_at: string;
   updated_at?: string;
   indexed_at: string;
-  metadata: {
+  system_metadata: {
     filename: string;
   };
 }

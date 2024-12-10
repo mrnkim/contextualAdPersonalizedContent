@@ -24,7 +24,7 @@ export async function GET(req: Request) {
               "Content-Type": "application/json",
               "x-api-key": `${API_KEY}`,
             },
-            body: JSON.stringify({prompt: prompt, video_id: `${videoId}`})
+            body: JSON.stringify({prompt: prompt, video_id: `${videoId}`, stream: false})
         };
 
       try {
@@ -35,6 +35,7 @@ export async function GET(req: Request) {
         }
 
         const responseText = await response.text();
+        console.log("🚀 > GET > responseText=", responseText)
 
         if (!responseText) {
           throw new Error("Empty response from API");
@@ -42,7 +43,8 @@ export async function GET(req: Request) {
 
         const data = JSON.parse(responseText);
 
-        return NextResponse.json(data.data,{ status: 200 });
+
+        return NextResponse.json(data.data, { status: 200 });
       } catch (error) {
         console.error("Error in GET function:", error);
         return NextResponse.json(

@@ -19,6 +19,7 @@ function FootageSummary({
   error,
   setShowAnalysis
 }: FootageSummaryProps) {
+  console.log("🚀 > hashtags=", hashtags)
 
   useEffect(() => {
     if (gistData?.hashtags) {

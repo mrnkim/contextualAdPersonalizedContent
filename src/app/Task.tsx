@@ -47,7 +47,7 @@ const Task = ({ taskDetails, playing, setPlaying }: TaskProps): JSX.Element => {
 		{taskDetails?.metadata?.filename && (
 			<div className="w-full">
 				<p className={clsx("text-body3", "truncate", "text-grey-700")}>
-						{taskDetails.metadata.filename}
+						{taskDetails.system_metadata.filename}
 				</p>
 			</div>
 		)}
