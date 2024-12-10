@@ -33,8 +33,6 @@ const Video: React.FC<VideoProps> = ({ videoId, indexId, showTitle = true, video
       }
       return fetchVideoDetails((videoId)!, indexId);
     },
-    staleTime: 600000,
-    gcTime: 900000,
     enabled: !!indexId && (!!videoId) && !providedVideoDetails,
   });
 

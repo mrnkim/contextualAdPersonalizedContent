@@ -27,6 +27,7 @@ function Ads({ indexId, isIndexIdLoading, selectedFile, isRecommendClicked, setI
     queryFn: () => fetchVideos(page, indexId!),
     enabled: !!indexId,
   });
+  console.log("🚀 > Ads > videosData=", videosData)
 
   const totalPage = videosData?.page_info?.total_page || 1;
   const hasVideoData = videosData && videosData.data && videosData.data.length > 0;
@@ -40,7 +41,7 @@ function Ads({ indexId, isIndexIdLoading, selectedFile, isRecommendClicked, setI
   }, [isRecommendClicked]);
 
   return (
-    <div className="flex flex-col items-center gap-4">
+    <div className="flex flex-col items -center gap-4">
       <h2 className="text-2xl font-bold">Ads Library</h2>
       <ErrorBoundary FallbackComponent={ErrorFallback}>
         <Suspense fallback={<LoadingSpinner />}>
@@ -51,9 +52,11 @@ function Ads({ indexId, isIndexIdLoading, selectedFile, isRecommendClicked, setI
           ) : (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 justify-items-center">
-                {videosData.data.map((video: VideoType) => (
-                  <Video key={video._id} videoId={video._id} indexId={indexId || ''} />
-                ))}
+                {videosData.data.map((video: VideoType) => {
+                  return (
+                    <Video key={video._id} videoId={video._id} indexId={indexId || ''} />
+                  );
+                })}
               </div>
               <div className={clsx("w-full", "flex", "justify-center", "mt-3")}>
                 <PageNav page={page} setPage={setPage} totalPage={totalPage} />
