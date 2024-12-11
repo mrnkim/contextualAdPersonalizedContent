@@ -18,11 +18,15 @@ interface UserProfileProps {
   indexId: string;
 }
 
+const capitalize = (str: string) => {
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+};
+
 function UserProfile({
   profilePic = '/default-profile.png',
   interests: initialInterests = [],
-  demographics = {},
-  emotionAffinities = [],
+  demographics: initialDemographics = {},
+  emotionAffinities: initialEmotionAffinities = [],
   userId,
   indexId
 }: UserProfileProps) {
@@ -31,6 +35,23 @@ function UserProfile({
 
   const [isSearchClicked, setIsSearchClicked] = React.useState(false);
   const [currentVideoIndex, setCurrentVideoIndex] = React.useState(0);
+
+  const [demographics, setDemographics] = React.useState(initialDemographics);
+  console.log("🚀 > demographics=", demographics)
+  const [newDemographicKey, setNewDemographicKey] = React.useState('');
+  const [newDemographicValue, setNewDemographicValue] = React.useState('');
+
+  const [nameInput, setNameInput] = React.useState('');
+  const [ageInput, setAgeInput] = React.useState('');
+  const [locationInput, setLocationInput] = React.useState('');
+
+  const [editingKey, setEditingKey] = React.useState<string | null>(null);
+  const [editingValue, setEditingValue] = React.useState<string | null>(null);
+  const [newKeyInput, setNewKeyInput] = React.useState('');
+  const [newValueInput, setNewValueInput] = React.useState('');
+
+  const [emotionAffinities, setEmotionAffinities] = React.useState(initialEmotionAffinities);
+  const [newEmotion, setNewEmotion] = React.useState('');
 
   const handleInterestSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && newInterest.trim()) {
@@ -41,6 +62,36 @@ function UserProfile({
 
   const removeInterest = (indexToRemove: number) => {
     setInterests(interests.filter((_, index) => index !== indexToRemove));
+  };
+
+  const handleDemographicSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      if (newDemographicKey.trim()) {
+        setDemographics({
+          ...demographics,
+          [newDemographicKey.trim()]: newDemographicValue.trim()
+        });
+        setNewDemographicKey('');
+        setNewDemographicValue('');
+      }
+    }
+  };
+
+  const removeDemographic = (key: string) => {
+    const newDemographics = { ...demographics };
+    delete newDemographics[key];
+    setDemographics(newDemographics);
+  };
+
+  const handleEmotionSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && newEmotion.trim()) {
+      setEmotionAffinities([...emotionAffinities, newEmotion.trim()]);
+      setNewEmotion('');
+    }
+  };
+
+  const removeEmotion = (indexToRemove: number) => {
+    setEmotionAffinities(emotionAffinities.filter((_, index) => index !== indexToRemove));
   };
 
   // Modified search queries to handle pagination
@@ -121,7 +172,7 @@ function UserProfile({
                 key={index}
                 className="bg-moss_green-200 px-2 py-1 rounded text-sm flex items-center gap-1"
               >
-                {interest}
+                {capitalize(interest)}
                 <button
                   onClick={() => removeInterest(index)}
                   className="ml-1 text-grey-500 hover:text-grey-700"
@@ -145,25 +196,293 @@ function UserProfile({
         {/* Demographics */}
         <div className="space-y-2">
           <h3 className="font-semibold">Demographics</h3>
-          <div className="bg-lime-200 p-2 rounded h-[90px]">
-            <p>Name: {demographics.name}</p>
-            <p>Age: {demographics.age}</p>
-            <p>Location: {demographics.location}</p>
+          <div className="flex flex-col gap-2">
+            {/* Default demographics Fields */}
+            <div className="flex items-center gap-2">
+              <span className="w-20 text-sm">Name:</span>
+              {demographics.name ? (
+                <span className="bg-moss_green-200 px-2 py-1 rounded text-sm flex items-center gap-1">
+                  {capitalize(demographics.name)}
+                  <button
+                    onClick={() => removeDemographic('name')}
+                    className="ml-1 text-grey-500 hover:text-grey-700"
+                  >
+                    ×
+                  </button>
+                </span>
+              ) : (
+                <input
+                  type="text"
+                  value={nameInput}
+                  onChange={(e) => setNameInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && nameInput.trim()) {
+                      setDemographics({
+                        ...demographics,
+                        name: nameInput.trim()
+                      });
+                      setNameInput('');
+                    }
+                  }}
+                  placeholder="Enter name..."
+                  className="px-2 py-1 text-sm bg-transparent outline-none border-gray-300 focus:border-lime-500 w-40"
+                />
+              )}
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className="w-20 text-sm">Age:</span>
+              {demographics.age ? (
+                <span className="bg-moss_green-200 px-2 py-1 rounded text-sm flex items-center gap-1">
+                  {capitalize(demographics.age.toString())}
+                  <button
+                    onClick={() => removeDemographic('age')}
+                    className="ml-1 text-grey-500 hover:text-grey-700"
+                  >
+                    ×
+                  </button>
+                </span>
+              ) : (
+                <input
+                  type="number"
+                  value={ageInput}
+                  onChange={(e) => setAgeInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && ageInput.trim()) {
+                      setDemographics({
+                        ...demographics,
+                        age: parseInt(ageInput.trim())
+                      });
+                      setAgeInput('');
+                    }
+                  }}
+                  placeholder="Enter age..."
+                  className="px-2 py-1 text-sm bg-transparent outline-none border-gray-300 focus:border-lime-500 w-40"
+                />
+              )}
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className="w-20 text-sm">Location:</span>
+              {demographics.location ? (
+                <span className="bg-moss_green-200 px-2 py-1 rounded text-sm flex items-center gap-1">
+                  {capitalize(demographics.location)}
+                  <button
+                    onClick={() => removeDemographic('location')}
+                    className="ml-1 text-grey-500 hover:text-grey-700"
+                  >
+                    ×
+                  </button>
+                </span>
+              ) : (
+                <input
+                  type="text"
+                  value={locationInput}
+                  onChange={(e) => setLocationInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && locationInput.trim()) {
+                      setDemographics({
+                        ...demographics,
+                        location: locationInput.trim()
+                      });
+                      setLocationInput('');
+                    }
+                  }}
+                  placeholder="Enter location..."
+                  className="px-2 py-1 text-sm bg-transparent outline-none border-gray-300 focus:border-lime-500 w-40"
+                />
+              )}
+            </div>
+
+            {/* Additional demographics Fields */}
+            {Object.entries(demographics)
+              .sort(([a], [b]) => a.localeCompare(b))
+              .map(([key, value]) => {
+                if (!['name', 'age', 'location'].includes(key)) {
+                  return (
+                    <div key={key} className="flex items-center">
+                      <div className="flex items-center gap-1">
+                        {editingKey === key ? (
+                          <input
+                            type="text"
+                            value={newKeyInput}
+                            onChange={(e) => setNewKeyInput(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' && newKeyInput.trim()) {
+                                const newDemographics = { ...demographics };
+                                delete newDemographics[key];
+                                newDemographics[newKeyInput.trim()] = value;
+                                setDemographics(newDemographics);
+                                setEditingKey(null);
+                                setNewKeyInput('');
+                              }
+                            }}
+                            onBlur={() => {
+                              setEditingKey(null);
+                              setNewKeyInput('');
+                            }}
+                            className="px-2 py-1 text-sm bg-transparent outline-none border-gray-300 focus:border-lime-500 w-24"
+                            autoFocus
+                          />
+                        ) : (
+                          <>
+                            <span
+                              className="bg-moss_green-200 px-2 py-1 rounded text-sm cursor-pointer flex items-center"
+                              onClick={() => {
+                                setEditingKey(key);
+                                setNewKeyInput(key);
+                              }}
+                            >
+                              {capitalize(key)}
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  removeDemographic(key);
+                                }}
+                                className="ml-1 text-grey-500 hover:text-grey-700"
+                              >
+                                ×
+                              </button>
+                            </span>
+                            <span>:</span>
+                          </>
+                        )}
+                      </div>
+
+                      <div className="ml-2">
+                        {editingValue === key ? (
+                          <input
+                            type="text"
+                            value={newValueInput}
+                            onChange={(e) => setNewValueInput(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' && newValueInput.trim()) {
+                                setDemographics({
+                                  ...demographics,
+                                  [key]: newValueInput.trim()
+                                });
+                                setEditingValue(null);
+                                setNewValueInput('');
+                              }
+                            }}
+                            onBlur={() => {
+                              setEditingValue(null);
+                              setNewValueInput('');
+                            }}
+                            className="px-2 py-1 text-sm bg-transparent outline-none border-gray-300 focus:border-lime-500 w-40"
+                            autoFocus
+                          />
+                        ) : (
+                          <span
+                            className="bg-moss_green-200 px-2 py-1 rounded text-sm flex items-center gap-1 cursor-pointer"
+                            onClick={() => {
+                              setEditingValue(key);
+                              setNewValueInput(value as string);
+                            }}
+                          >
+                            {typeof value === 'string' ? capitalize(value) : value}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setDemographics({
+                                  ...demographics,
+                                  [key]: ''
+                                });
+                              }}
+                              className="ml-1 text-grey-500 hover:text-grey-700"
+                            >
+                              ×
+                            </button>
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                }
+                return null;
+              })}
+
+            {/* 새로운 key-value 입력 필드 */}
+            <div className="flex items-center gap-2">
+              <div className="w-32">
+                <input
+                  type="text"
+                  value={newDemographicKey}
+                  onChange={(e) => setNewDemographicKey(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      const trimmedKey = e.currentTarget.value.trim();
+                      if (trimmedKey) {
+                        setTimeout(() => {
+                          setDemographics(prev => ({
+                            ...prev,
+                            [trimmedKey]: null
+                          }));
+                          setNewDemographicKey('');
+                        }, 0);
+                      }
+                    }
+                  }}
+                  placeholder="Add field"
+                  className="px-2 py-1 text-sm bg-transparent outline-none border-gray-300 focus:border-lime-500 w-24"
+                />
+                <span className="mx-1">:</span>
+              </div>
+
+              <input
+                type="text"
+                value={newDemographicValue}
+                onChange={(e) => setNewDemographicValue(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const trimmedValue = e.currentTarget.value.trim();
+                    if (trimmedValue && newDemographicKey) {
+                      setTimeout(() => {
+                        setDemographics(prev => ({
+                          ...prev,
+                          [newDemographicKey]: trimmedValue
+                        }));
+                        setNewDemographicValue('');
+                      }, 0);
+                    }
+                  }
+                }}
+                placeholder="Add value"
+                className="px-2 py-1 text-sm bg-transparent outline-none border-gray-300 focus:border-lime-500 w-40"
+              />
+            </div>
           </div>
         </div>
 
         {/* Emotion Affinities */}
         <div className="space-y-2 h-[50px]">
           <h3 className="font-semibold">Emotion Affinities</h3>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 items-center">
             {emotionAffinities.map((emotion, index) => (
               <span
                 key={index}
-                className="px-2 py-1 rounded text-sm"
+                className="bg-moss_green-200 px-2 py-1 rounded text-sm flex items-center gap-1"
               >
-                {emotion}
+                {capitalize(emotion)}
+                <button
+                  onClick={() => removeEmotion(index)}
+                  className="ml-1 text-grey-500 hover:text-grey-700"
+                >
+                  ×
+                </button>
               </span>
             ))}
+            <input
+              type="text"
+              value={newEmotion}
+              onChange={(e) => setNewEmotion(e.target.value)}
+              onKeyDown={handleEmotionSubmit}
+              placeholder="Add emotion..."
+              className="px-2 py-1 text-sm bg-transparent outline-none border-gray-300 focus:border-lime-500 w-24"
+              hidden={emotionAffinities.length === 5}
+            />
           </div>
         </div>
 
