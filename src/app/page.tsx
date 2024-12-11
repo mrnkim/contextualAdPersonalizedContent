@@ -39,7 +39,7 @@ export default function Page() {
       {selectedApp === 'contextual' ? (
           <ContextualAds adsIndexId={adsIndexId || ''} />
         ) : (
-          <PersonalizedContent adsIndexId={adsIndexId || ''} />
+          <PersonalizedContent />
         )
       }
 

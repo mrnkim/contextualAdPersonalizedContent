@@ -134,8 +134,43 @@ export interface UploadFormProps {
   onFileUpload: (file: File) => void;
 }
 
+export interface IndexData {
+  _id: string;
+  index_name: string;
+  models: string[];
+  video_count: number;
+  total_duration: number;
+  addons: string[];
+  created_at: string;
+  updated_at: string;
+  expires_at: string | null;
+}
+
+export interface IndexPageInfo {
+  page: number;
+  limit_per_page: number;
+  total_page: number;
+  total_results: number;
+}
+
+export interface IndexesResponse {
+  data: IndexData[];
+  page_info: IndexPageInfo;
+}
+
+export interface IndexesData {
+  pages: IndexesResponse[];
+  pageParams: number[];
+}
+
 export interface IndexesDropDownProps {
-  onIndexChange: (id: string) => void;
+  handleIndexChange: (indexId: string) => void;
+  indexesData: IndexesData;
+  fetchNextPage: () => void;
+  hasNextPage: boolean;
+  isFetchingNextPage: boolean;
+  isLoading: boolean;
+  selectedIndexId: string | null;
 }
 
 // Video Related Interfaces

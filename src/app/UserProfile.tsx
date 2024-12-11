@@ -56,13 +56,12 @@ function UserProfile({
 
           const initialResponse = await textToVideoSearch(indexId, interest, [
             "visual",
-            "conversation",
-            "text_in_video",
-            "logo"
+            "audio",
           ], 10);
 
           results.push(...(initialResponse.data || []));
           currentPageToken = initialResponse.page_info?.next_page_token;
+          
 
           while (currentPageToken) {
             const nextPage = await fetchSearchPage(currentPageToken);

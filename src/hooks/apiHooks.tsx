@@ -43,6 +43,14 @@ export const fetchVideos = async (page: number, indexId: string, pageLimit: numb
 	return response.json();
 };
 
+export const fetchIndexes = async (page: number, pageLimit: number=9) => {
+	const response = await fetch(`/api/getIndexes?page=${page}&pageLimit=${pageLimit}`);
+	if (!response.ok) {
+		throw new Error("Network response was not ok");
+	}
+	return response.json();
+};
+
 export const fetchVideoDetails = async (videoId: string, indexId: string) => {
     const response = await fetch(`/api/getVideo?videoId=${videoId}&indexId=${indexId}`);
     if (!response.ok) {
