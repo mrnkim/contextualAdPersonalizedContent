@@ -28,7 +28,6 @@ function UserProfile({
 }: UserProfileProps) {
   const [newInterest, setNewInterest] = React.useState('');
   const [interests, setInterests] = React.useState(initialInterests);
-  console.log("🚀 > interests=", interests)
 
   const [isSearchClicked, setIsSearchClicked] = React.useState(false);
   const [currentVideoIndex, setCurrentVideoIndex] = React.useState(0);
@@ -61,7 +60,7 @@ function UserProfile({
 
           results.push(...(initialResponse.data || []));
           currentPageToken = initialResponse.page_info?.next_page_token;
-          
+
 
           while (currentPageToken) {
             const nextPage = await fetchSearchPage(currentPageToken);
@@ -99,7 +98,6 @@ function UserProfile({
     return Array.from(results.values());
   }, [searchQueries]);
 
-  console.log("🚀 > allSearchResults=", allSearchResults)
   return (
     <div className="flex flex-col items-center w-[360px]">
       <div className="border rounded-lg p-4 w-full h-[550px] space-y-4">

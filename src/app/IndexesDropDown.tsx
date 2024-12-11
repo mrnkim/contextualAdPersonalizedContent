@@ -14,7 +14,6 @@ const IndexesDropDown: React.FC<IndexesDropDownProps> = ({
   isLoading,
   selectedIndexId
 }) => {
-  console.log("🚀 > indexesData=", indexesData)
 
   // Get all indexes from all pages
   const allIndexes = indexesData?.pages?.flatMap(page => page.data) || [];

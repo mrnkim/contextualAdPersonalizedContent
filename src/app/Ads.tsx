@@ -27,7 +27,6 @@ function Ads({ indexId, isIndexIdLoading, selectedFile, isRecommendClicked, setI
     queryFn: () => fetchVideos(page, indexId!),
     enabled: !!indexId,
   });
-  console.log("🚀 > Ads > videosData=", videosData)
 
   const totalPage = videosData?.page_info?.total_page || 1;
   const hasVideoData = videosData && videosData.data && videosData.data.length > 0;

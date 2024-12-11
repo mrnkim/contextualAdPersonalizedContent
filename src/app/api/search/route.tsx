@@ -9,7 +9,6 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const indexId = searchParams.get("indexId");
     const query = searchParams.get("query");
-    console.log("🚀 > GET > query=", query)
     const searchOptionsString = searchParams.get("searchOptions");
     const pageLimit = searchParams.get("pageLimit");
     const searchOptions = searchOptionsString ? searchOptionsString.split(',') : [];
@@ -58,7 +57,6 @@ export async function GET(req: Request) {
         }
 
         const responseData = await response.json();
-        console.log("🚀 > GET > responseData=", responseData)
 
         if (!responseData) {
           throw new Error("Empty response from API");

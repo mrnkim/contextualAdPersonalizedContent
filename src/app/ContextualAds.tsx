@@ -13,38 +13,37 @@ const PROMPT = "Summarize the video focusing on the event type, main content, an
 const ContextualAds = ({ adsIndexId }: { adsIndexId: string }) => {
     const [hashtags, setHashtags] = useState<string[]>([]);
     const [emotions, setEmotions] = useState<string[]>([]);
+    console.log("🚀 > ContextualAds > emotions=", emotions)
     const [footageVideoId, setFootageVideoId] = useState<string>('');
+    console.log("🚀 > ContextualAds > footageVideoId=", footageVideoId)
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [selectedAd, setSelectedAd] = useState<RecommendedAdProps["recommendedAd"] | null>(null);
     const [selectedChapter, setSelectedChapter] = useState<number | null>(null);
     const [isRecommendClicked, setIsRecommendClicked] = useState(false);
     const [isRecommendClickedEver, setIsRecommendClickedEver] = useState(false);
     const [isAnalyzeClicked, setIsAnalyzeClicked] = useState(false);
+    console.log("🚀 > ContextualAds > isAnalyzeClicked=", isAnalyzeClicked)
 
     const searchOptionRef = useRef<HTMLFormElement>(null);
     const customQueryRef = useRef<HTMLInputElement>(null);
-
-    // const { data: gistData, isLoading: isGistLoading, error: gistDataError } = useQuery<GistData, Error>({
-    //   queryKey: ["gist", footageVideoId],
-    //   queryFn: () => generateGist(footageVideoId),
-    //   enabled: !!footageVideoId && !!isAnalyzeClicked
-    // });
 
     const { data:gistData, isLoading: isGistLoading, error: gistDataError } = useQuery<string, Error>({
       queryKey: ["hashtags", footageVideoId],
       queryFn: () => generateCustomTexts(footageVideoId, HASHTAGS_PROMPT),
       enabled: !!footageVideoId && !!isAnalyzeClicked,
       refetchOnWindowFocus: false,
+      staleTime: Infinity,
+      cacheTime: Infinity,
     });
-    console.log("🚀 > ContextualAds > gistData=", gistData)
 
     const { data: rawCustomTextsData, isLoading: isCustomTextsLoading, error: customTextsError } = useQuery<string, Error>({
       queryKey: ["summary", footageVideoId],
       queryFn: () => generateCustomTexts(footageVideoId, PROMPT),
       enabled: !!footageVideoId && !!isAnalyzeClicked,
       refetchOnWindowFocus: false,
+      staleTime: Infinity,
+      cacheTime: Infinity,
     });
-    console.log("🚀 > ContextualAds > rawCustomTextsData=", rawCustomTextsData)
 
     const customTextsData = useMemo(() => rawCustomTextsData, [rawCustomTextsData]);
 
@@ -57,13 +56,25 @@ const ContextualAds = ({ adsIndexId }: { adsIndexId: string }) => {
     useEffect(() => {
       if (customTextsData) {
         const emotionalTones: string[] = [];
-        const matches = customTextsData.matchAll(/Emotional Tone:\s*([^.]+)\./g);
+        const matches = customTextsData.match(/Emotional Tone[:\s]*([^.]+)\./);
 
-        for (const match of matches) {
-          if (match[1]) {
-            const words = match[1].trim().split(/\s+/).slice(0, 3);
-            emotionalTones.push(...words);
-          }
+        if (matches && matches[1]) {
+          // Split by commas, periods, or spaces and clean up each word
+          const words = matches[1]
+            .trim()
+            .split(/[,.\s]+/)
+            .filter(word => {
+              // 영문자로만 구성된 단어만 허용 (대소문자 모두)
+              return (
+                word &&
+                word !== 'and' &&
+                word !== ':' &&
+                /^[a-zA-Z]+$/.test(word)
+              );
+            });
+
+          // Take only the first three words
+          emotionalTones.push(...words.slice(0, 3));
         }
 
         setEmotions(emotionalTones);
