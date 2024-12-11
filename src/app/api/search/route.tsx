@@ -36,7 +36,7 @@ export async function GET(req: Request) {
       });
       formData.append('group_by', 'video');
       formData.append('page_limit', pageLimit ?? '4');
-      formData.append('threshold', 'medium');
+      formData.append('threshold', 'high');
 
       const options = {
           method: "POST",

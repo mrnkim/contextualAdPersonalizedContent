@@ -32,6 +32,7 @@ function UserProfile({
 }: UserProfileProps) {
   const [newInterest, setNewInterest] = React.useState('');
   const [interests, setInterests] = React.useState(initialInterests);
+  console.log("🚀 > interests=", interests)
 
   const [isSearchClicked, setIsSearchClicked] = React.useState(false);
   const [currentVideoIndex, setCurrentVideoIndex] = React.useState(0);
@@ -53,31 +54,26 @@ function UserProfile({
   const [emotionAffinities, setEmotionAffinities] = React.useState(initialEmotionAffinities);
   const [newEmotion, setNewEmotion] = React.useState('');
 
+  // Add useEffect to reset search when any value changes
+  React.useEffect(() => {
+    setIsSearchClicked(false);
+  }, [interests, demographics, emotionAffinities]);
+
   const handleInterestSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && newInterest.trim()) {
+      setIsSearchClicked(false);
       setInterests([...interests, newInterest.trim()]);
       setNewInterest('');
     }
   };
 
   const removeInterest = (indexToRemove: number) => {
+    setIsSearchClicked(false);
     setInterests(interests.filter((_, index) => index !== indexToRemove));
   };
 
-  const handleDemographicSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      if (newDemographicKey.trim()) {
-        setDemographics({
-          ...demographics,
-          [newDemographicKey.trim()]: newDemographicValue.trim()
-        });
-        setNewDemographicKey('');
-        setNewDemographicValue('');
-      }
-    }
-  };
-
   const removeDemographic = (key: string) => {
+    setIsSearchClicked(false);
     const newDemographics = { ...demographics };
     delete newDemographics[key];
     setDemographics(newDemographics);
@@ -85,19 +81,21 @@ function UserProfile({
 
   const handleEmotionSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && newEmotion.trim()) {
+      setIsSearchClicked(false);
       setEmotionAffinities([...emotionAffinities, newEmotion.trim()]);
       setNewEmotion('');
     }
   };
 
   const removeEmotion = (indexToRemove: number) => {
+    setIsSearchClicked(false);
     setEmotionAffinities(emotionAffinities.filter((_, index) => index !== indexToRemove));
   };
 
   // Modified search queries to handle pagination
   const searchQueries = useQueries({
     queries: interests.map((interest) => ({
-      queryKey: ["search", interest, userId],
+      queryKey: ["search", interest, userId, isSearchClicked, interests.length],
       queryFn: async () => {
         if (!isSearchClicked) return null;
         try {
@@ -112,7 +110,6 @@ function UserProfile({
           results.push(...(initialResponse.data || []));
           currentPageToken = initialResponse.page_info?.next_page_token;
 
-
           while (currentPageToken) {
             const nextPage = await fetchSearchPage(currentPageToken);
             results.push(...(nextPage.data || []));
@@ -126,6 +123,10 @@ function UserProfile({
         }
       },
       enabled: isSearchClicked,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+      staleTime: 0,
+      cacheTime: 0,
     })),
   });
 
@@ -137,21 +138,28 @@ function UserProfile({
 
     // Add all search results with deduplication
     searchQueries
-      .filter(query => query.data?.data)
+      .filter(query => query.data?.data && query.isSuccess)
       .forEach(query => {
-        query.data!.data.forEach((item: any) => {
-          if (!results.has(item.id)) {
-            results.set(item.id, item);
-          }
-        });
+        // Only include results for current interests
+        if (interests.includes(query.data!.searchTerm)) {
+          query.data!.data.forEach((item: any) => {
+            if (!results.has(item.id)) {
+              results.set(item.id, item);
+            }
+          });
+        }
       });
 
     return Array.from(results.values());
-  }, [searchQueries]);
+  }, [searchQueries, interests]);
+  console.log("🚀 > allSearchResults > allSearchResults=", allSearchResults)
+
+  // Ensure currentVideoIndex is within bounds
+  const validCurrentVideoIndex = currentVideoIndex < allSearchResults.length ? currentVideoIndex : 0;
 
   return (
     <div className="flex flex-col items-center w-[360px]">
-      <div className="border rounded-lg p-4 w-full h-[550px] space-y-4">
+      <div className="border rounded-lg p-4 w-full space-y-4">
         {/* Profile Picture */}
         <div className="flex justify-center mb-4">
           <div className="w-28 h-28 rounded-full overflow-hidden">
@@ -457,7 +465,7 @@ function UserProfile({
         </div>
 
         {/* Emotion Affinities */}
-        <div className="space-y-2 h-[50px]">
+        <div className="space-y-2 h-[90px]">
           <h3 className="font-semibold">Emotion Affinities</h3>
           <div className="flex flex-wrap gap-2 items-center">
             {emotionAffinities.map((emotion, index) => (
@@ -501,20 +509,17 @@ function UserProfile({
             </div>
           </Button>
         </div>
-      </div>
-
-      {/* Search Results */}
+        {/* Search Results */}
       {isSearchClicked && (
         <div className="w-full mt-4">
-          <h3 className="font-semibold mb-2">Search Results</h3>
+          <h3 className="font-semibold mb-2">Search Results for {demographics.name}</h3>
           {isLoading ? (
             <div className="flex justify-center">
               <LoadingSpinner />
             </div>
           ) : allSearchResults.length > 0 ? (
             <div className="space-y-2">
-              {/* Single Video Player with Navigation */}
-              <div className="border rounded p-2">
+              <div className="p-2">
                 <div className="flex items-center justify-between">
                   <button
                     onClick={() => setCurrentVideoIndex(prev =>
@@ -530,7 +535,7 @@ function UserProfile({
                   </button>
 
                   <Video
-                    videoId={allSearchResults[currentVideoIndex].id}
+                    videoId={allSearchResults[validCurrentVideoIndex]?.id}
                     indexId={indexId}
                   />
 
@@ -554,6 +559,9 @@ function UserProfile({
           )}
         </div>
       )}
+      </div>
+
+
     </div>
   )
 }
