@@ -418,17 +418,17 @@ function UserProfile({
                   value={newDemographicKey}
                   onChange={(e) => setNewDemographicKey(e.target.value)}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
+                    if (e.key === 'Enter' && newDemographicValue.trim()) {
                       e.preventDefault();
-                      const trimmedKey = e.currentTarget.value.trim();
-                      if (trimmedKey) {
-                        setTimeout(() => {
-                          setDemographics(prev => ({
-                            ...prev,
-                            [trimmedKey]: null
-                          }));
-                          setNewDemographicKey('');
-                        }, 0);
+                      const trimmedKey = newDemographicKey.trim();
+                      const trimmedValue = newDemographicValue.trim();
+                      if (trimmedKey && trimmedValue) {
+                        setDemographics(prev => ({
+                          ...prev,
+                          [trimmedKey]: trimmedValue
+                        }));
+                        setNewDemographicKey('');
+                        setNewDemographicValue('');
                       }
                     }
                   }}
@@ -443,17 +443,17 @@ function UserProfile({
                 value={newDemographicValue}
                 onChange={(e) => setNewDemographicValue(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
+                  if (e.key === 'Enter' && newDemographicKey.trim()) {
                     e.preventDefault();
-                    const trimmedValue = e.currentTarget.value.trim();
-                    if (trimmedValue && newDemographicKey) {
-                      setTimeout(() => {
-                        setDemographics(prev => ({
-                          ...prev,
-                          [newDemographicKey]: trimmedValue
-                        }));
-                        setNewDemographicValue('');
-                      }, 0);
+                    const trimmedKey = newDemographicKey.trim();
+                    const trimmedValue = newDemographicValue.trim();
+                    if (trimmedKey && trimmedValue) {
+                      setDemographics(prev => ({
+                        ...prev,
+                        [trimmedKey]: trimmedValue
+                      }));
+                      setNewDemographicKey('');
+                      setNewDemographicValue('');
                     }
                   }
                 }}
