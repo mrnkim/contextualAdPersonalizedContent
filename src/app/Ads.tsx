@@ -31,8 +31,6 @@ function Ads({ indexId, isIndexIdLoading, selectedFile, isRecommendClicked, setI
   const totalPage = videosData?.page_info?.total_page || 1;
   const hasVideoData = videosData && videosData.data && videosData.data.length > 0;
 
-
-
   useEffect(() => {
     if (isRecommendClicked) {
       setHasSearchOptionChanged(false);

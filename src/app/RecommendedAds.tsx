@@ -6,8 +6,6 @@ import LoadingSpinner from './LoadingSpinner';
 import ErrorFallback from './ErrorFallback';
 import { RecommendedAdsProps, RecommendedAdProps } from './types';
 import RecommendedPlacements from './RecommendedPlacements';
-import { fetchSearchPage } from '@/hooks/apiHooks';
-import Button from './Button'
 import RecommendedAdItem from './RecommendedAdItem';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
@@ -16,10 +14,12 @@ export enum SearchOption {
   AUDIO = 'audio'
 }
 
+const INITIAL_DISPLAY_COUNT = 3;
+
 const RecommendedAds = ({ hashtags, footageVideoId, adsIndexId, selectedFile, setIsRecommendClicked, searchOptionRef, customQueryRef, emotions, footageIndexId, isRecommendClicked, selectedAd, setSelectedAd, selectedChapter, setSelectedChapter }: RecommendedAdsProps) => {
   const [searchOptions, setSearchOptions] = useState<SearchOption[]>([]);
   const [searchQueries, setSearchQueries] = useState<string[]>([]);
-  const [displayCount, setDisplayCount] = useState(3);
+  const [displayCount, setDisplayCount] = useState(INITIAL_DISPLAY_COUNT);
 
   useEffect(() => {
     if (!isRecommendClicked) return;
@@ -33,7 +33,7 @@ const RecommendedAds = ({ hashtags, footageVideoId, adsIndexId, selectedFile, se
     } else if (radioInputs[1]?.checked) {
       newQueries = emotions;
     } else if (radioInputs[4]?.checked) {
-      newQueries = [...hashtags.slice(0,2), customQueryRef.current?.value];
+      newQueries = [...hashtags.slice(0,2), customQueryRef.current?.value || ''];
     }
 
     setSearchQueries(newQueries);
@@ -73,21 +73,17 @@ const RecommendedAds = ({ hashtags, footageVideoId, adsIndexId, selectedFile, se
     }
     return acc;
   }, [] as RecommendedAdProps["recommendedAd"][]);
-  console.log("🚀 > combinedData > combinedData=", combinedData)
 
-  // 현재 화면에 보여줄 데이터
   const displayedData = useMemo(() => {
     return combinedData.slice(0, displayCount);
   }, [combinedData, displayCount]);
 
-  // 더 보여줄 데이터가 있는지 확인
   const hasMore = displayCount < combinedData.length;
 
-  // 더 많은 데이터를 로드하는 함수
   const fetchMoreData = () => {
-    if (displayCount >= combinedData.length) return; // 더 이상 로드할 데이터가 없으면 중단
+    if (displayCount >= combinedData.length) return;
 
-    setDisplayCount(prev => Math.min(prev + 5, combinedData.length)); // 최대값을 넘지 않도록 제한
+    setDisplayCount(prev => Math.min(prev + INITIAL_DISPLAY_COUNT, combinedData.length));
   };
 
   if (isError) return <ErrorFallback error={new Error("Search failed")} />;
@@ -132,7 +128,7 @@ const RecommendedAds = ({ hashtags, footageVideoId, adsIndexId, selectedFile, se
                     loader={<LoadingSpinner />}
                     scrollableTarget="scrollableDiv"
                     className="flex flex-col gap-12 p-2"
-                    scrollThreshold={0.8} // 스크롤이 80% 도달했을 때 새로운 데이터 로드
+                    scrollThreshold={0.8} // Loads new data when the scroll reaches 80% of the screen
                   >
                     {displayedData.map((recommendedAd) => (
                       <div

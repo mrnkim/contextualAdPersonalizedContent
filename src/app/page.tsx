@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import Button from './Button';
 import ContextualAds from './ContextualAds';
-import UserProfiles from './UserProfiles';
 import PersonalizedContent from './PersonalizedContent';
 
 const adsIndexId = process.env.NEXT_PUBLIC_ADS_INDEX_ID;

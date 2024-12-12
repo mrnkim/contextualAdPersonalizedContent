@@ -1,13 +1,12 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import IndexVideos from './IndexVideos';
 import UserProfiles from './UserProfiles';
 import IndexesDropDown from './IndexesDropDown';
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchIndexes } from '@/hooks/apiHooks';
-
+import { IndexesData } from './types'
 
 const PersonalizedContent = () => {
-  const [isSearchClicked, setIsSearchClicked] = useState(false);
   const [indexId, setIndexId] = useState<string | null>(null);
 
   const queryClient = useQueryClient();
@@ -30,20 +29,19 @@ const PersonalizedContent = () => {
 		},
 	});
 
+  const handleIndexChange = useCallback((newIndexId: string) => {
+		setIndexId(newIndexId);
+		queryClient.invalidateQueries({ queryKey: ['videos'] });
+			queryClient.invalidateQueries({ queryKey: ['search'] });
+			queryClient.invalidateQueries({ queryKey: ['chapters'] });
+			queryClient.invalidateQueries({ queryKey: ['videoDetails'] });
+	}, [queryClient]);
+
   useEffect(() => {
     if (indexesData?.pages[0]?.data[0]?._id && !indexId) {
       handleIndexChange(indexesData.pages[0].data[0]._id);
     }
-  }, [indexesData]);
-
-  const handleIndexChange = (newIndexId: string) => {
-		setIsSearchClicked(false);
-		setIndexId(newIndexId);
-		queryClient.invalidateQueries({ queryKey: ['videos'] });
-		queryClient.invalidateQueries({ queryKey: ['search'] });
-		queryClient.invalidateQueries({ queryKey: ['chapters'] });
-		queryClient.invalidateQueries({ queryKey: ['videoDetails'] });
-	};
+  }, [indexesData, handleIndexChange, indexId]);
 
   return (
     <div className="w-full max-w-7xl mx-auto">
@@ -51,7 +49,7 @@ const PersonalizedContent = () => {
     <div className="flex-grow mr-4 mb-6">
     <IndexesDropDown
       handleIndexChange={handleIndexChange}
-      indexesData={indexesData}
+      indexesData={indexesData as IndexesData}
       fetchNextPage={fetchNextPage}
       hasNextPage={hasNextPage}
       isFetchingNextPage={isFetchingNextPage}
@@ -60,15 +58,13 @@ const PersonalizedContent = () => {
     />
     </div>
 
-    <IndexVideos
+   { indexId && <><IndexVideos
       indexId={indexId}
       isIndexIdLoading={!indexId}
     />
     <UserProfiles
       indexId={indexId}
-      isSearchClicked={isSearchClicked}
-      setIsSearchClicked={setIsSearchClicked}
-    />
+    /></>}
 
   </div>
   )

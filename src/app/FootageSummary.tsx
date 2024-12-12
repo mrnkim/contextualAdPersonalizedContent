@@ -19,13 +19,12 @@ function FootageSummary({
   error,
   setShowAnalysis
 }: FootageSummaryProps) {
-  console.log("🚀 > hashtags=", hashtags)
 
   useEffect(() => {
     if (gistData?.hashtags) {
       setHashtags(gistData.hashtags);
     }
-  }, [gistData]);
+  }, [gistData, setHashtags]);
 
   const formatCustomTexts = (data: string) => {
     const sections = ["Event Type", "Main Content", "Emotional Tone"];

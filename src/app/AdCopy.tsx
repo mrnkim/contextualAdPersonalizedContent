@@ -14,14 +14,11 @@ import {
   const AdCopy = ({ videoDetails, isDialogOpen, setIsDialogOpen, setIsGenerating, adCopyData }: AdCopyProps) => {
     const [currentSuggestionIndex, setCurrentSuggestionIndex] = useState(0);
 
-
-
-
     useEffect(() => {
       if (adCopyData) {
         setIsGenerating(false);
       }
-    }, [adCopyData]);
+    }, [adCopyData, setIsGenerating]);
 
       const handlePreviousSuggestion = () => {
         setCurrentSuggestionIndex((prevIndex: number) => (prevIndex - 1 + parsedAdCopy.length) % parsedAdCopy.length);

@@ -4,6 +4,7 @@ import { useQueries } from "@tanstack/react-query";
 import { fetchSearchPage, textToVideoSearch } from '@/hooks/apiHooks';
 import LoadingSpinner from './LoadingSpinner';
 import Video from './Video';
+import { Clip } from './types';
 
 interface UserProfileProps {
   profilePic?: string;
@@ -12,10 +13,16 @@ interface UserProfileProps {
     age?: number;
     name?: string;
     location?: string;
+    [key: string]: string | number | undefined;
   };
   emotionAffinities?: string[];
   userId: string;
   indexId: string;
+}
+
+interface VideoItem {
+  id: string;
+  clips: Clip[];
 }
 
 const capitalize = (str: string) => {
@@ -32,7 +39,6 @@ function UserProfile({
 }: UserProfileProps) {
   const [newInterest, setNewInterest] = React.useState('');
   const [interests, setInterests] = React.useState(initialInterests);
-  console.log("🚀 > interests=", interests)
 
   const [isSearchClicked, setIsSearchClicked] = React.useState(false);
   const [currentVideoIndex, setCurrentVideoIndex] = React.useState(0);
@@ -141,7 +147,7 @@ function UserProfile({
       .forEach(query => {
         // Only include results for current interests
         if (interests.includes(query.data!.searchTerm)) {
-          query.data!.data.forEach((item: any) => {
+          query.data!.data.forEach((item: VideoItem) => {
             if (!results.has(item.id)) {
               results.set(item.id, item);
             }
@@ -151,7 +157,6 @@ function UserProfile({
 
     return Array.from(results.values());
   }, [searchQueries, interests]);
-  console.log("🚀 > allSearchResults > allSearchResults=", allSearchResults)
 
   // Ensure currentVideoIndex is within bounds
   const validCurrentVideoIndex = currentVideoIndex < allSearchResults.length ? currentVideoIndex : 0;

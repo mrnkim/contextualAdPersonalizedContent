@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react'
-import { generateGist, generateCustomTexts } from '@/hooks/apiHooks';
-import { GistData, RecommendedAdProps } from './types';
+import { generateCustomTexts } from '@/hooks/apiHooks';
+import { RecommendedAdProps } from './types';
 import Footage from './Footage';
 import Ads from './Ads';
 import RecommendedAds from './RecommendedAds';
@@ -13,16 +13,13 @@ const PROMPT = "Summarize the video focusing on the event type, main content, an
 const ContextualAds = ({ adsIndexId }: { adsIndexId: string }) => {
     const [hashtags, setHashtags] = useState<string[]>([]);
     const [emotions, setEmotions] = useState<string[]>([]);
-    console.log("🚀 > ContextualAds > emotions=", emotions)
     const [footageVideoId, setFootageVideoId] = useState<string>('');
-    console.log("🚀 > ContextualAds > footageVideoId=", footageVideoId)
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [selectedAd, setSelectedAd] = useState<RecommendedAdProps["recommendedAd"] | null>(null);
     const [selectedChapter, setSelectedChapter] = useState<number | null>(null);
     const [isRecommendClicked, setIsRecommendClicked] = useState(false);
     const [isRecommendClickedEver, setIsRecommendClickedEver] = useState(false);
     const [isAnalyzeClicked, setIsAnalyzeClicked] = useState(false);
-    console.log("🚀 > ContextualAds > isAnalyzeClicked=", isAnalyzeClicked)
 
     const searchOptionRef = useRef<HTMLFormElement>(null);
     const customQueryRef = useRef<HTMLInputElement>(null);
@@ -33,7 +30,6 @@ const ContextualAds = ({ adsIndexId }: { adsIndexId: string }) => {
       enabled: !!footageVideoId && !!isAnalyzeClicked,
       refetchOnWindowFocus: false,
       staleTime: Infinity,
-      cacheTime: Infinity,
     });
 
     const { data: rawCustomTextsData, isLoading: isCustomTextsLoading, error: customTextsError } = useQuery<string, Error>({
@@ -42,7 +38,6 @@ const ContextualAds = ({ adsIndexId }: { adsIndexId: string }) => {
       enabled: !!footageVideoId && !!isAnalyzeClicked,
       refetchOnWindowFocus: false,
       staleTime: Infinity,
-      cacheTime: Infinity,
     });
 
     const customTextsData = useMemo(() => rawCustomTextsData, [rawCustomTextsData]);
@@ -97,7 +92,7 @@ const ContextualAds = ({ adsIndexId }: { adsIndexId: string }) => {
                 setIsRecommendClicked={setIsRecommendClicked}
                 emotions={emotions}
                 setEmotions={setEmotions}
-                gistData={gistData || { hashtags: [] }}
+                gistData={gistData}
                 customTextsData={customTextsData ?? ""}
                 isLoading={isGistLoading || isCustomTextsLoading}
                 error={gistDataError || customTextsError}

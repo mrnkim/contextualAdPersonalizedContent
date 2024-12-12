@@ -6,81 +6,81 @@ const RecommendOptionForm = ({ searchOptionRef, customQueryRef, setIsRecommendCl
         setHasSearchOptionChanged(true);
       };
 
-      const handleFormSubmit = (e: React.FormEvent) => {
+    const handleFormSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         setIsRecommendClicked(true);
       };
-return (
-<form ref={searchOptionRef} onSubmit={handleFormSubmit}>
-                  <div className="flex gap-4 items-center">
-                    <label className="flex items-center gap-2">
-                      <input
-                        type="radio"
-                        name="searchOption"
-                        value="general"
-                        defaultChecked
-                        onChange={handleSearchOptionChange}
-                      />
-                      General
-                    </label>
-                    <label className="flex items-center gap-2">
-                      <input
-                        type="radio"
-                        name="searchOption"
-                        value="emotion"
-                        onChange={handleSearchOptionChange}
-                      />
-                      Emotion
-                    </label>
-                    <label className="flex items-center gap-2">
-                      <input
-                        type="radio"
-                        name="searchOption"
-                        value="visual"
-                        onChange={handleSearchOptionChange}
-                      />
-                      Visual
-                    </label>
-                    <label className="flex items-center gap-2">
-                      <input
-                        type="radio"
-                        name="searchOption"
-                        value="conversation"
-                        onChange={handleSearchOptionChange}
-                      />
-                      Conversation
-                    </label>
-                  </div>
-                  <div className="flex items-center gap-2 w-full max-w-md">
-                    <label className="flex items-center gap-2 shrink-0">
-                      <input
-                        type="radio"
-                        name="searchOption"
-                        value="custom"
-                        id="customRadio"
-                        onChange={handleSearchOptionChange}
-                      />
-                      Custom
-                    </label>
-                    <input
-                      type="text"
-                      ref={customQueryRef}
-                      placeholder="Enter custom search query"
-                      className="border px-2 py-1 flex-1 mt-2"
-                      onChange={handleSearchOptionChange}
-                      onFocus={() => {
-                        const customRadio = document.getElementById('customRadio') as HTMLInputElement;
-                        if (customRadio) customRadio.checked = true;
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault();
-                          setIsRecommendClicked(true);
-                        }
-                      }}
-                    />
-                  </div>
-                </form>
+    return (
+            <form ref={searchOptionRef} onSubmit={handleFormSubmit}>
+              <div className="flex gap-4 items-center">
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="searchOption"
+                    value="general"
+                    defaultChecked
+                    onChange={handleSearchOptionChange}
+                  />
+                  General
+                </label>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="searchOption"
+                    value="emotion"
+                    onChange={handleSearchOptionChange}
+                  />
+                  Emotion
+                </label>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="searchOption"
+                    value="visual"
+                    onChange={handleSearchOptionChange}
+                  />
+                  Visual
+                </label>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="searchOption"
+                    value="conversation"
+                    onChange={handleSearchOptionChange}
+                  />
+                  Conversation
+                </label>
+              </div>
+              <div className="flex items-center gap-2 w-full max-w-md">
+                <label className="flex items-center gap-2 shrink-0">
+                  <input
+                    type="radio"
+                    name="searchOption"
+                    value="custom"
+                    id="customRadio"
+                    onChange={handleSearchOptionChange}
+                  />
+                  Custom
+                </label>
+                <input
+                  type="text"
+                  ref={customQueryRef}
+                  placeholder="Enter custom search query"
+                  className="border px-2 py-1 flex-1 mt-2"
+                  onChange={handleSearchOptionChange}
+                  onFocus={() => {
+                    const customRadio = document.getElementById('customRadio') as HTMLInputElement;
+                    if (customRadio) customRadio.checked = true;
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      setIsRecommendClicked(true);
+                    }
+                  }}
+                />
+              </div>
+            </form>
   )
 }
 

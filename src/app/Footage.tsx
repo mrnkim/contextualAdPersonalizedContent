@@ -117,7 +117,7 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 				clearInterval(intervalId);
 			}
 		};
-	}, [queryClient, setHashtags, setIsRecommendClicked, setSelectedFile, taskId, indexId]);
+	}, [queryClient, setHashtags, setIsRecommendClicked, setSelectedFile, taskId, indexId, reset]);
 
 	useEffect(() => {
 		if (videosData?.pages[0]?.data && videosData.pages[0].data.length > 0) {
@@ -126,7 +126,7 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 				setFootageVideoId(latestVideo._id);
 			}
 		}
-	}, [videosData]);
+	}, [videosData, footageVideoId, setFootageVideoId]);
 
 	return (
 		<div className="flex flex-col items-center gap-4 w-full">

@@ -285,10 +285,6 @@ export interface TaskDetails {
   }
 }
 
-export interface GistData {
-  hashtags: string[];
-}
-
 export interface SearchResult {
   id: string;
   clips?: object[];

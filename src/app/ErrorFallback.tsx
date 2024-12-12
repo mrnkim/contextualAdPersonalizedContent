@@ -30,6 +30,8 @@ function ErrorFallback({ error }: { error: Error }) {
           {error instanceof Error ? error.message : String(error)}
         </span>
       </Alert>
+
+      {/*TODO: Decide whether to keep this button*/}
       {/* <Button type="button" size="sm" onClick={handleRefresh}>
         Back to Home
       </Button> */}
