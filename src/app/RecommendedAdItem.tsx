@@ -3,7 +3,6 @@ import RecommendedAd from './RecommendedAd';
 import { useQuery } from '@tanstack/react-query';
 import { RecommendedAdProps, VideoDetails } from './types';
 import { fetchVideoDetails } from '@/hooks/apiHooks';
-import { metadata } from './layout';
 
     const RecommendedAdItem = ({ recommendedAd, adsIndexId }: { recommendedAd: RecommendedAdProps["recommendedAd"], adsIndexId: string }) => {
         const { data: videoDetails } = useQuery<VideoDetails, Error>({
@@ -11,7 +10,6 @@ import { metadata } from './layout';
           queryFn: () => fetchVideoDetails(recommendedAd.id!, adsIndexId),
           enabled: !!recommendedAd.id && !!adsIndexId
         });
-        console.log("🚀 > RecommendedAdItem > videoDetails=", videoDetails)
 
         return (
           <div className="flex flex-col p-2">

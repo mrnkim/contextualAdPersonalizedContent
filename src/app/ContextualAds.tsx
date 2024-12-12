@@ -56,7 +56,7 @@ const ContextualAds = ({ adsIndexId }: { adsIndexId: string }) => {
     useEffect(() => {
       if (customTextsData) {
         const emotionalTones: string[] = [];
-        const matches = customTextsData.match(/Emotional Tone[:\s]*([^.]+)\./);
+        const matches = customTextsData.match(/Emotional Tone[:\s]*([^]+)/);
 
         if (matches && matches[1]) {
           // Split by commas, periods, or spaces and clean up each word
