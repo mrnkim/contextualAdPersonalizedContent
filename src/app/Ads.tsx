@@ -25,7 +25,9 @@ function Ads({ indexId, isIndexIdLoading, selectedFile, isRecommendClicked, setI
   const { data: videosData, isLoading } = useQuery({
     queryKey: ["videos", page, indexId],
     queryFn: () => fetchVideos(page, indexId!),
-    enabled: !!indexId,
+    enabled: Boolean(indexId),
+    retry: 3,
+    staleTime: 1000 * 60 * 5,
   });
 
   const totalPage = videosData?.page_info?.total_page || 1;
@@ -36,6 +38,11 @@ function Ads({ indexId, isIndexIdLoading, selectedFile, isRecommendClicked, setI
       setHasSearchOptionChanged(false);
     }
   }, [isRecommendClicked]);
+
+  useEffect(() => {
+    console.log('Current indexId:', indexId);
+    console.log('isIndexIdLoading:', isIndexIdLoading);
+  }, [indexId, isIndexIdLoading]);
 
   return (
     <div className="flex flex-col gap-4">
