@@ -38,7 +38,6 @@ function UserProfile({
   const [currentVideoIndex, setCurrentVideoIndex] = React.useState(0);
 
   const [demographics, setDemographics] = React.useState(initialDemographics);
-  console.log("🚀 > demographics=", demographics)
   const [newDemographicKey, setNewDemographicKey] = React.useState('');
   const [newDemographicValue, setNewDemographicValue] = React.useState('');
 
@@ -195,7 +194,7 @@ function UserProfile({
               onChange={(e) => setNewInterest(e.target.value)}
               onKeyDown={handleInterestSubmit}
               placeholder="Add interest..."
-              className="px-2 py-1 text-sm bg-transparent outline-none border-gray-300 focus:border-lime-500 w-24"
+              className="px-2 py-1 text-sm bg-transparent outline-none border-grey-300 focus:border-lime-500 w-24"
               hidden={interests.length === 5}
             />
           </div>
@@ -233,7 +232,7 @@ function UserProfile({
                     }
                   }}
                   placeholder="Enter name..."
-                  className="px-2 py-1 text-sm bg-transparent outline-none border-gray-300 focus:border-lime-500 w-40"
+                  className="px-2 py-1 text-sm bg-transparent outline-none border-grey-300 focus:border-lime-500 w-40"
                 />
               )}
             </div>
@@ -265,7 +264,7 @@ function UserProfile({
                     }
                   }}
                   placeholder="Enter age..."
-                  className="px-2 py-1 text-sm bg-transparent outline-none border-gray-300 focus:border-lime-500 w-40"
+                  className="px-2 py-1 text-sm bg-transparent outline-none border-grey-300 focus:border-lime-500 w-40"
                 />
               )}
             </div>
@@ -297,7 +296,7 @@ function UserProfile({
                     }
                   }}
                   placeholder="Enter location..."
-                  className="px-2 py-1 text-sm bg-transparent outline-none border-gray-300 focus:border-lime-500 w-40"
+                  className="px-2 py-1 text-sm bg-transparent outline-none border-grey-300 focus:border-lime-500 w-40"
                 />
               )}
             </div>
@@ -329,7 +328,7 @@ function UserProfile({
                               setEditingKey(null);
                               setNewKeyInput('');
                             }}
-                            className="px-2 py-1 text-sm bg-transparent outline-none border-gray-300 focus:border-lime-500 w-24"
+                            className="px-2 py-1 text-sm bg-transparent outline-none border-grey-300 focus:border-lime-500 w-24"
                             autoFocus
                           />
                         ) : (
@@ -377,7 +376,7 @@ function UserProfile({
                               setEditingValue(null);
                               setNewValueInput('');
                             }}
-                            className="px-2 py-1 text-sm bg-transparent outline-none border-gray-300 focus:border-lime-500 w-40"
+                            className="px-2 py-1 text-sm bg-transparent outline-none border-grey-300 focus:border-lime-500 w-40"
                             autoFocus
                           />
                         ) : (
@@ -433,7 +432,7 @@ function UserProfile({
                     }
                   }}
                   placeholder="Add field"
-                  className="px-2 py-1 text-sm bg-transparent outline-none border-gray-300 focus:border-lime-500 w-24"
+                  className="px-2 py-1 text-sm bg-transparent outline-none border-grey-300 focus:border-lime-500 w-24"
                 />
                 <span className="mx-1">:</span>
               </div>
@@ -458,7 +457,7 @@ function UserProfile({
                   }
                 }}
                 placeholder="Add value"
-                className="px-2 py-1 text-sm bg-transparent outline-none border-gray-300 focus:border-lime-500 w-40"
+                className="px-2 py-1 text-sm bg-transparent outline-none border-grey-300 focus:border-lime-500 w-40"
               />
             </div>
           </div>
@@ -487,8 +486,8 @@ function UserProfile({
               value={newEmotion}
               onChange={(e) => setNewEmotion(e.target.value)}
               onKeyDown={handleEmotionSubmit}
-              placeholder="Add emotion..."
-              className="px-2 py-1 text-sm bg-transparent outline-none border-gray-300 focus:border-lime-500 w-24"
+              placeholder="Add emotion"
+              className="px-2 py-1 text-sm bg-transparent outline-none border-grey-300 focus:border-lime-500 w-32"
               hidden={emotionAffinities.length === 5}
             />
           </div>
@@ -526,9 +525,10 @@ function UserProfile({
                       prev === 0 ? allSearchResults.length - 1 : prev - 1
                     )}
                     className="p-2"
+                    disabled={allSearchResults.length === 1}
                   >
                     <img
-                      src="/ChevronLeft.svg"
+                      src={allSearchResults.length === 1 ? "/ChevronLeftDisabled.svg" : "/ChevronLeft.svg"}
                       alt="Previous"
                       className="w-5 h-5"
                     />
@@ -544,9 +544,10 @@ function UserProfile({
                       prev === allSearchResults.length - 1 ? 0 : prev + 1
                     )}
                     className="p-2"
+                    disabled={allSearchResults.length === 1}
                   >
                     <img
-                      src="/ChevronRight.svg"
+                      src={allSearchResults.length === 1 ? "/ChevronRightDisabled.svg" : "/ChevronRight.svg"}
                       alt="Next"
                       className="w-5 h-5"
                     />
@@ -555,7 +556,7 @@ function UserProfile({
               </div>
             </div>
           ) : (
-            <p className="text-center text-gray-500">No results found</p>
+            <p className="text-center text-grey-500">No results found</p>
           )}
         </div>
       )}
