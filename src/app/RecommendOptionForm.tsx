@@ -17,11 +17,11 @@ const RecommendOptionForm = ({ searchOptionRef, customQueryRef, setIsRecommendCl
                   <input
                     type="radio"
                     name="searchOption"
-                    value="general"
+                    value="hashtags"
                     defaultChecked
                     onChange={handleSearchOptionChange}
                   />
-                  General
+                  Hashtags
                 </label>
                 <label className="flex items-center gap-2">
                   <input

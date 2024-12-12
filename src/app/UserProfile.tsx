@@ -59,6 +59,9 @@ function UserProfile({
   const [emotionAffinities, setEmotionAffinities] = React.useState(initialEmotionAffinities);
   const [newEmotion, setNewEmotion] = React.useState('');
 
+  // Add new state for showing/hiding the add field form
+  const [showAddField, setShowAddField] = React.useState(false);
+
   // Add useEffect to reset search when any value changes
   React.useEffect(() => {
     setIsSearchClicked(false);
@@ -414,15 +417,42 @@ function UserProfile({
                 return null;
               })}
 
-            {/* 새로운 key-value 입력 필드 */}
-            <div className="flex items-center gap-2">
-              <div className="w-32">
+            {/* Add more button and new key-value input fields */}
+            {showAddField ? (
+              <div className="flex items-center gap-2">
+                <div className="w-32">
+                  <input
+                    type="text"
+                    value={newDemographicKey}
+                    onChange={(e) => setNewDemographicKey(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && newDemographicValue.trim()) {
+                        e.preventDefault();
+                        const trimmedKey = newDemographicKey.trim();
+                        const trimmedValue = newDemographicValue.trim();
+                        if (trimmedKey && trimmedValue) {
+                          setDemographics(prev => ({
+                            ...prev,
+                            [trimmedKey]: trimmedValue
+                          }));
+                          setNewDemographicKey('');
+                          setNewDemographicValue('');
+                          setShowAddField(false);
+                        }
+                      }
+                    }}
+                    placeholder="Add field"
+                    className="px-2 py-1 text-sm bg-transparent outline-none border-grey-300 focus:border-lime-500 w-24"
+                  />
+                  <span className="mx-1">:</span>
+                </div>
+
                 <input
                   type="text"
-                  value={newDemographicKey}
-                  onChange={(e) => setNewDemographicKey(e.target.value)}
+                  value={newDemographicValue}
+                  onChange={(e) => setNewDemographicValue(e.target.value)}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter' && newDemographicValue.trim()) {
+                    if (e.key === 'Enter' && newDemographicKey.trim()) {
                       e.preventDefault();
                       const trimmedKey = newDemographicKey.trim();
                       const trimmedValue = newDemographicValue.trim();
@@ -433,38 +463,24 @@ function UserProfile({
                         }));
                         setNewDemographicKey('');
                         setNewDemographicValue('');
+                        setShowAddField(false);
                       }
                     }
                   }}
-                  placeholder="Add field"
-                  className="px-2 py-1 text-sm bg-transparent outline-none border-grey-300 focus:border-lime-500 w-24"
+                  placeholder="Add value"
+                  className="px-2 py-1 text-sm bg-transparent outline-none border-grey-300 focus:border-lime-500 w-40"
                 />
-                <span className="mx-1">:</span>
               </div>
-
-              <input
-                type="text"
-                value={newDemographicValue}
-                onChange={(e) => setNewDemographicValue(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && newDemographicKey.trim()) {
-                    e.preventDefault();
-                    const trimmedKey = newDemographicKey.trim();
-                    const trimmedValue = newDemographicValue.trim();
-                    if (trimmedKey && trimmedValue) {
-                      setDemographics(prev => ({
-                        ...prev,
-                        [trimmedKey]: trimmedValue
-                      }));
-                      setNewDemographicKey('');
-                      setNewDemographicValue('');
-                    }
-                  }
-                }}
-                placeholder="Add value"
-                className="px-2 py-1 text-sm bg-transparent outline-none border-grey-300 focus:border-lime-500 w-40"
-              />
-            </div>
+            ) : (
+              <div className="flex justify-start">
+                <button
+                  onClick={() => setShowAddField(true)}
+                  className="text-sm text-grey-500 hover:text-grey-700"
+                >
+                  + Add more
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -524,41 +540,48 @@ function UserProfile({
             </div>
           ) : allSearchResults.length > 0 ? (
             <div className="space-y-2">
-              <div className="p-2">
-                <div className="flex items-center justify-between">
-                  <button
-                    onClick={() => setCurrentVideoIndex(prev =>
-                      prev === 0 ? allSearchResults.length - 1 : prev - 1
-                    )}
-                    className="p-2"
-                    disabled={allSearchResults.length === 1}
+              <div className="p-2 flex items-center justify-between gap-2">
+                <button
+                  onClick={() => setCurrentVideoIndex(prev =>
+                    prev === 0 ? allSearchResults.length - 1 : prev - 1
+                  )}
+                  className="p-1 flex-shrink-0"
+                  disabled={allSearchResults.length === 1}
+                >
+                  <svg
+                    className={`w-5 h-5 ${allSearchResults.length === 1 ? 'text-gray-300' : 'text-gray-700'}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
                   >
-                    <img
-                      src={allSearchResults.length === 1 ? "/ChevronLeftDisabled.svg" : "/ChevronLeft.svg"}
-                      alt="Previous"
-                      className="w-5 h-5"
-                    />
-                  </button>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
 
+                <div className="w-[240px] h-[135px]">
                   <Video
                     videoId={allSearchResults[validCurrentVideoIndex]?.id}
                     indexId={indexId}
+                    showTitle={false}
                   />
-
-                  <button
-                    onClick={() => setCurrentVideoIndex(prev =>
-                      prev === allSearchResults.length - 1 ? 0 : prev + 1
-                    )}
-                    className="p-2"
-                    disabled={allSearchResults.length === 1}
-                  >
-                    <img
-                      src={allSearchResults.length === 1 ? "/ChevronRightDisabled.svg" : "/ChevronRight.svg"}
-                      alt="Next"
-                      className="w-5 h-5"
-                    />
-                  </button>
                 </div>
+
+                <button
+                  onClick={() => setCurrentVideoIndex(prev =>
+                    prev === allSearchResults.length - 1 ? 0 : prev + 1
+                  )}
+                  className="p-1 flex-shrink-0"
+                  disabled={allSearchResults.length === 1}
+                >
+                  <svg
+                    className={`w-5 h-5 ${allSearchResults.length === 1 ? 'text-gray-300' : 'text-gray-700'}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
               </div>
             </div>
           ) : (

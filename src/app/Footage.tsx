@@ -132,9 +132,8 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 
 	useEffect(() => {
 		if (videosData?.pages[0]?.data && videosData.pages[0].data.length > 0) {
-			const latestVideo = videosData.pages[0].data[0];
-			if (latestVideo._id !== footageVideoId) {
-				setFootageVideoId(latestVideo._id);
+			if (!footageVideoId) {
+				setFootageVideoId(videosData.pages[0].data[0]._id);
 			}
 		}
 	}, [videosData, footageVideoId, setFootageVideoId]);

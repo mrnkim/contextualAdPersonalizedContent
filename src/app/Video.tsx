@@ -37,11 +37,11 @@ const Video: React.FC<VideoProps> = ({ videoId, indexId, showTitle = true, video
   });
 
   const finalVideoDetails = providedVideoDetails || videoDetails;
-  
+
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <Suspense fallback={<LoadingSpinner />}>
-        <div className="flex flex-col w-full max-w-sm">
+        <div className="flex flex-col w-full max-w-sm h-full">
           <div className="relative">
             <div
               className="w-full h-0 pb-[56.25%] relative overflow-hidden rounded cursor-pointer"
