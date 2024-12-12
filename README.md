@@ -1,7 +1,3 @@
-## 👋 Introduction
-
-Contextual Ad is a tool that allows you to analyze your source footage, generate a summary, and receive ad recommendations based on the content and emotional tone of the footage. It also suggests optimal ad placements, enabling you to preview how the footage and ads work together. Additionally, you can generate ad copies, headlines, and hashtags for each ad!
-
 ## 🚀 Prerequisites
 
 ### 1. Twelve Labs API Key
@@ -12,9 +8,8 @@ If you don't have one, visit [Twelve Labs Playground](https://playground.twelvel
 
 Make sure you have two indexes for source footage and ads. If not,
 
-- Check [here](https://docs.twelvelabs.io/docs/create-indexes) on how to create an index and get the index id
-- When creating an index, check “Logo” and “Text in Video” under “More options”
-  <img src="public/index_options.png" alt="index options" width="300"/>
+- You can create the new indexes in [Twelve Labs Playground](https://playground.twelvelabs.io/)
+- Or check [here](https://docs.twelvelabs.io/docs/create-indexes) on how to create an index and get the index id
 
 ## 🔑 Getting Started
 
