@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useInfiniteQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { fetchVideos, fetchTaskDetails, uploadFootage } from '@/hooks/apiHooks';
 import Button from './Button';
@@ -69,7 +69,7 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 		uploadMutation.mutate(file);
 	};
 
-	const reset = () => {
+	const reset = useCallback(() => {
 		setIsAnalyzeClicked(false);
 		setShowAnalysis(false);
 		setSelectedFile(null);
@@ -80,7 +80,18 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 		setIsRecommendClickedEver(false);
 		setSelectedAd(null);
 		setSelectedChapter(null);
-	};
+	}, [
+		setIsAnalyzeClicked,
+		setShowAnalysis,
+		setSelectedFile,
+		setTaskId,
+		setTaskDetails,
+		setHashtags,
+		setIsRecommendClicked,
+		setIsRecommendClickedEver,
+		setSelectedAd,
+		setSelectedChapter
+	]);
 
 	useEffect(() => {
 		let intervalId: NodeJS.Timeout | null = null;

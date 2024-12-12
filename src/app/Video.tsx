@@ -37,7 +37,7 @@ const Video: React.FC<VideoProps> = ({ videoId, indexId, showTitle = true, video
   });
 
   const finalVideoDetails = providedVideoDetails || videoDetails;
-
+  
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <Suspense fallback={<LoadingSpinner />}>
@@ -92,7 +92,7 @@ const Video: React.FC<VideoProps> = ({ videoId, indexId, showTitle = true, video
                   )}
                 >
                   <p className={clsx("text-white", "text-xs", "font-light")}>
-                    {formatDuration(finalVideoDetails?.system_metadata?.duration ?? 0)}
+                    {formatDuration(finalVideoDetails?.metadata?.duration ?? 0)}
                   </p>
                 </div>
               </div>
@@ -101,7 +101,7 @@ const Video: React.FC<VideoProps> = ({ videoId, indexId, showTitle = true, video
           {showTitle && (
             <div className="mt-2">
               <p className={clsx("text-body3", "truncate", "text-grey-700")}>
-                {finalVideoDetails?.system_metadata?.filename}
+                {finalVideoDetails?.metadata?.filename}
               </p>
             </div>
           )}

@@ -27,7 +27,7 @@ export interface FootageProps {
   setIsRecommendClicked: (isRecommendClicked: boolean) => void;
   emotions: string[];
   setEmotions: (emotions: string[]) => void;
-  gistData: GistData;
+  gistData: string;
   customTextsData: string;
   isLoading: boolean;
   error: Error | null;
@@ -57,7 +57,7 @@ export interface AdsProps {
 export interface FootageSummaryProps {
   hashtags: string[];
   setHashtags: (hashtags: string[]) => void;
-  gistData: GistData;
+  gistData: string;
   customTextsData: string;
   isLoading: boolean;
   error: Error | null;

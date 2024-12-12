@@ -103,7 +103,7 @@ export const uploadFootage = async (file: File, indexId: string) => {
     formData.append('index_id', indexId);
     formData.append('video_file', file);
 
-    const response = await fetch('https://api.twelvelabs.io/v1.2/tasks', {
+    const response = await fetch('https://api.twelvelabs.io/v1.3/tasks', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',

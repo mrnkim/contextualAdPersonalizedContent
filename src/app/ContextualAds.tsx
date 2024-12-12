@@ -92,7 +92,7 @@ const ContextualAds = ({ adsIndexId }: { adsIndexId: string }) => {
                 setIsRecommendClicked={setIsRecommendClicked}
                 emotions={emotions}
                 setEmotions={setEmotions}
-                gistData={gistData}
+                gistData={gistData ?? ""}
                 customTextsData={customTextsData ?? ""}
                 isLoading={isGistLoading || isCustomTextsLoading}
                 error={gistDataError || customTextsError}

@@ -44,11 +44,11 @@ const IndexesDropDown: React.FC<IndexesDropDownProps> = ({
   const MENU_MAX_HEIGHT = 5 * ITEM_HEIGHT;
 
   return (
-    <div className="relative">
+    <div className="mx-auto flex justify-center">
       <Select
         value={selectedIndexId || ""}
         onChange={handleChange}
-        className={clsx('h-9 w-full tablet:w-[200px]', 'bg-white', 'pl-[1px]', 'truncate text-ellipsis')}
+        className={clsx('h-9 w-1/3', 'bg-white', 'pl-[1px]', 'truncate text-ellipsis')}
         renderValue={(value) => (
           <div className="truncate">
             {allIndexes.find(index => index._id === value)?.index_name || "Select an index"}
@@ -58,7 +58,7 @@ const IndexesDropDown: React.FC<IndexesDropDownProps> = ({
           PaperProps: {
             sx: {
               maxHeight: MENU_MAX_HEIGHT,
-              width: 200
+              width: 150
             }
           },
           MenuListProps: {

@@ -21,10 +21,41 @@ function FootageSummary({
 }: FootageSummaryProps) {
 
   useEffect(() => {
-    if (gistData?.hashtags) {
-      setHashtags(gistData.hashtags);
+    if (gistData && typeof gistData === 'string') {
+      const extractedHashtags = gistData.split(/\s+/).filter(tag => tag.startsWith('#')).map(tag => tag.slice(1));
+      setHashtags(extractedHashtags);
     }
   }, [gistData, setHashtags]);
+
+  const renderGistData = () => {
+    if (!gistData) return null;
+
+    if (typeof gistData === 'string') {
+      const tags = gistData.split(/\s+/).filter(tag => tag.startsWith('#'));
+      return (
+        <div className="mb-5">
+          {tags.join(' ')}
+        </div>
+      );
+    }
+
+    return null;
+  };
+
+  const renderHashtags = () => {
+    if (hashtags && hashtags.length > 0) {
+      return <div className="mb-5">{hashtags.map((tag: string) => `#${tag?.trim()}`).join(' ')}</div>;
+    }
+  };
+
+  const renderCustomTexts = () => {
+    if (!customTextsData) return null;
+    return (
+      <div className="mb-2">
+        {formatCustomTexts(customTextsData as string)}
+      </div>
+    );
+  };
 
   const formatCustomTexts = (data: string) => {
     const sections = ["Event Type", "Main Content", "Emotional Tone"];
@@ -45,32 +76,6 @@ function FootageSummary({
         <p className="whitespace-pre-wrap">{sectionContents[section] || ''}</p>
       </div>
     ));
-  };
-
-  const renderGistData = () => {
-    if (!gistData) return null;
-    return (
-      <>
-        <div className="mb-5">
-          {gistData?.hashtags?.map((tag: string) => `#${tag?.trim()}`).join(' ')}
-        </div>
-      </>
-    );
-  };
-
-  const renderHashtags = () => {
-    if (hashtags.length > 0) {
-      return <div className="mb-5">{hashtags.map((tag: string) => `#${tag?.trim()}`).join(' ')}</div>;
-    }
-  };
-
-  const renderCustomTexts = () => {
-    if (!customTextsData) return null;
-    return (
-      <div className="mb-2">
-        {formatCustomTexts(customTextsData as string)}
-      </div>
-    );
   };
 
   return (
@@ -102,7 +107,7 @@ function FootageSummary({
             </div>
           ) : (
             <>
-              {hashtags.length > 0 ? renderHashtags() : renderGistData()}
+              {renderHashtags() || renderGistData()}
               {renderCustomTexts()}
             </>
           )}
