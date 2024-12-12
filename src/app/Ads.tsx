@@ -40,8 +40,8 @@ function Ads({ indexId, isIndexIdLoading, selectedFile, isRecommendClicked, setI
   }, [isRecommendClicked]);
 
   return (
-    <div className="flex flex-col items -center gap-4">
-      <h2 className="text-2xl font-bold">Ads Library</h2>
+    <div className="flex flex-col gap-4">
+      <h2 className="text-2xl font-bold text-center">Ads Library</h2>
       <ErrorBoundary FallbackComponent={ErrorFallback}>
         <Suspense fallback={<LoadingSpinner />}>
           {isIndexIdLoading || isLoading ? (

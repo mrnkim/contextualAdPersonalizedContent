@@ -494,7 +494,7 @@ function UserProfile({
         </div>
 
         {/* Search Button */}
-        <div className="flex justify-center mt-8 pt-6">
+        <div className="flex justify-center pt-6">
           <Button
             type="button"
             size="sm"
@@ -508,10 +508,11 @@ function UserProfile({
             </div>
           </Button>
         </div>
+
         {/* Search Results */}
       {isSearchClicked && (
-        <div className="w-full mt-4">
-          <h3 className="font-semibold mb-2">Search Results for {demographics.name}</h3>
+        <div className="w-full">
+          <h3 className="font-semibold mb-2 mt-8">Search Results for {demographics.name}</h3>
           {isLoading ? (
             <div className="flex justify-center">
               <LoadingSpinner />

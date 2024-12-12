@@ -16,21 +16,13 @@ export default function Page() {
       <div className="flex gap-4 mb-8 max-w-7xl mx-auto w-full">
         <Button
           onClick={() => setSelectedApp('contextual')}
-          className={`${
-            selectedApp === 'contextual'
-              ? 'text-black'
-              : 'text-gray-300'
-          }`}
+          appearance={selectedApp === 'contextual' ? 'default' : 'subtle'}
         >
           Contextual Ads
         </Button>
         <Button
           onClick={() => setSelectedApp('personalized')}
-          className={`${
-            selectedApp === 'personalized'
-            ? 'text-black'
-            : 'text-gray-300'
-          }`}
+          appearance={selectedApp === 'personalized' ? 'default' : 'subtle'}
         >
           Personalized Content
         </Button>
