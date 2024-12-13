@@ -65,7 +65,7 @@ function UserProfile({
   // Add useEffect to reset search when any value changes
   React.useEffect(() => {
     setIsSearchClicked(false);
-  }, [interests, demographics, emotionAffinities]);
+  }, [interests, demographics, emotionAffinities, indexId]);
 
   const handleInterestSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && newInterest.trim()) {
@@ -103,7 +103,7 @@ function UserProfile({
   // Modified search queries to handle pagination
   const searchQueries = useQueries({
     queries: interests.map((interest) => ({
-      queryKey: ["search", interest, userId, isSearchClicked, interests.length],
+      queryKey: ["search", interest, userId, isSearchClicked, indexId],
       queryFn: async () => {
         if (!isSearchClicked) return null;
         try {

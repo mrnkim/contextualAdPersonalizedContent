@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, Suspense } from 'react'
+import React, { useState, Suspense, useEffect } from 'react'
 import Video from './Video';
 import LoadingSpinner from './LoadingSpinner';
 import ErrorFallback from './ErrorFallback';
@@ -24,6 +24,10 @@ type IndexVideosProps = {
 
 function IndexVideos({ indexId, isIndexIdLoading}: IndexVideosProps) {
   const [page, setPage] = useState(1);
+
+  useEffect(() => {
+    setPage(1);
+  }, [indexId]);
 
   const { data: videosData, isLoading } = useQuery({
     queryKey: ["videos", page, indexId],

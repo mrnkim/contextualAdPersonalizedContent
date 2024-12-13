@@ -14,9 +14,27 @@ const IndexesDropDown: React.FC<IndexesDropDownProps> = ({
   isLoading,
   selectedIndexId
 }) => {
+  const [loadedIndexes, setLoadedIndexes] = React.useState<IndexData[]>([]);
 
-  // Get all indexes from all pages
-  const allIndexes = indexesData?.pages?.flatMap(page => page.data) || [];
+  React.useEffect(() => {
+    if (indexesData?.pages) {
+      const newIndexes = indexesData.pages.flatMap(page => page.data);
+      setLoadedIndexes(prev => {
+        const combined = [...prev, ...newIndexes];
+        // Remove duplicates based on _id
+        return Array.from(new Map(combined.map(item => [item._id, item])).values());
+      });
+    }
+  }, [indexesData?.pages]);
+
+  React.useEffect(() => {
+    if (selectedIndexId && loadedIndexes.length > 0) {
+      const isValidIndex = loadedIndexes.some(index => index._id === selectedIndexId);
+      if (!isValidIndex) {
+        handleIndexChange(loadedIndexes[0]?._id || '');
+      }
+    }
+  }, [selectedIndexId, loadedIndexes, handleIndexChange]);
 
   const handleChange = (event: SelectChangeEvent<string>) => {
     const newIndexId = event.target.value;
@@ -49,11 +67,14 @@ const IndexesDropDown: React.FC<IndexesDropDownProps> = ({
         value={selectedIndexId || ""}
         onChange={handleChange}
         className={clsx('h-9 w-1/3', 'bg-white', 'pl-[1px]', 'truncate text-ellipsis')}
-        renderValue={(value) => (
-          <div className="truncate">
-            {allIndexes.find(index => index._id === value)?.index_name || "Select an index"}
-          </div>
-        )}
+        renderValue={(value) => {
+          const selectedIndex = loadedIndexes.find(index => index._id === value);
+          return (
+            <div className="truncate">
+              {selectedIndex?.index_name || "Select an index"}
+            </div>
+          );
+        }}
         MenuProps={{
           PaperProps: {
             sx: {
@@ -104,7 +125,7 @@ const IndexesDropDown: React.FC<IndexesDropDownProps> = ({
           },
         }}
       >
-        {allIndexes.map((index: IndexData) => (
+        {loadedIndexes.map((index: IndexData) => (
           <MenuItem
             key={index._id}
             value={index._id}
