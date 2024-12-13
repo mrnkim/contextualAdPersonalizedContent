@@ -38,10 +38,10 @@ const PersonalizedContent = () => {
 	}, [queryClient]);
 
   useEffect(() => {
-    if (indexesData?.pages[0]?.data[0]?._id && !indexId) {
-      handleIndexChange(indexesData.pages[0].data[0]._id);
+    if (!indexId) {
+      handleIndexChange(process.env.NEXT_PUBLIC_ADS_INDEX_ID || '');
     }
-  }, [indexesData, handleIndexChange, indexId]);
+  }, [handleIndexChange, indexId]);
 
   return (
     <div className="w-full max-w-7xl mx-auto">
