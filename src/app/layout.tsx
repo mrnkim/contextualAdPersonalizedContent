@@ -23,8 +23,8 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Contextual Ads",
-  description: "Contextual Ads",
+  title: "Contextual Ads | Personalized Content",
+  description: "Contextual Ads and Personalized Content",
 };
 
 export default function RootLayout({
