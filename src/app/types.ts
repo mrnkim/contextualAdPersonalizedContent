@@ -189,6 +189,8 @@ export interface VideoProps {
   indexId: string;
   showTitle?: boolean;
   videoDetails?: VideoDetails;
+  playing?: boolean;
+  onPlay?: () => void;
 }
 
 export interface AdCopyProps {

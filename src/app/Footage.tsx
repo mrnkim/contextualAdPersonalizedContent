@@ -11,12 +11,14 @@ import VideosDropDown from './VideosDropDown';
 import UploadForm from './UploadForm';
 import Task from './Task';
 import { FootageProps, TaskDetails, VideosData } from './types';
+import { usePlayer } from '@/contexts/PlayerContext';
 
 function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVideoId, setFootageVideoId, selectedFile, setSelectedFile, setIsRecommendClicked, gistData, customTextsData, isLoading, error, setIsRecommendClickedEver, setSelectedAd, setSelectedChapter, isAnalyzeClicked, setIsAnalyzeClicked }: FootageProps) {
 	const [showAnalysis, setShowAnalysis] = useState(false);
 	const [taskId, setTaskId] = useState<string | null>(null);
 	const [taskDetails, setTaskDetails] = useState<TaskDetails | null>(null);
 	const [playing, setPlaying] = useState(false);
+	const { currentPlayerId, setCurrentPlayerId } = usePlayer();
 
 	const handleVideoChange = (newVideoId: string) => {
 		reset();
@@ -181,7 +183,12 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 						<div>No videos available</div>
 					) : (
 						<>
-							<Video videoId={footageVideoId || ''} indexId={indexId || ''} />
+							<Video
+								videoId={footageVideoId || ''}
+								indexId={indexId || ''}
+								playing={currentPlayerId === `footage-${footageVideoId}`}
+								onPlay={() => setCurrentPlayerId(`footage-${footageVideoId}`)}
+							/>
 								<div className="w-fit">
 									<span className="text-xs font-bold mb-0.5 text-left block">Step 1</span>
 									<div className="flex gap-2">

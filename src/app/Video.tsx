@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, Suspense } from "react";
+import React, { Suspense } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ErrorBoundary } from "react-error-boundary";
 import ErrorFallback from "./ErrorFallback";
@@ -10,8 +10,7 @@ import { fetchVideoDetails } from "@/hooks/apiHooks";
 import LoadingSpinner from "./LoadingSpinner";
 import { VideoProps, VideoDetails } from "./types";
 
-const Video: React.FC<VideoProps> = ({ videoId, indexId, showTitle = true, videoDetails: providedVideoDetails }) => {
-  const [playing, setPlaying] = useState(false);
+const Video: React.FC<VideoProps> = ({ videoId, indexId, showTitle = true, videoDetails: providedVideoDetails, playing = false, onPlay }) => {
 
   const formatDuration = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600);
@@ -45,7 +44,7 @@ const Video: React.FC<VideoProps> = ({ videoId, indexId, showTitle = true, video
           <div className="relative">
             <div
               className="w-full h-0 pb-[56.25%] relative overflow-hidden rounded cursor-pointer"
-              onClick={() => setPlaying(!playing)}
+              onClick={onPlay}
             >
               <ReactPlayer
                 url={finalVideoDetails?.hls?.video_url}
@@ -72,6 +71,7 @@ const Video: React.FC<VideoProps> = ({ videoId, indexId, showTitle = true, video
                   },
                 }}
                 progressInterval={100}
+                onPlay={onPlay}
               />
               <div
                 className={clsx(

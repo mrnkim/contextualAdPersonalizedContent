@@ -12,6 +12,7 @@ import { fetchVideos } from '@/hooks/apiHooks';
 import { ErrorBoundary } from 'react-error-boundary';
 import { AdsProps } from './types';
 import RecommendOptionForm from './RecommendOptionForm';
+import { usePlayer } from '@/contexts/PlayerContext';
 
 type VideoType = {
   _id: string;
@@ -21,6 +22,7 @@ type VideoType = {
 function Ads({ indexId, isIndexIdLoading, selectedFile, isRecommendClicked, setIsRecommendClicked, searchOptionRef, customQueryRef, isAnalysisLoading, setIsRecommendClickedEver, isRecommendClickedEver, setSelectedAd, setSelectedChapter, hashtags}: AdsProps) {
   const [page, setPage] = useState(1);
   const [hasSearchOptionChanged, setHasSearchOptionChanged] = useState(false);
+  const { currentPlayerId, setCurrentPlayerId } = usePlayer();
 
   const { data: videosData, isLoading } = useQuery({
     queryKey: ["videos", page, indexId],
@@ -51,7 +53,13 @@ function Ads({ indexId, isIndexIdLoading, selectedFile, isRecommendClicked, setI
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 justify-items-center">
                 {videosData.data.map((video: VideoType) => {
                   return (
-                    <Video key={video._id} videoId={video._id} indexId={indexId || ''} />
+                    <Video
+                      key={video._id}
+                      videoId={video._id}
+                      indexId={indexId || ''}
+                      playing={currentPlayerId === `ad-library-${video._id}`}
+                      onPlay={() => setCurrentPlayerId(`ad-library-${video._id}`)}
+                    />
                   );
                 })}
               </div>

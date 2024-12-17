@@ -8,6 +8,7 @@ import LoadingSpinner from './LoadingSpinner';
 import { RecommendedAdProps } from './types';
 import { useQuery } from "@tanstack/react-query"
 import { generateCustomTexts } from "@/hooks/apiHooks";
+import { usePlayer } from '@/contexts/PlayerContext';
 
 const AD_COPY_PROMPT = "Generate three sets of ad copy details based on the video. Each set should include: Headline, Ad Copy, and Hashtags. For each set, start with the headline, followed directly by the ad copy, and then the hashtags. Label each section with 'Headline:', 'Ad Copy:', and 'Hashtags:' respectively. Present the sets in sequence (e.g., Set 1, Set 2), rather than grouping all headlines, ad copies, and hashtags separately. Don't provide any introductory text or comments."
 
@@ -29,12 +30,21 @@ const RecommendedAd: React.FC<RecommendedAdProps> = ({ recommendedAd, indexId, v
     setIsAdCopyClicked(true);
   };
 
+  const { currentPlayerId, setCurrentPlayerId } = usePlayer();
+
   return (
     <div className="w-full">
       <ErrorBoundary FallbackComponent={({ error }) => <ErrorFallback error={error} />}>
         <div className="flex flex-col w-full items-center">
           <Suspense fallback={<div className="flex justify-center items-center h-full"><LoadingSpinner /></div>}>
-            <Video videoId={recommendedAd.id ?? ''} indexId={indexId} showTitle={false} videoDetails={videoDetails}/>
+            <Video
+              videoId={recommendedAd.id ?? ''}
+              indexId={indexId}
+              showTitle={false}
+              videoDetails={videoDetails}
+              playing={currentPlayerId === `recommended-ad-${recommendedAd.id}`}
+              onPlay={() => setCurrentPlayerId(`recommended-ad-${recommendedAd.id}`)}
+            />
           </Suspense>
           <div className="w-fit">
             <div className="flex gap-2 mt-2">

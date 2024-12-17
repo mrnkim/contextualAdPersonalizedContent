@@ -7,6 +7,7 @@ import { ErrorBoundary } from 'react-error-boundary'
 import ErrorFallback from './ErrorFallback'
 import LoadingSpinner from './LoadingSpinner';
 import { Toaster, toast } from 'react-hot-toast';
+import { usePlayer } from '@/contexts/PlayerContext';
 
 const displayTimeRange = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600);
@@ -17,12 +18,12 @@ const displayTimeRange = (seconds: number): string => {
 };
 
 const RecommendedPlacements = ({ footageVideoId, footageIndexId, selectedAd, adsIndexId, selectedChapter, setSelectedChapter }: RecommendedPlacementsProps) => {
+    const { currentPlayerId, setCurrentPlayerId } = usePlayer();
     const playerRef = useRef<ReactPlayer>(null);
     const [playbackSequence, setPlaybackSequence] = useState<'footage' | 'ad'>('footage');
     const [returnToTime, setReturnToTime] = useState<number | null>(null);
     const [hasPlayedAd, setHasPlayedAd] = useState<boolean>(false);
     const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
-    const [autoPlay, setAutoPlay] = useState<boolean>(false);
 
     useEffect(() => {
         if (playbackSequence === 'footage' && returnToTime !== null && !isTransitioning) {
@@ -41,7 +42,6 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId, selectedAd, ads
             setReturnToTime(null);
             setHasPlayedAd(false);
             setIsTransitioning(false);
-            setAutoPlay(false);
 
             if (playerRef.current) {
                 playerRef.current.seekTo(0, 'seconds');
@@ -111,7 +111,6 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId, selectedAd, ads
         setSelectedChapter(index);
         setHasPlayedAd(false);
         setPlaybackSequence('footage');
-        setAutoPlay(true);
 
         if (playerRef.current) {
             const startTime = Math.max(0, chapter.end - 3);
@@ -129,10 +128,8 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId, selectedAd, ads
 
         if (isLastChapter) {
             setReturnToTime(0);
-            setAutoPlay(false);
         } else {
             setReturnToTime(chapter.end);
-            setAutoPlay(true);
         }
     };
 
@@ -158,7 +155,8 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId, selectedAd, ads
                             controls
                             width="100%"
                             height="100%"
-                            playing={true}
+                            playing={currentPlayerId === `recommended-ad-${selectedAd?.id}`}
+                            onPlay={() => setCurrentPlayerId(`recommended-ad-${selectedAd?.id}`)}
                             onProgress={handleProgress}
                             onEnded={handleAdEnded}
                         />
@@ -170,7 +168,8 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId, selectedAd, ads
                                 controls
                                 width="100%"
                                 height="100%"
-                                playing={autoPlay}
+                                playing={currentPlayerId === `recommended-${footageVideoId}`}
+                                onPlay={() => setCurrentPlayerId(`recommended-${footageVideoId}`)}
                                 onProgress={handleProgress}
                             />
                         )
