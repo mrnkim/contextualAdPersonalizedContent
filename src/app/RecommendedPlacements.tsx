@@ -49,6 +49,12 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId, selectedAd, ads
         }
     }, [selectedAd?.id]);
 
+    useEffect(() => {
+        if (playbackSequence === 'ad' && selectedAd) {
+            setCurrentPlayerId(`recommended-ad-${selectedAd.id}`);
+        }
+    }, [playbackSequence, selectedAd]);
+
     const { data: chaptersData, isLoading: isChaptersLoading } = useQuery<ChaptersData, Error>({
         queryKey: ["chapters", footageVideoId],
         queryFn: () => generateChapters(footageVideoId),
@@ -111,6 +117,7 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId, selectedAd, ads
         setSelectedChapter(index);
         setHasPlayedAd(false);
         setPlaybackSequence('footage');
+        setCurrentPlayerId(`recommended-${footageVideoId}`);
 
         if (playerRef.current) {
             const startTime = Math.max(0, chapter.end - 3);
@@ -125,6 +132,7 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId, selectedAd, ads
         const isLastChapter = selectedChapter === chaptersData.chapters.length - 1;
 
         setPlaybackSequence('footage');
+        setCurrentPlayerId(`recommended-${footageVideoId}`);
 
         if (isLastChapter) {
             setReturnToTime(0);
