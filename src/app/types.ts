@@ -187,12 +187,11 @@ export interface ClipsProps {
 export interface VideoProps {
   videoId: string;
   indexId: string;
-  showTitle: boolean;
-  videoDetails: VideoDetails;
   playing: boolean;
   onPlay: () => void;
-  onSelect: () => void;
-  light?: boolean;
+  onSelect?: () => void;
+  showTitle?: boolean;
+  videoDetails?: VideoDetails;
 }
 
 export interface AdCopyProps {
