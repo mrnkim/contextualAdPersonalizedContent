@@ -1,5 +1,6 @@
 import React from 'react'
 import UserProfile from './UserProfile'
+import { Profile } from './types';
 
 function UserProfiles({
   indexId,
@@ -7,8 +8,8 @@ function UserProfiles({
   setProfiles
 }: {
   indexId: string;
-  profiles: any[]; // Consider adding proper type definition
-  setProfiles: (profiles: any[]) => void;
+  profiles: Profile[];
+  setProfiles: (profiles: Profile[]) => void;
 }) {
 
   return (

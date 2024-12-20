@@ -197,6 +197,7 @@ export interface VideoProps {
   playing: boolean;
   onPlay: () => void;
   onSelect?: () => void;
+  onPause?: () => void; 
   showTitle?: boolean;
   videoDetails?: VideoDetails;
 }
@@ -346,6 +347,7 @@ interface Demographics {
   name: string;
   age: number;
   location: string;
+  [key: string]: string | number;
 }
 
 export interface Profile {

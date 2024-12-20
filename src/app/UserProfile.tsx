@@ -4,30 +4,12 @@ import { useQueries } from "@tanstack/react-query";
 import { fetchSearchPage, textToVideoSearch } from '@/hooks/apiHooks';
 import LoadingSpinner from './LoadingSpinner';
 import Video from './Video';
-import { Clip } from './types';
+import { Clip, Profile } from './types';
 import { usePlayer } from '@/contexts/PlayerContext';
 
-interface Demographics {
-  age?: number;
-  name?: string;
-  location?: string;
-  [key: string]: string | number | undefined;
-}
-
-interface UserProfileProps {
-  profilePic?: string;
-  interests?: string[];
-  demographics?: Demographics;
-  emotionAffinities?: string[];
-  userId: string;
+interface UserProfileProps extends Profile {
   indexId: string;
-  onUpdateProfile: (updatedProfile: {
-    profilePic?: string;
-    interests?: string[];
-    demographics?: Demographics;
-    emotionAffinities?: string[];
-    userId: string;
-  }) => void;
+  onUpdateProfile: (updatedProfile: Partial<Profile>) => void;
 }
 
 interface VideoItem {
@@ -42,7 +24,11 @@ const capitalize = (str: string) => {
 function UserProfile({
   profilePic = '/default-profile.png',
   interests: initialInterests = [],
-  demographics: initialDemographics = {},
+  demographics: initialDemographics = {
+    name: '',
+    age: 0,
+    location: '',
+  },
   emotionAffinities: initialEmotionAffinities = [],
   userId,
   indexId,
@@ -62,6 +48,7 @@ function UserProfile({
   const [newValueInput, setNewValueInput] = React.useState('');
   const [newEmotion, setNewEmotion] = React.useState('');
   const [showAddField, setShowAddField] = React.useState(false);
+  const [isPlaying, setIsPlaying] = React.useState(false);
 
 
   const interests = initialInterests;
@@ -626,9 +613,15 @@ function UserProfile({
               <div className="space-y-2">
                 <div className="p-2 flex items-center justify-between gap-2">
                   <button
-                    onClick={() => setCurrentVideoIndex(prev =>
-                      prev === 0 ? allSearchResults.length - 1 : prev - 1
-                    )}
+                    onClick={() => {
+                      setCurrentVideoIndex(prev =>
+                        prev === 0 ? allSearchResults.length - 1 : prev - 1
+                      );
+                      if (isPlaying) {
+                        const newIndex = currentVideoIndex === 0 ? allSearchResults.length - 1 : currentVideoIndex - 1;
+                        setCurrentPlayerId(`searchResult-${userId}-${allSearchResults[newIndex]?.id}`);
+                      }
+                    }}
                     className="p-1 flex-shrink-0"
                     disabled={allSearchResults.length === 1}
                   >
@@ -648,14 +641,26 @@ function UserProfile({
                       indexId={indexId}
                       showTitle={false}
                       playing={currentPlayerId === `searchResult-${userId}-${allSearchResults[validCurrentVideoIndex]?.id}`}
-                      onPlay={() => setCurrentPlayerId(`searchResult-${userId}-${allSearchResults[validCurrentVideoIndex]?.id}`)}
+                      onPlay={() => {
+                        setCurrentPlayerId(`searchResult-${userId}-${allSearchResults[validCurrentVideoIndex]?.id}`);
+                        setIsPlaying(true);
+                      }}
+                      onPause={() => {
+                        setIsPlaying(false);
+                      }}
                     />
                   </div>
 
                   <button
-                    onClick={() => setCurrentVideoIndex(prev =>
-                      prev === allSearchResults.length - 1 ? 0 : prev + 1
-                    )}
+                    onClick={() => {
+                      setCurrentVideoIndex(prev =>
+                        prev === allSearchResults.length - 1 ? 0 : prev + 1
+                      );
+                      if (isPlaying) {
+                        const newIndex = currentVideoIndex === allSearchResults.length - 1 ? 0 : currentVideoIndex + 1;
+                        setCurrentPlayerId(`searchResult-${userId}-${allSearchResults[newIndex]?.id}`);
+                      }
+                    }}
                     className="p-1 flex-shrink-0"
                     disabled={allSearchResults.length === 1}
                   >
