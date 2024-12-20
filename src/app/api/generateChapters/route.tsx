@@ -23,7 +23,7 @@ export async function GET(req: Request) {
               "Content-Type": "application/json",
               "x-api-key": `${API_KEY}`,
             },
-            body: JSON.stringify({type: "chapter", video_id: videoId, prompt: "Provide only three chapters"})
+            body: JSON.stringify({type: "chapter", video_id: videoId, prompt: "Provide only three chapters. Ensure that no audio or key narrative elements are interrupted."})
         };
 
       try {
