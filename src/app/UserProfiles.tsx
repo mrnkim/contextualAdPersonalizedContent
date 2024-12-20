@@ -20,7 +20,10 @@ function UserProfiles({
           indexId={indexId}
           onUpdateProfile={(updatedProfile) => {
             const newProfiles = [...profiles];
-            newProfiles[index] = updatedProfile;
+            newProfiles[index] = {
+              ...profiles[index],
+              ...updatedProfile
+            };
             setProfiles(newProfiles);
           }}
         />

@@ -70,6 +70,9 @@ function UserProfile({
     if (e.key === 'Enter' && newInterest.trim()) {
       setIsSearchClicked(false);
       onUpdateProfile({
+        ...demographics,
+        profilePic,
+        userId,
         interests: [...interests, newInterest.trim()],
         demographics,
         emotionAffinities
@@ -81,6 +84,9 @@ function UserProfile({
   const removeInterest = (indexToRemove: number) => {
     setIsSearchClicked(false);
     onUpdateProfile({
+      ...demographics,
+      profilePic,
+      userId,
       interests: interests.filter((_, index) => index !== indexToRemove),
       demographics,
       emotionAffinities
@@ -92,6 +98,9 @@ function UserProfile({
     const newDemographics = { ...demographics };
     delete newDemographics[key];
     onUpdateProfile({
+      ...demographics,
+      profilePic,
+      userId,
       interests,
       demographics: newDemographics,
       emotionAffinities
@@ -102,6 +111,9 @@ function UserProfile({
     if (e.key === 'Enter' && newEmotion.trim()) {
       setIsSearchClicked(false);
       onUpdateProfile({
+        ...demographics,
+        profilePic,
+        userId,
         interests,
         demographics,
         emotionAffinities: [...emotionAffinities, newEmotion.trim()]
@@ -113,6 +125,9 @@ function UserProfile({
   const removeEmotion = (indexToRemove: number) => {
     setIsSearchClicked(false);
     onUpdateProfile({
+      ...demographics,
+      profilePic,
+      userId,
       interests,
       demographics,
       emotionAffinities: emotionAffinities.filter((_, index) => index !== indexToRemove)
@@ -243,6 +258,9 @@ function UserProfile({
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && nameInput.trim()) {
                       onUpdateProfile({
+                        ...demographics,
+                        profilePic,
+                        userId,
                         interests,
                         demographics: {
                           ...demographics,
@@ -279,6 +297,9 @@ function UserProfile({
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && ageInput.trim()) {
                       onUpdateProfile({
+                        ...demographics,
+                        profilePic,
+                        userId,
                         interests,
                         demographics: {
                           ...demographics,
@@ -315,6 +336,9 @@ function UserProfile({
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && locationInput.trim()) {
                       onUpdateProfile({
+                        ...demographics,
+                        profilePic,
+                        userId,
                         interests,
                         demographics: {
                           ...demographics,
@@ -349,6 +373,9 @@ function UserProfile({
                                 delete newDemographics[key];
                                 newDemographics[newKeyInput.trim()] = value;
                                 onUpdateProfile({
+                                  ...demographics,
+                                  profilePic,
+                                  userId,
                                   interests,
                                   demographics: newDemographics,
                                   emotionAffinities
@@ -398,6 +425,9 @@ function UserProfile({
                             onKeyDown={(e) => {
                               if (e.key === 'Enter' && newValueInput.trim()) {
                                 onUpdateProfile({
+                                  ...demographics,
+                                  profilePic,
+                                  userId,
                                   interests,
                                   demographics: {
                                     ...demographics,
@@ -429,6 +459,9 @@ function UserProfile({
                               onClick={(e) => {
                                 e.stopPropagation();
                                 onUpdateProfile({
+                                  ...demographics,
+                                  profilePic,
+                                  userId,
                                   interests,
                                   demographics: {
                                     ...demographics,
@@ -464,6 +497,9 @@ function UserProfile({
                         const trimmedValue = newDemographicValue.trim();
                         if (trimmedKey && trimmedValue) {
                           onUpdateProfile({
+                            ...demographics,
+                            profilePic,
+                            userId,
                             interests,
                             demographics: {
                               ...demographics,
@@ -494,6 +530,9 @@ function UserProfile({
                       const trimmedValue = newDemographicValue.trim();
                       if (trimmedKey && trimmedValue) {
                         onUpdateProfile({
+                          ...demographics,
+                          profilePic,
+                          userId,
                           interests,
                           demographics: {
                             ...demographics,
