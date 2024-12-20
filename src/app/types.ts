@@ -341,3 +341,17 @@ export interface RecommendedAdItemProps {
   adsIndexId: string;
   score?: number;
 }
+
+interface Demographics {
+  name: string;
+  age: number;
+  location: string;
+}
+
+export interface Profile {
+  profilePic: string;
+  interests: string[];
+  demographics: Demographics;
+  emotionAffinities: string[];
+  userId: string;
+}
