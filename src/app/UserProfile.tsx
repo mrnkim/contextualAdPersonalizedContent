@@ -5,23 +5,28 @@ import { fetchSearchPage, textToVideoSearch } from '@/hooks/apiHooks';
 import LoadingSpinner from './LoadingSpinner';
 import Video from './Video';
 import { Clip } from './types';
+import { usePlayer } from '@/contexts/PlayerContext';
+
+interface Demographics {
+  age?: number;
+  name?: string;
+  location?: string;
+  [key: string]: string | number | undefined;
+}
 
 interface UserProfileProps {
   profilePic?: string;
   interests?: string[];
-  demographics?: {
-    age?: number;
-    name?: string;
-    location?: string;
-    [key: string]: string | number | undefined;
-  };
+  demographics?: Demographics;
   emotionAffinities?: string[];
   userId: string;
   indexId: string;
   onUpdateProfile: (updatedProfile: {
-    interests: string[];
-    demographics: any;
-    emotionAffinities: string[];
+    profilePic?: string;
+    interests?: string[];
+    demographics?: Demographics;
+    emotionAffinities?: string[];
+    userId: string;
   }) => void;
 }
 
@@ -58,9 +63,12 @@ function UserProfile({
   const [newEmotion, setNewEmotion] = React.useState('');
   const [showAddField, setShowAddField] = React.useState(false);
 
+
   const interests = initialInterests;
   const demographics = initialDemographics;
   const emotionAffinities = initialEmotionAffinities;
+
+  const { currentPlayerId, setCurrentPlayerId } = usePlayer();
 
   React.useEffect(() => {
     setIsSearchClicked(false);
@@ -639,6 +647,8 @@ function UserProfile({
                       videoId={allSearchResults[validCurrentVideoIndex]?.id}
                       indexId={indexId}
                       showTitle={false}
+                      playing={currentPlayerId === `searchResult-${userId}-${allSearchResults[validCurrentVideoIndex]?.id}`}
+                      onPlay={() => setCurrentPlayerId(`searchResult-${userId}-${allSearchResults[validCurrentVideoIndex]?.id}`)}
                     />
                   </div>
 
