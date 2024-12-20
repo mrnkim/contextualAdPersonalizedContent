@@ -73,6 +73,7 @@ const RecommendedAds = ({ hashtags, footageVideoId, adsIndexId, selectedFile, se
     }
     return acc;
   }, [] as RecommendedAdProps["recommendedAd"][]);
+  console.log("🚀 > combinedData > combinedData=", combinedData)
 
   const displayedData = useMemo(() => {
     return combinedData.slice(0, displayCount);
@@ -139,6 +140,7 @@ const RecommendedAds = ({ hashtags, footageVideoId, adsIndexId, selectedFile, se
                         <RecommendedAdItem
                           recommendedAd={recommendedAd}
                           adsIndexId={adsIndexId}
+                          score={recommendedAd.clips[0]?.score}
                         />
                       </div>
                     ))}

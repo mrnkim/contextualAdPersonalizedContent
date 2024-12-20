@@ -88,8 +88,15 @@ export interface TaskProps {
 
 export interface RecommendedAdProps {
   recommendedAd: {
-    id?: string
-    clips: Array<object>
+    id?: string;
+    clips: Array<{
+      confidence: "high" | "medium" | "low";
+      end: number;
+      score: number;
+      start: number;
+      thumbnail_url: string;
+      video_id: string;
+    }>;
   };
   indexId: string;
   videoDetails: VideoDetails;
@@ -329,4 +336,8 @@ export interface VideosData {
   pageParams: number[];
 }
 
-
+export interface RecommendedAdItemProps {
+  recommendedAd: RecommendedAdProps["recommendedAd"];
+  adsIndexId: string;
+  score?: number;
+}
