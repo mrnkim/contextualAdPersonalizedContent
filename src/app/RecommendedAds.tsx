@@ -91,7 +91,7 @@ const RecommendedAds = ({ hashtags, footageVideoId, adsIndexId, selectedFile, se
 
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
-      <div className="flex flex-row w-full my-5 gap-8">
+      <div className="flex flex-row w-full my-5 gap-16">
         {/* Left side - RecommendedPlacements */}
           <div className="w-2/3">
             <RecommendedPlacements
