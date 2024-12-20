@@ -13,7 +13,6 @@ import { usePlayer } from '@/contexts/PlayerContext';
 const AD_COPY_PROMPT = "Generate three sets of ad copy details based on the video. Each set should include: Headline, Ad Copy, and Hashtags. For each set, start with the headline, followed directly by the ad copy, and then the hashtags. Label each section with 'Headline:', 'Ad Copy:', and 'Hashtags:' respectively. Present the sets in sequence (e.g., Set 1, Set 2), rather than grouping all headlines, ad copies, and hashtags separately. Don't provide any introductory text or comments."
 
 const RecommendedAd: React.FC<RecommendedAdProps> = ({ recommendedAd, indexId, videoDetails }) => {
-  console.log("🚀 > videoDetails=", videoDetails)
   const [isAdCopyClicked, setIsAdCopyClicked] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);

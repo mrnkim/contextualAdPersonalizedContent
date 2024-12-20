@@ -6,7 +6,13 @@ import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchIndexes } from '@/hooks/apiHooks';
 import { IndexesData } from './types'
 
-const PersonalizedContent = () => {
+const PersonalizedContent = ({
+  profiles,
+  setProfiles
+}: {
+  profiles: any[]; // Consider adding proper type definition
+  setProfiles: (profiles: any[]) => void;
+}) => {
   const [indexId, setIndexId] = useState<string | null>(null);
 
   const queryClient = useQueryClient();
@@ -64,6 +70,8 @@ const PersonalizedContent = () => {
     />
     <UserProfiles
       indexId={indexId}
+      profiles={profiles}
+      setProfiles={setProfiles}
     /></>}
 
   </div>

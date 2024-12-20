@@ -18,6 +18,11 @@ interface UserProfileProps {
   emotionAffinities?: string[];
   userId: string;
   indexId: string;
+  onUpdateProfile: (updatedProfile: {
+    interests: string[];
+    demographics: any;
+    emotionAffinities: string[];
+  }) => void;
 }
 
 interface VideoItem {
@@ -35,34 +40,28 @@ function UserProfile({
   demographics: initialDemographics = {},
   emotionAffinities: initialEmotionAffinities = [],
   userId,
-  indexId
+  indexId,
+  onUpdateProfile
 }: UserProfileProps) {
   const [newInterest, setNewInterest] = React.useState('');
-  const [interests, setInterests] = React.useState(initialInterests);
-
   const [isSearchClicked, setIsSearchClicked] = React.useState(false);
   const [currentVideoIndex, setCurrentVideoIndex] = React.useState(0);
-
-  const [demographics, setDemographics] = React.useState(initialDemographics);
   const [newDemographicKey, setNewDemographicKey] = React.useState('');
   const [newDemographicValue, setNewDemographicValue] = React.useState('');
-
   const [nameInput, setNameInput] = React.useState('');
   const [ageInput, setAgeInput] = React.useState('');
   const [locationInput, setLocationInput] = React.useState('');
-
   const [editingKey, setEditingKey] = React.useState<string | null>(null);
   const [editingValue, setEditingValue] = React.useState<string | null>(null);
   const [newKeyInput, setNewKeyInput] = React.useState('');
   const [newValueInput, setNewValueInput] = React.useState('');
-
-  const [emotionAffinities, setEmotionAffinities] = React.useState(initialEmotionAffinities);
   const [newEmotion, setNewEmotion] = React.useState('');
-
-  // Add new state for showing/hiding the add field form
   const [showAddField, setShowAddField] = React.useState(false);
 
-  // Add useEffect to reset search when any value changes
+  const interests = initialInterests;
+  const demographics = initialDemographics;
+  const emotionAffinities = initialEmotionAffinities;
+
   React.useEffect(() => {
     setIsSearchClicked(false);
   }, [interests, demographics, emotionAffinities, indexId]);
@@ -70,37 +69,56 @@ function UserProfile({
   const handleInterestSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && newInterest.trim()) {
       setIsSearchClicked(false);
-      setInterests([...interests, newInterest.trim()]);
+      onUpdateProfile({
+        interests: [...interests, newInterest.trim()],
+        demographics,
+        emotionAffinities
+      });
       setNewInterest('');
     }
   };
 
   const removeInterest = (indexToRemove: number) => {
     setIsSearchClicked(false);
-    setInterests(interests.filter((_, index) => index !== indexToRemove));
+    onUpdateProfile({
+      interests: interests.filter((_, index) => index !== indexToRemove),
+      demographics,
+      emotionAffinities
+    });
   };
 
   const removeDemographic = (key: string) => {
     setIsSearchClicked(false);
     const newDemographics = { ...demographics };
     delete newDemographics[key];
-    setDemographics(newDemographics);
+    onUpdateProfile({
+      interests,
+      demographics: newDemographics,
+      emotionAffinities
+    });
   };
 
   const handleEmotionSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && newEmotion.trim()) {
       setIsSearchClicked(false);
-      setEmotionAffinities([...emotionAffinities, newEmotion.trim()]);
+      onUpdateProfile({
+        interests,
+        demographics,
+        emotionAffinities: [...emotionAffinities, newEmotion.trim()]
+      });
       setNewEmotion('');
     }
   };
 
   const removeEmotion = (indexToRemove: number) => {
     setIsSearchClicked(false);
-    setEmotionAffinities(emotionAffinities.filter((_, index) => index !== indexToRemove));
+    onUpdateProfile({
+      interests,
+      demographics,
+      emotionAffinities: emotionAffinities.filter((_, index) => index !== indexToRemove)
+    });
   };
 
-  // Modified search queries to handle pagination
   const searchQueries = useQueries({
     queries: interests.map((interest) => ({
       queryKey: ["search", interest, userId, isSearchClicked, indexId],
@@ -140,15 +158,12 @@ function UserProfile({
 
   const isLoading = searchQueries.some(query => query.isLoading);
 
-  // Combine and deduplicate results
   const allSearchResults = React.useMemo(() => {
     const results = new Map();
 
-    // Add all search results with deduplication
     searchQueries
       .filter(query => query.data?.data && query.isSuccess)
       .forEach(query => {
-        // Only include results for current interests
         if (interests.includes(query.data!.searchTerm)) {
           query.data!.data.forEach((item: VideoItem) => {
             if (!results.has(item.id)) {
@@ -161,13 +176,11 @@ function UserProfile({
     return Array.from(results.values());
   }, [searchQueries, interests]);
 
-  // Ensure currentVideoIndex is within bounds
   const validCurrentVideoIndex = currentVideoIndex < allSearchResults.length ? currentVideoIndex : 0;
 
   return (
     <div className="flex flex-col items-center w-[360px]">
       <div className="border rounded-lg p-4 w-full space-y-4">
-        {/* Profile Picture */}
         <div className="flex justify-center mb-4">
           <div className="w-28 h-28 rounded-full overflow-hidden">
             <img
@@ -178,7 +191,6 @@ function UserProfile({
           </div>
         </div>
 
-        {/* Interests */}
         <div className="space-y-2 h-[90px]">
           <h3 className="font-semibold">Interests</h3>
           <div className="flex flex-wrap gap-2 items-center">
@@ -208,11 +220,9 @@ function UserProfile({
           </div>
         </div>
 
-        {/* Demographics */}
         <div className="space-y-2">
           <h3 className="font-semibold">Demographics</h3>
           <div className="flex flex-col gap-2">
-            {/* Default demographics Fields */}
             <div className="flex items-center gap-2">
               <span className="w-20 text-sm">Name:</span>
               {demographics.name ? (
@@ -232,9 +242,13 @@ function UserProfile({
                   onChange={(e) => setNameInput(e.target.value)}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && nameInput.trim()) {
-                      setDemographics({
-                        ...demographics,
-                        name: nameInput.trim()
+                      onUpdateProfile({
+                        interests,
+                        demographics: {
+                          ...demographics,
+                          name: nameInput.trim()
+                        },
+                        emotionAffinities
                       });
                       setNameInput('');
                     }
@@ -264,9 +278,13 @@ function UserProfile({
                   onChange={(e) => setAgeInput(e.target.value)}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && ageInput.trim()) {
-                      setDemographics({
-                        ...demographics,
-                        age: parseInt(ageInput.trim())
+                      onUpdateProfile({
+                        interests,
+                        demographics: {
+                          ...demographics,
+                          age: parseInt(ageInput.trim())
+                        },
+                        emotionAffinities
                       });
                       setAgeInput('');
                     }
@@ -296,9 +314,13 @@ function UserProfile({
                   onChange={(e) => setLocationInput(e.target.value)}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && locationInput.trim()) {
-                      setDemographics({
-                        ...demographics,
-                        location: locationInput.trim()
+                      onUpdateProfile({
+                        interests,
+                        demographics: {
+                          ...demographics,
+                          location: locationInput.trim()
+                        },
+                        emotionAffinities
                       });
                       setLocationInput('');
                     }
@@ -309,7 +331,6 @@ function UserProfile({
               )}
             </div>
 
-            {/* Additional demographics Fields */}
             {Object.entries(demographics)
               .sort(([a], [b]) => a.localeCompare(b))
               .map(([key, value]) => {
@@ -327,7 +348,11 @@ function UserProfile({
                                 const newDemographics = { ...demographics };
                                 delete newDemographics[key];
                                 newDemographics[newKeyInput.trim()] = value;
-                                setDemographics(newDemographics);
+                                onUpdateProfile({
+                                  interests,
+                                  demographics: newDemographics,
+                                  emotionAffinities
+                                });
                                 setEditingKey(null);
                                 setNewKeyInput('');
                               }
@@ -372,9 +397,13 @@ function UserProfile({
                             onChange={(e) => setNewValueInput(e.target.value)}
                             onKeyDown={(e) => {
                               if (e.key === 'Enter' && newValueInput.trim()) {
-                                setDemographics({
-                                  ...demographics,
-                                  [key]: newValueInput.trim()
+                                onUpdateProfile({
+                                  interests,
+                                  demographics: {
+                                    ...demographics,
+                                    [key]: newValueInput.trim()
+                                  },
+                                  emotionAffinities
                                 });
                                 setEditingValue(null);
                                 setNewValueInput('');
@@ -399,9 +428,13 @@ function UserProfile({
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                setDemographics({
-                                  ...demographics,
-                                  [key]: ''
+                                onUpdateProfile({
+                                  interests,
+                                  demographics: {
+                                    ...demographics,
+                                    [key]: ''
+                                  },
+                                  emotionAffinities
                                 });
                               }}
                               className="ml-1 text-grey-500 hover:text-grey-700"
@@ -417,7 +450,6 @@ function UserProfile({
                 return null;
               })}
 
-            {/* Add more button and new key-value input fields */}
             {showAddField ? (
               <div className="flex items-center gap-2">
                 <div className="w-32">
@@ -431,10 +463,14 @@ function UserProfile({
                         const trimmedKey = newDemographicKey.trim();
                         const trimmedValue = newDemographicValue.trim();
                         if (trimmedKey && trimmedValue) {
-                          setDemographics(prev => ({
-                            ...prev,
-                            [trimmedKey]: trimmedValue
-                          }));
+                          onUpdateProfile({
+                            interests,
+                            demographics: {
+                              ...demographics,
+                              [trimmedKey]: trimmedValue
+                            },
+                            emotionAffinities
+                          });
                           setNewDemographicKey('');
                           setNewDemographicValue('');
                           setShowAddField(false);
@@ -457,10 +493,14 @@ function UserProfile({
                       const trimmedKey = newDemographicKey.trim();
                       const trimmedValue = newDemographicValue.trim();
                       if (trimmedKey && trimmedValue) {
-                        setDemographics(prev => ({
-                          ...prev,
-                          [trimmedKey]: trimmedValue
-                        }));
+                        onUpdateProfile({
+                          interests,
+                          demographics: {
+                            ...demographics,
+                            [trimmedKey]: trimmedValue
+                          },
+                          emotionAffinities
+                        });
                         setNewDemographicKey('');
                         setNewDemographicValue('');
                         setShowAddField(false);
@@ -484,7 +524,6 @@ function UserProfile({
           </div>
         </div>
 
-        {/* Emotion Affinities */}
         <div className="space-y-2 h-[90px]">
           <h3 className="font-semibold">Emotion Affinities</h3>
           <div className="flex flex-wrap gap-2 items-center">
@@ -514,7 +553,6 @@ function UserProfile({
           </div>
         </div>
 
-        {/* Search Button */}
         <div className="flex justify-center pt-6">
           <Button
             type="button"
@@ -530,68 +568,65 @@ function UserProfile({
           </Button>
         </div>
 
-        {/* Search Results */}
-      {isSearchClicked && (
-        <div className="w-full">
-          <h3 className="font-semibold mb-2 mt-8">Search Results for {demographics.name}</h3>
-          {isLoading ? (
-            <div className="flex justify-center">
-              <LoadingSpinner />
-            </div>
-          ) : allSearchResults.length > 0 ? (
-            <div className="space-y-2">
-              <div className="p-2 flex items-center justify-between gap-2">
-                <button
-                  onClick={() => setCurrentVideoIndex(prev =>
-                    prev === 0 ? allSearchResults.length - 1 : prev - 1
-                  )}
-                  className="p-1 flex-shrink-0"
-                  disabled={allSearchResults.length === 1}
-                >
-                  <svg
-                    className={`w-5 h-5 ${allSearchResults.length === 1 ? 'text-gray-300' : 'text-gray-700'}`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
-                </button>
-
-                <div className="w-[240px] h-[135px]">
-                  <Video
-                    videoId={allSearchResults[validCurrentVideoIndex]?.id}
-                    indexId={indexId}
-                    showTitle={false}
-                  />
-                </div>
-
-                <button
-                  onClick={() => setCurrentVideoIndex(prev =>
-                    prev === allSearchResults.length - 1 ? 0 : prev + 1
-                  )}
-                  className="p-1 flex-shrink-0"
-                  disabled={allSearchResults.length === 1}
-                >
-                  <svg
-                    className={`w-5 h-5 ${allSearchResults.length === 1 ? 'text-gray-300' : 'text-gray-700'}`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
+        {isSearchClicked && (
+          <div className="w-full">
+            <h3 className="font-semibold mb-2 mt-8">Search Results for {demographics.name}</h3>
+            {isLoading ? (
+              <div className="flex justify-center">
+                <LoadingSpinner />
               </div>
-            </div>
-          ) : (
-            <p className="text-center text-grey-500">No results found</p>
-          )}
-        </div>
-      )}
+            ) : allSearchResults.length > 0 ? (
+              <div className="space-y-2">
+                <div className="p-2 flex items-center justify-between gap-2">
+                  <button
+                    onClick={() => setCurrentVideoIndex(prev =>
+                      prev === 0 ? allSearchResults.length - 1 : prev - 1
+                    )}
+                    className="p-1 flex-shrink-0"
+                    disabled={allSearchResults.length === 1}
+                  >
+                    <svg
+                      className={`w-5 h-5 ${allSearchResults.length === 1 ? 'text-gray-300' : 'text-gray-700'}`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+
+                  <div className="w-[240px] h-[135px]">
+                    <Video
+                      videoId={allSearchResults[validCurrentVideoIndex]?.id}
+                      indexId={indexId}
+                      showTitle={false}
+                    />
+                  </div>
+
+                  <button
+                    onClick={() => setCurrentVideoIndex(prev =>
+                      prev === allSearchResults.length - 1 ? 0 : prev + 1
+                    )}
+                    className="p-1 flex-shrink-0"
+                    disabled={allSearchResults.length === 1}
+                  >
+                    <svg
+                      className={`w-5 h-5 ${allSearchResults.length === 1 ? 'text-gray-300' : 'text-gray-700'}`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <p className="text-center text-grey-500">No results found</p>
+            )}
+          </div>
+        )}
       </div>
-
-
     </div>
   )
 }
