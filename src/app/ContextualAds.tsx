@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react'
 import { generateCustomTexts } from '@/hooks/apiHooks';
-import { RecommendedAdProps } from './types';
+import { RecommendedAdProps, ContextualAdsProps } from './types';
 import Footage from './Footage';
 import Ads from './Ads';
 import RecommendedAds from './RecommendedAds';
@@ -10,7 +10,7 @@ const footageIndexId = process.env.NEXT_PUBLIC_FOOTAGE_INDEX_ID;
 const HASHTAGS_PROMPT = "Generate a list of 3 hashtags that best describe the video. Do not include any introductory text or comments."
 const PROMPT = "Summarize the video focusing on the event type, main content, and the emotional tone. Provide the titles (Event Type, Main Content, Emotional Tone) before each summary. Do not include any introductory text or comments. For Emotional Tone, start with three words and a period."
 
-const ContextualAds = ({ adsIndexId }: { adsIndexId: string }) => {
+const ContextualAds = ({ adsIndexId }: ContextualAdsProps) => {
     const [hashtags, setHashtags] = useState<string[]>([]);
     const [emotions, setEmotions] = useState<string[]>([]);
     const [footageVideoId, setFootageVideoId] = useState<string>('');

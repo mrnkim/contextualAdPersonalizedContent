@@ -197,7 +197,7 @@ export interface VideoProps {
   playing: boolean;
   onPlay: () => void;
   onSelect?: () => void;
-  onPause?: () => void; 
+  onPause?: () => void;
   showTitle?: boolean;
   videoDetails?: VideoDetails;
 }
@@ -356,4 +356,20 @@ export interface Profile {
   demographics: Demographics;
   emotionAffinities: string[];
   userId: string;
+}
+
+export interface ContextualAdsProps {
+  adsIndexId: string;
+  profiles: Array<{
+    profilePic: string;
+    interests: string[];
+    demographics: {
+      name: string;
+      age: number;
+      location: string;
+    };
+    emotionAffinities: string[];
+    userId: string;
+  }>;
+  setProfiles: React.Dispatch<React.SetStateAction<ContextualAdsProps['profiles']>>;
 }
