@@ -16,12 +16,16 @@ import { fetchVideoDetails } from '@/hooks/apiHooks';
             {videoDetails?.metadata.filename && (
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <h3 className="text-lg font-medium">
+                  <h3 className="font-medium">
                     {videoDetails.metadata.filename.split('.')[0]}
                   </h3>
                   {score && (
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-moss_green-200">
-                      Score: {Math.round(score)}
+                    <span className="flex-shrink-0 inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-moss_green-200 whitespace-nowrap">
+                      <img
+                        src={"/score.svg"}
+                        alt="score icon"
+                        className="w-4 h-4"
+                      /> {Math.round(score)}
                     </span>
                   )}
                 </div>
