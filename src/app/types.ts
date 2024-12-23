@@ -373,3 +373,25 @@ export interface ContextualAdsProps {
   }>;
   setProfiles: React.Dispatch<React.SetStateAction<ContextualAdsProps['profiles']>>;
 }
+
+export interface VideoItem {
+  id: string;
+  clips: Clip[];
+}
+
+export interface SearchResultsProps {
+  isLoading: boolean;
+  allSearchResults: VideoItem[];
+  currentVideoIndex: number;
+  setCurrentVideoIndex: (value: React.SetStateAction<number>) => void;
+  isPlaying: boolean;
+  setIsPlaying: (value: boolean) => void;
+  currentPlayerId: string;
+  setCurrentPlayerId: (value: string) => void;
+  userId: string;
+  indexId: string;
+  demographics: {
+    name: string;
+    [key: string]: string | number;
+  };
+}
