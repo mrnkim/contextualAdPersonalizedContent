@@ -88,8 +88,15 @@ export interface TaskProps {
 
 export interface RecommendedAdProps {
   recommendedAd: {
-    id?: string
-    clips: Array<object>
+    id?: string;
+    clips: Array<{
+      confidence: "high" | "medium" | "low";
+      end: number;
+      score: number;
+      start: number;
+      thumbnail_url: string;
+      video_id: string;
+    }>;
   };
   indexId: string;
   videoDetails: VideoDetails;
@@ -190,6 +197,7 @@ export interface VideoProps {
   playing: boolean;
   onPlay: () => void;
   onSelect?: () => void;
+  onPause?: () => void;
   showTitle?: boolean;
   videoDetails?: VideoDetails;
 }
@@ -329,4 +337,39 @@ export interface VideosData {
   pageParams: number[];
 }
 
+export interface RecommendedAdItemProps {
+  recommendedAd: RecommendedAdProps["recommendedAd"];
+  adsIndexId: string;
+  score?: number;
+}
 
+interface Demographics {
+  name: string;
+  age: number;
+  location: string;
+  [key: string]: string | number;
+}
+
+export interface Profile {
+  profilePic: string;
+  interests: string[];
+  demographics: Demographics;
+  emotionAffinities: string[];
+  userId: string;
+}
+
+export interface ContextualAdsProps {
+  adsIndexId: string;
+  profiles: Array<{
+    profilePic: string;
+    interests: string[];
+    demographics: {
+      name: string;
+      age: number;
+      location: string;
+    };
+    emotionAffinities: string[];
+    userId: string;
+  }>;
+  setProfiles: React.Dispatch<React.SetStateAction<ContextualAdsProps['profiles']>>;
+}

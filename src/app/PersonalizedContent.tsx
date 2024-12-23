@@ -4,14 +4,14 @@ import UserProfiles from './UserProfiles';
 import IndexesDropDown from './IndexesDropDown';
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchIndexes } from '@/hooks/apiHooks';
-import { IndexesData } from './types'
+import { IndexesData, Profile } from './types'
 
 const PersonalizedContent = ({
   profiles,
   setProfiles
 }: {
-  profiles: any[]; // Consider adding proper type definition
-  setProfiles: (profiles: any[]) => void;
+  profiles: Profile[];
+  setProfiles: (profiles: Profile[]) => void;
 }) => {
   const [indexId, setIndexId] = useState<string | null>(null);
 

@@ -9,6 +9,7 @@ import PageNav from './PageNav';
 import clsx from 'clsx'
 import { fetchVideos } from '@/hooks/apiHooks';
 import { ErrorBoundary } from 'react-error-boundary';
+import { usePlayer } from '@/contexts/PlayerContext';
 
 const PAGE_LIMIT=8
 
@@ -24,6 +25,7 @@ type IndexVideosProps = {
 
 function IndexVideos({ indexId, isIndexIdLoading}: IndexVideosProps) {
   const [page, setPage] = useState(1);
+  const { currentPlayerId, setCurrentPlayerId } = usePlayer();
 
   useEffect(() => {
     setPage(1);
@@ -50,7 +52,12 @@ function IndexVideos({ indexId, isIndexIdLoading}: IndexVideosProps) {
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 justify-items-center w-full max-w-6xl">
                 {videosData.data.map((video: VideoType) => (
-                  <Video key={video._id} videoId={video._id} indexId={indexId || ''} />
+                  <Video
+                  key={video._id}
+                  videoId={video._id}
+                  indexId={indexId || ''}
+                  playing={currentPlayerId === `ad-${video._id}`}
+                  onPlay={() => setCurrentPlayerId(`ad-${video._id}`)} />
                 ))}
               </div>
               <div className={clsx("w-full", "flex", "justify-center", "mt-3")}>

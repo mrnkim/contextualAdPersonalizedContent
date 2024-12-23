@@ -4,25 +4,12 @@ import { useQueries } from "@tanstack/react-query";
 import { fetchSearchPage, textToVideoSearch } from '@/hooks/apiHooks';
 import LoadingSpinner from './LoadingSpinner';
 import Video from './Video';
-import { Clip } from './types';
+import { Clip, Profile } from './types';
+import { usePlayer } from '@/contexts/PlayerContext';
 
-interface UserProfileProps {
-  profilePic?: string;
-  interests?: string[];
-  demographics?: {
-    age?: number;
-    name?: string;
-    location?: string;
-    [key: string]: string | number | undefined;
-  };
-  emotionAffinities?: string[];
-  userId: string;
+interface UserProfileProps extends Profile {
   indexId: string;
-  onUpdateProfile: (updatedProfile: {
-    interests: string[];
-    demographics: any;
-    emotionAffinities: string[];
-  }) => void;
+  onUpdateProfile: (updatedProfile: Partial<Profile>) => void;
 }
 
 interface VideoItem {
@@ -37,7 +24,11 @@ const capitalize = (str: string) => {
 function UserProfile({
   profilePic = '/default-profile.png',
   interests: initialInterests = [],
-  demographics: initialDemographics = {},
+  demographics: initialDemographics = {
+    name: '',
+    age: 0,
+    location: '',
+  },
   emotionAffinities: initialEmotionAffinities = [],
   userId,
   indexId,
@@ -57,10 +48,14 @@ function UserProfile({
   const [newValueInput, setNewValueInput] = React.useState('');
   const [newEmotion, setNewEmotion] = React.useState('');
   const [showAddField, setShowAddField] = React.useState(false);
+  const [isPlaying, setIsPlaying] = React.useState(false);
+
 
   const interests = initialInterests;
   const demographics = initialDemographics;
   const emotionAffinities = initialEmotionAffinities;
+
+  const { currentPlayerId, setCurrentPlayerId } = usePlayer();
 
   React.useEffect(() => {
     setIsSearchClicked(false);
@@ -70,6 +65,9 @@ function UserProfile({
     if (e.key === 'Enter' && newInterest.trim()) {
       setIsSearchClicked(false);
       onUpdateProfile({
+        ...demographics,
+        profilePic,
+        userId,
         interests: [...interests, newInterest.trim()],
         demographics,
         emotionAffinities
@@ -81,6 +79,9 @@ function UserProfile({
   const removeInterest = (indexToRemove: number) => {
     setIsSearchClicked(false);
     onUpdateProfile({
+      ...demographics,
+      profilePic,
+      userId,
       interests: interests.filter((_, index) => index !== indexToRemove),
       demographics,
       emotionAffinities
@@ -92,6 +93,9 @@ function UserProfile({
     const newDemographics = { ...demographics };
     delete newDemographics[key];
     onUpdateProfile({
+      ...demographics,
+      profilePic,
+      userId,
       interests,
       demographics: newDemographics,
       emotionAffinities
@@ -102,6 +106,9 @@ function UserProfile({
     if (e.key === 'Enter' && newEmotion.trim()) {
       setIsSearchClicked(false);
       onUpdateProfile({
+        ...demographics,
+        profilePic,
+        userId,
         interests,
         demographics,
         emotionAffinities: [...emotionAffinities, newEmotion.trim()]
@@ -113,6 +120,9 @@ function UserProfile({
   const removeEmotion = (indexToRemove: number) => {
     setIsSearchClicked(false);
     onUpdateProfile({
+      ...demographics,
+      profilePic,
+      userId,
       interests,
       demographics,
       emotionAffinities: emotionAffinities.filter((_, index) => index !== indexToRemove)
@@ -243,6 +253,9 @@ function UserProfile({
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && nameInput.trim()) {
                       onUpdateProfile({
+                        ...demographics,
+                        profilePic,
+                        userId,
                         interests,
                         demographics: {
                           ...demographics,
@@ -279,6 +292,9 @@ function UserProfile({
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && ageInput.trim()) {
                       onUpdateProfile({
+                        ...demographics,
+                        profilePic,
+                        userId,
                         interests,
                         demographics: {
                           ...demographics,
@@ -315,6 +331,9 @@ function UserProfile({
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && locationInput.trim()) {
                       onUpdateProfile({
+                        ...demographics,
+                        profilePic,
+                        userId,
                         interests,
                         demographics: {
                           ...demographics,
@@ -349,6 +368,9 @@ function UserProfile({
                                 delete newDemographics[key];
                                 newDemographics[newKeyInput.trim()] = value;
                                 onUpdateProfile({
+                                  ...demographics,
+                                  profilePic,
+                                  userId,
                                   interests,
                                   demographics: newDemographics,
                                   emotionAffinities
@@ -398,6 +420,9 @@ function UserProfile({
                             onKeyDown={(e) => {
                               if (e.key === 'Enter' && newValueInput.trim()) {
                                 onUpdateProfile({
+                                  ...demographics,
+                                  profilePic,
+                                  userId,
                                   interests,
                                   demographics: {
                                     ...demographics,
@@ -429,6 +454,9 @@ function UserProfile({
                               onClick={(e) => {
                                 e.stopPropagation();
                                 onUpdateProfile({
+                                  ...demographics,
+                                  profilePic,
+                                  userId,
                                   interests,
                                   demographics: {
                                     ...demographics,
@@ -464,6 +492,9 @@ function UserProfile({
                         const trimmedValue = newDemographicValue.trim();
                         if (trimmedKey && trimmedValue) {
                           onUpdateProfile({
+                            ...demographics,
+                            profilePic,
+                            userId,
                             interests,
                             demographics: {
                               ...demographics,
@@ -494,6 +525,9 @@ function UserProfile({
                       const trimmedValue = newDemographicValue.trim();
                       if (trimmedKey && trimmedValue) {
                         onUpdateProfile({
+                          ...demographics,
+                          profilePic,
+                          userId,
                           interests,
                           demographics: {
                             ...demographics,
@@ -579,9 +613,15 @@ function UserProfile({
               <div className="space-y-2">
                 <div className="p-2 flex items-center justify-between gap-2">
                   <button
-                    onClick={() => setCurrentVideoIndex(prev =>
-                      prev === 0 ? allSearchResults.length - 1 : prev - 1
-                    )}
+                    onClick={() => {
+                      setCurrentVideoIndex(prev =>
+                        prev === 0 ? allSearchResults.length - 1 : prev - 1
+                      );
+                      if (isPlaying) {
+                        const newIndex = currentVideoIndex === 0 ? allSearchResults.length - 1 : currentVideoIndex - 1;
+                        setCurrentPlayerId(`searchResult-${userId}-${allSearchResults[newIndex]?.id}`);
+                      }
+                    }}
                     className="p-1 flex-shrink-0"
                     disabled={allSearchResults.length === 1}
                   >
@@ -600,13 +640,27 @@ function UserProfile({
                       videoId={allSearchResults[validCurrentVideoIndex]?.id}
                       indexId={indexId}
                       showTitle={false}
+                      playing={currentPlayerId === `searchResult-${userId}-${allSearchResults[validCurrentVideoIndex]?.id}`}
+                      onPlay={() => {
+                        setCurrentPlayerId(`searchResult-${userId}-${allSearchResults[validCurrentVideoIndex]?.id}`);
+                        setIsPlaying(true);
+                      }}
+                      onPause={() => {
+                        setIsPlaying(false);
+                      }}
                     />
                   </div>
 
                   <button
-                    onClick={() => setCurrentVideoIndex(prev =>
-                      prev === allSearchResults.length - 1 ? 0 : prev + 1
-                    )}
+                    onClick={() => {
+                      setCurrentVideoIndex(prev =>
+                        prev === allSearchResults.length - 1 ? 0 : prev + 1
+                      );
+                      if (isPlaying) {
+                        const newIndex = currentVideoIndex === allSearchResults.length - 1 ? 0 : currentVideoIndex + 1;
+                        setCurrentPlayerId(`searchResult-${userId}-${allSearchResults[newIndex]?.id}`);
+                      }
+                    }}
                     className="p-1 flex-shrink-0"
                     disabled={allSearchResults.length === 1}
                   >

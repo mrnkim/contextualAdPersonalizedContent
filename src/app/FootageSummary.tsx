@@ -66,7 +66,10 @@ function FootageSummary({
     let match;
     while ((match = sectionRegex.exec(data)) !== null) {
       const sectionName = match[1].trim();
-      const content = match[2].trim().replace(/^:\s*/, '');
+      const content = match[2].trim()
+        .replace(/^:\s*/, '')
+        .replace(/^\*\*/, '')
+        .replace(/\*\*$/, '');
       sectionContents[sectionName] = content;
     }
 
