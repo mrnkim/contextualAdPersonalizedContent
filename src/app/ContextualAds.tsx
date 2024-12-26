@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react'
-import { generateCustomTexts } from '@/hooks/apiHooks';
+import { generateCustomTexts, checkVectorExists, getAndStoreEmbeddings } from '@/hooks/apiHooks';
 import { RecommendedAdProps, ContextualAdsProps } from './types';
 import Footage from './Footage';
 import Ads from './Ads';
@@ -42,6 +42,13 @@ const ContextualAds = ({ adsIndexId }: ContextualAdsProps) => {
 
     const customTextsData = useMemo(() => rawCustomTextsData, [rawCustomTextsData]);
 
+    const { data: footageVectorsExist } = useQuery({
+      queryKey: ['vectorExists', footageIndexId, footageVideoId],
+      queryFn: () => checkVectorExists(footageIndexId!, footageVideoId),
+      enabled: !!footageIndexId && !!footageVideoId,
+    });
+    console.log("🚀 > ContextualAds > footageVectorsExist=", footageVectorsExist)
+
     useEffect(() => {
       if (gistData) {
         setHashtags(gistData.split("#").filter(tag => tag.trim() !== ""));
@@ -75,6 +82,14 @@ const ContextualAds = ({ adsIndexId }: ContextualAdsProps) => {
         setEmotions(emotionalTones);
       }
     }, [customTextsData]);
+
+    useEffect(() => {
+      if (footageVideoId && footageIndexId && footageVectorsExist === false) {
+        getAndStoreEmbeddings(footageIndexId, footageVideoId)
+          .catch(console.error);
+      }
+    }, [footageVideoId, footageIndexId, footageVectorsExist]);
+
   return (
     <div>
         <h1 className="text-3xl font-bold text-center mb-16">Contextual Ads</h1>

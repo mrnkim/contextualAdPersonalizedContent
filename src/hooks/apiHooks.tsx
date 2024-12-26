@@ -132,4 +132,25 @@ export const uploadFootage = async (file: File, indexId: string) => {
   }
 };
 
+export const checkVectorExists = async (indexId: string, videoId: string) => {
+  try {
+    const response = await fetch(`/api/fetchVectors?indexId=${indexId}&videoId=${videoId}`);
+    const data = await response.json();
+    return data.exists;
+  } catch (error) {
+    console.error('Error checking vector:', error);
+    return false;
+  }
+};
+
+export const getAndStoreEmbeddings = async (indexId: string, videoId: string) => {
+  try {
+    const response = await fetch(`/api/embeddings/get?indexId=${indexId}&videoId=${videoId}`);
+    return await response.json();
+  } catch (error) {
+    console.error('Error generating embeddings:', error);
+    throw error;
+  }
+};
+
 
