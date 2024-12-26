@@ -7,6 +7,7 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const videoId = searchParams.get("videoId");
   const indexId = searchParams.get("indexId");
+  const embed = searchParams.get("embed");
 
   if (!indexId) {
     return NextResponse.json(
@@ -22,7 +23,7 @@ export async function GET(req: Request) {
     );
   }
 
-   const url = `${TWELVELABS_API_BASE_URL}/indexes/${indexId}/videos/${videoId}`;
+   const url = `${TWELVELABS_API_BASE_URL}/indexes/${indexId}/videos/${videoId}?embed=${embed}`;
 
   const options = {
     method: "GET",
@@ -45,6 +46,7 @@ export async function GET(req: Request) {
       hls: video.hls,
       metadata: video.system_metadata,
       source: video.source,
+      embedding: video.embedding
     });
   } catch (error) {
     return NextResponse.json(

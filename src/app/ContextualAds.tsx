@@ -85,7 +85,7 @@ const ContextualAds = ({ adsIndexId }: ContextualAdsProps) => {
 
     useEffect(() => {
       if (footageVideoId && footageIndexId && footageVectorsExist === false) {
-        getAndStoreEmbeddings(footageIndexId, footageVideoId)
+        getAndStoreEmbeddings(footageIndexId, footageVideoId, "footage")
           .catch(console.error);
       }
     }, [footageVideoId, footageIndexId, footageVectorsExist]);

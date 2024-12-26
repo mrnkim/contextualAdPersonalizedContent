@@ -51,8 +51,8 @@ export const fetchIndexes = async (page: number, pageLimit: number=9) => {
 	return response.json();
 };
 
-export const fetchVideoDetails = async (videoId: string, indexId: string) => {
-    const response = await fetch(`/api/getVideo?videoId=${videoId}&indexId=${indexId}`);
+export const fetchVideoDetails = async (videoId: string, indexId: string, embed: boolean = false) => {
+    const response = await fetch(`/api/getVideo?videoId=${videoId}&indexId=${indexId}&embed=${embed}`);
     if (!response.ok) {
       throw new Error("Network response was not ok");
     }
@@ -143,12 +143,39 @@ export const checkVectorExists = async (indexId: string, videoId: string) => {
   }
 };
 
-export const getAndStoreEmbeddings = async (indexId: string, videoId: string) => {
+export const getAndStoreEmbeddings = async (indexId: string, videoId: string, type: string) => {
   try {
-    const response = await fetch(`/api/embeddings/get?indexId=${indexId}&videoId=${videoId}`);
+    // 1. 먼저 비디오 상세 정보와 임베딩을 가져옴
+    const videoDetails = await fetchVideoDetails(videoId, indexId, true);
+    console.log("🚀 > getAndStoreEmbeddings > videoDetails=", videoDetails)
+
+    if (!videoDetails.embedding) {
+      throw new Error('No embeddings found for video');
+    }
+
+    const embedding = videoDetails.embedding;
+
+    // 2. 임베딩을 Pinecone에 저장
+    const response = await fetch('/api/storeEmbeddings', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        videoId,
+        videoName: videoDetails.metadata.filename,
+        embedding: embedding,
+        type: type,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to store embeddings');
+    }
+
     return await response.json();
   } catch (error) {
-    console.error('Error generating embeddings:', error);
+    console.error('Error in getAndStoreEmbeddings:', error);
     throw error;
   }
 };
