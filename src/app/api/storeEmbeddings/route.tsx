@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { Pinecone } from '@pinecone-database/pinecone';
+import { Segment, Vector } from '@/app/types';
 
 function sanitizeVectorId(str: string) {
   const sanitized = str
@@ -23,7 +24,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const vectors = embedding.video_embedding.segments.map((segment, index) => ({
+    const vectors = embedding.video_embedding.segments.map((segment: Segment, index: number) => ({
       id: `${videoName}_${index}`,
       values: segment.float,
       metadata: {
@@ -57,13 +58,13 @@ export async function POST(request: Request) {
       });
 
       // Sanitize vector IDs
-      const sanitizedVectors = vectors.map(vector => ({
+      const sanitizedVectors = vectors.map((vector: Vector) => ({
         ...vector,
         id: sanitizeVectorId(vector.id)
       }));
 
       // 벡터 형식 검증
-      const isValidVector = sanitizedVectors.every(vector =>
+      const isValidVector = sanitizedVectors.every((vector: Vector) =>
         vector.id &&
         Array.isArray(vector.values) &&
         vector.values.length === 1024 &&
@@ -75,27 +76,26 @@ export async function POST(request: Request) {
       const batchSize = 5;
       console.log('Starting upsert operation in smaller batches...');
 
-      // for (let i = 0; i < sanitizedVectors.length; i += batchSize) {
-      //   const batch = sanitizedVectors.slice(i, i + batchSize);
-      //   console.log(`Upserting batch ${Math.floor(i/batchSize) + 1} of ${Math.ceil(sanitizedVectors.length/batchSize)}`);
-      //   console.log('Batch vector IDs:', batch.map(v => v.id));
+      for (let i = 0; i < sanitizedVectors.length; i += batchSize) {
+        const batch = sanitizedVectors.slice(i, i + batchSize);
+        console.log(`Upserting batch ${Math.floor(i/batchSize) + 1} of ${Math.ceil(sanitizedVectors.length/batchSize)}`);
 
-      //   try {
-      //     const upsertResponse = await index.upsert(batch);
-      //     console.log('Upsert response:', upsertResponse);
+        try {
+          const upsertResponse = await index.upsert(batch);
+          console.log('Upsert response:', upsertResponse);
 
-      //     // 각 벡터가 실제로 업로드되었는지 즉시 확인
-      //     const fetchResponse = await index.fetch(batch.map(v => v.id));
-      //     console.log('Fetch verification:', {
-      //       attempted: batch.length,
-      //       found: Object.keys(fetchResponse.records).length
-      //     });
-      //   } catch (error) {
-      //     console.error('Error in batch:', error);
-      //     console.error('Problematic batch data:', JSON.stringify(batch, null, 2));
-      //     throw error;
-      //   }
-      // }
+          // Verify the batch upload
+          const fetchResponse = await index.fetch(batch.map((v: Vector) => v.id));
+          console.log('Fetch verification:', {
+            attempted: batch.length,
+            found: Object.keys(fetchResponse.records).length
+          });
+        } catch (error) {
+          console.error('Error in batch:', error);
+          console.error('Problematic batch data:', JSON.stringify(batch, null, 2));
+          throw error;
+        }
+      }
 
       // 최종 확인
       console.log('Verifying upsert...');
@@ -104,24 +104,22 @@ export async function POST(request: Request) {
 
       // 무작위로 5개 벡터를 선택해서 실제로 존재하는지 확인
       const sampleIds = sanitizedVectors
-        .map(v => v.id)
+        .map((v: Vector) => v.id)
         .sort(() => 0.5 - Math.random())
         .slice(0, 5);
 
       console.log('Performing final verification with random samples...');
       const fetchResponse = await index.fetch(sampleIds);
-      sampleIds.forEach(id => {
+      sampleIds.forEach((id: string) => {
         console.log(`Vector ${id}: ${fetchResponse.records[id] ? 'exists' : 'not found'}`);
       });
 
       console.log('Upsert operation completed successfully');
     } catch (error) {
       console.error('Error in upsertToPinecone:', error);
-      if (error.response) {
+      if (error instanceof Error && 'response' in error && error.response) {
         console.error('Pinecone API Error Response:', {
-          status: error.response.status,
-          statusText: error.response.statusText,
-          data: error.response.data
+        error: error.response
         });
       }
       throw error;

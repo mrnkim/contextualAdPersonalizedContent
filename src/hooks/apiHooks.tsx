@@ -147,13 +147,13 @@ export const getAndStoreEmbeddings = async (indexId: string, videoId: string, ty
   try {
     // 1. 먼저 비디오 상세 정보와 임베딩을 가져옴
     const videoDetails = await fetchVideoDetails(videoId, indexId, true);
-    console.log("🚀 > getAndStoreEmbeddings > videoDetails=", videoDetails)
 
     if (!videoDetails.embedding) {
       throw new Error('No embeddings found for video');
     }
 
     const embedding = videoDetails.embedding;
+    console.log("🚀 > getAndStoreEmbeddings > embedding=", embedding)
 
     // 2. 임베딩을 Pinecone에 저장
     const response = await fetch('/api/storeEmbeddings', {

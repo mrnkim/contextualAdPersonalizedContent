@@ -1,6 +1,6 @@
 import React from 'react';
 import clsx from 'clsx';
-import { LoadingSpinnerProps, Size, Color } from './types';
+import { LoadingSpinnerProps, Size, Color } from '@/app/types';
 
 function getSize(size: Size): string {
   switch (size) {

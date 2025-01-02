@@ -5,7 +5,7 @@ import AdCopy from './AdCopy';
 import { ErrorBoundary } from 'react-error-boundary'
 import ErrorFallback from './ErrorFallback'
 import LoadingSpinner from './LoadingSpinner';
-import { RecommendedAdProps } from './types';
+import { RecommendedAdProps } from '@/app/types';
 import { useQuery } from "@tanstack/react-query"
 import { generateCustomTexts } from "@/hooks/apiHooks";
 import { usePlayer } from '@/contexts/PlayerContext';

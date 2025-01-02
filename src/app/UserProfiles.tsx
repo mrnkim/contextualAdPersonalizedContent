@@ -1,6 +1,6 @@
 import React from 'react'
 import UserProfile from './UserProfile'
-import { Profile } from './types';
+import { Profile } from '@/app/types';
 
 function UserProfiles({
   indexId,

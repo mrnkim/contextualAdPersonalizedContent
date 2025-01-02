@@ -8,7 +8,7 @@ import clsx from "clsx";
 import ReactPlayer from "react-player";
 import { fetchVideoDetails } from "@/hooks/apiHooks";
 import LoadingSpinner from "./LoadingSpinner";
-import { VideoProps, VideoDetails } from "./types";
+import { VideoProps, VideoDetails } from "@/app/types";
 
 const Video: React.FC<VideoProps> = ({ videoId, indexId, showTitle = true, videoDetails: providedVideoDetails, playing = false, onPlay }) => {
 

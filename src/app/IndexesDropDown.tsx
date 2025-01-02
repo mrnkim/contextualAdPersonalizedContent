@@ -1,8 +1,8 @@
 import React from 'react';
-import { IndexData, IndexesDropDownProps } from './types';
+import { IndexData, IndexesDropDownProps } from '@/app/types';
 import { MenuItem, Select, Skeleton, SelectChangeEvent } from '@mui/material'
 import clsx from 'clsx';
-import LoadingSpinner from './LoadingSpinner';
+import LoadingSpinner from '@/app/LoadingSpinner';
 
 
 const IndexesDropDown: React.FC<IndexesDropDownProps> = ({

@@ -373,3 +373,26 @@ export interface ContextualAdsProps {
   }>;
   setProfiles: React.Dispatch<React.SetStateAction<ContextualAdsProps['profiles']>>;
 }
+
+export interface Vector {
+  id: string;
+  values: number[];
+  metadata: VectorMetadata;
+}
+
+export interface VectorMetadata {
+  video_file: string;
+  video_segment: number;
+  start_time: number;
+  end_time: number;
+  scope: string;
+  video_type: string;
+  tl_video_id: string;
+}
+
+export interface Segment {
+  embedding_scope: string;
+  end_offset_sec: number;
+  float: number[];
+  start_offset_sec: number;
+}

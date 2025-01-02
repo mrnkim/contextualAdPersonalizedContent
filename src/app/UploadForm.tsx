@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import Button from './Button';
-import { UploadFormProps } from './types';
+import { UploadFormProps } from '@/app/types';
 
 function UploadForm({ selectedFile, taskId, onFileUpload}: UploadFormProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);

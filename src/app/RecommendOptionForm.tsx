@@ -1,5 +1,5 @@
 import React from 'react'
-import { RecommendOptionFormProps } from './types';
+import { RecommendOptionFormProps } from '@/app/types';
 
 const RecommendOptionForm = ({ searchOptionRef, customQueryRef, setIsRecommendClicked, setHasSearchOptionChanged }: RecommendOptionFormProps) => {
     const handleSearchOptionChange = () => {

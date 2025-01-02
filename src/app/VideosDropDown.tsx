@@ -1,5 +1,5 @@
 import React from 'react';
-import { Video, VideosDropDownProps } from './types';
+import { Video, VideosDropDownProps } from '@/app/types';
 import { MenuItem, Select, Skeleton, SelectChangeEvent } from '@mui/material'
 import clsx from 'clsx';
 import LoadingSpinner from './LoadingSpinner';

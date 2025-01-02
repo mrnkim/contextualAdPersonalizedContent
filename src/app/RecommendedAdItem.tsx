@@ -1,7 +1,7 @@
 import React from 'react'
 import RecommendedAd from './RecommendedAd';
 import { useQuery } from '@tanstack/react-query';
-import { RecommendedAdItemProps, VideoDetails } from './types';
+import { RecommendedAdItemProps, VideoDetails } from '@/app/types';
 import { fetchVideoDetails } from '@/hooks/apiHooks';
 
     const RecommendedAdItem = ({ recommendedAd, adsIndexId, score }: RecommendedAdItemProps) => {

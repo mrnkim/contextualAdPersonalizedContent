@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { ChaptersData, RecommendedPlacementsProps, VideoDetails } from './types';
+import { ChaptersData, RecommendedPlacementsProps, VideoDetails } from '@/app/types';
 import { generateChapters, fetchVideoDetails } from '@/hooks/apiHooks';
 import React, { useState, useRef, useEffect } from 'react'
 import ReactPlayer from 'react-player';

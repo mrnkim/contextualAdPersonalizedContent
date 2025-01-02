@@ -4,7 +4,7 @@ import UserProfiles from './UserProfiles';
 import IndexesDropDown from './IndexesDropDown';
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchIndexes } from '@/hooks/apiHooks';
-import { IndexesData, Profile } from './types'
+import { IndexesData, Profile } from '@/app/types'
 
 const PersonalizedContent = ({
   profiles,

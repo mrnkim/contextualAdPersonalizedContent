@@ -4,9 +4,9 @@ import { textToVideoSearch } from '@/hooks/apiHooks';
 import { ErrorBoundary } from 'react-error-boundary';
 import LoadingSpinner from './LoadingSpinner';
 import ErrorFallback from './ErrorFallback';
-import { RecommendedAdsProps, RecommendedAdProps } from './types';
-import RecommendedPlacements from './RecommendedPlacements';
-import RecommendedAdItem from './RecommendedAdItem';
+import { RecommendedAdsProps, RecommendedAdProps } from '@/app/types';
+import RecommendedPlacements from '@/app/RecommendedPlacements';
+import RecommendedAdItem from '@/app/RecommendedAdItem';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
 export enum SearchOption {

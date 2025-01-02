@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import LoadingSpinner from "./LoadingSpinner";
 import { forwardRef, memo, useMemo } from "react";
-import { ButtonProps } from "./types";
+import { ButtonProps } from "@/app/types";
 
 const filledButtonClasses = clsx(
   // background

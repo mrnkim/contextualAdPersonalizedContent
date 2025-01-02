@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react'
 import { generateCustomTexts, checkVectorExists, getAndStoreEmbeddings } from '@/hooks/apiHooks';
-import { RecommendedAdProps, ContextualAdsProps } from './types';
-import Footage from './Footage';
-import Ads from './Ads';
-import RecommendedAds from './RecommendedAds';
+import { RecommendedAdProps, ContextualAdsProps } from '@/app/types';
+import Footage from '@/app/Footage';
+import Ads from '@/app/Ads';
+import RecommendedAds from '@/app/RecommendedAds';
 import { useQuery } from '@tanstack/react-query';
 
 const footageIndexId = process.env.NEXT_PUBLIC_FOOTAGE_INDEX_ID;
@@ -43,7 +43,7 @@ const ContextualAds = ({ adsIndexId }: ContextualAdsProps) => {
     const customTextsData = useMemo(() => rawCustomTextsData, [rawCustomTextsData]);
 
     const { data: footageVectorsExist } = useQuery({
-      queryKey: ['vectorExists', footageIndexId, footageVideoId],
+      queryKey: ['footageVectorsExist', footageIndexId, footageVideoId],
       queryFn: () => checkVectorExists(footageIndexId!, footageVideoId),
       enabled: !!footageIndexId && !!footageVideoId,
     });

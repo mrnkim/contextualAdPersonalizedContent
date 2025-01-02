@@ -10,7 +10,7 @@ import LoadingSpinner from './LoadingSpinner';
 import VideosDropDown from './VideosDropDown';
 import UploadForm from './UploadForm';
 import Task from './Task';
-import { FootageProps, TaskDetails, VideosData } from './types';
+import { FootageProps, TaskDetails, VideosData } from '@/app/types';
 import { usePlayer } from '@/contexts/PlayerContext';
 
 function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVideoId, setFootageVideoId, selectedFile, setSelectedFile, setIsRecommendClicked, gistData, customTextsData, isLoading, error, setIsRecommendClickedEver, setSelectedAd, setSelectedChapter, isAnalyzeClicked, setIsAnalyzeClicked }: FootageProps) {

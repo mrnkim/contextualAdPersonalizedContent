@@ -8,8 +8,8 @@ import {
   import CloseIcon from '@mui/icons-material/Close';
   import LoadingSpinner from './LoadingSpinner';
   import { ErrorBoundary } from 'react-error-boundary'
-  import ErrorFallback from './ErrorFallback';
-  import { AdCopyProps } from './types';
+  import ErrorFallback from '@/app/ErrorFallback';
+  import { AdCopyProps } from '@/app/types';
 
   const AdCopy = ({ videoDetails, isDialogOpen, setIsDialogOpen, setIsGenerating, adCopyData }: AdCopyProps) => {
     const [currentSuggestionIndex, setCurrentSuggestionIndex] = useState(0);
