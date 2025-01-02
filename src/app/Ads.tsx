@@ -43,35 +43,35 @@ function Ads({ indexId, isIndexIdLoading, selectedFile, isRecommendClicked, setI
     }
   }, [isRecommendClicked]);
 
-  const fetchAllVideos = useCallback(async () => {
-    if (!indexId) return;
-    setProcessingVideos(true);
-    try {
-      const firstPageData = await fetchVideos(1, indexId);
-      const totalPages = firstPageData.page_info?.total_page || 1;
+  // const fetchAllVideos = useCallback(async () => {
+  //   if (!indexId) return;
+  //   setProcessingVideos(true);
+  //   try {
+  //     const firstPageData = await fetchVideos(1, indexId);
+  //     const totalPages = firstPageData.page_info?.total_page || 1;
 
-      for (let currentPage = 1; currentPage <= totalPages; currentPage++) {
-        const pageData = await fetchVideos(currentPage, indexId);
-        for (const video of pageData.data) {
-          const vectorExists = await checkVectorExists(indexId, video._id);
-          if (!vectorExists) {
-            await getAndStoreEmbeddings(indexId, video._id, "ad");
-          }
-        }
-      }
-      setHasProcessed(true);
-    } catch (error) {
-      console.error("Error processing videos:", error);
-    } finally {
-      setProcessingVideos(false);
-    }
-  }, [indexId]);
+  //     for (let currentPage = 1; currentPage <= totalPages; currentPage++) {
+  //       const pageData = await fetchVideos(currentPage, indexId);
+  //       for (const video of pageData.data) {
+  //         const vectorExists = await checkVectorExists(indexId, video._id);
+  //         if (!vectorExists) {
+  //           await getAndStoreEmbeddings(indexId, video._id, "ad");
+  //         }
+  //       }
+  //     }
+  //     setHasProcessed(true);
+  //   } catch (error) {
+  //     console.error("Error processing videos:", error);
+  //   } finally {
+  //     setProcessingVideos(false);
+  //   }
+  // }, [indexId]);
 
-  useEffect(() => {
-    if (indexId && !hasProcessed) {
-      fetchAllVideos();
-    }
-  }, [indexId, hasProcessed, fetchAllVideos]);
+  // useEffect(() => {
+  //   if (indexId && !hasProcessed) {
+  //     fetchAllVideos();
+  //   }
+  // }, [indexId, hasProcessed, fetchAllVideos]);
 
   return (
     <div className="flex flex-col gap-4">

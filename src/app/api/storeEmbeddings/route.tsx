@@ -42,54 +42,43 @@ export async function POST(request: Request) {
 
     try {
       console.log('Initializing Pinecone client...');
-    const pc = new Pinecone({
-      apiKey: process.env.PINECONE_API_KEY!
-    });
-    const index = pc.index(process.env.PINECONE_INDEX!);
-
-      console.log(`Found ${vectors.length} vectors to upsert`);
-
-      // 벡터 데이터 로깅
-      console.log('Sample vector data:', {
-        id: vectors[0].id,
-        metadata: vectors[0].metadata,
-        valuesLength: vectors[0].values.length,
-        sampleValues: vectors[0].values.slice(0, 5)
+      const pc = new Pinecone({
+        apiKey: process.env.PINECONE_API_KEY!
       });
+      const index = pc.index(process.env.PINECONE_INDEX!);
 
-      // Sanitize vector IDs
+      // Sanitize vector IDs first
       const sanitizedVectors = vectors.map((vector: Vector) => ({
         ...vector,
         id: sanitizeVectorId(vector.id)
       }));
 
-      // 벡터 형식 검증
-      const isValidVector = sanitizedVectors.every((vector: Vector) =>
-        vector.id &&
-        Array.isArray(vector.values) &&
-        vector.values.length === 1024 &&
-        vector.values.every(v => typeof v === 'number')
+      // 벡저 모든 벡터 ID들이 존재하는지 확인
+      const vectorIds = sanitizedVectors.map((v: Vector) => v.id);
+      console.log('Checking for existing vectors...');
+      const existingVectors = await index.fetch(vectorIds);
+
+      // 존재하지 않는 벡터만 필터링
+      const vectorsToUpsert = sanitizedVectors.filter(
+        (vector: Vector) => !existingVectors.records[vector.id]
       );
-      console.log('Vector validation:', { isValid: isValidVector });
 
-      // 배치 크기를 더 작게 조정
+      if (vectorsToUpsert.length === 0) {
+        console.log('All vectors already exist in Pinecone. Skipping upsert.');
+        return NextResponse.json({ success: true, message: 'All vectors already exist' });
+      }
+
+      console.log(`Found ${vectorsToUpsert.length} new vectors to upsert`);
+
+      // 이후 벡터 검증 및 업서트 로직
       const batchSize = 5;
-      console.log('Starting upsert operation in smaller batches...');
-
-      for (let i = 0; i < sanitizedVectors.length; i += batchSize) {
-        const batch = sanitizedVectors.slice(i, i + batchSize);
-        console.log(`Upserting batch ${Math.floor(i/batchSize) + 1} of ${Math.ceil(sanitizedVectors.length/batchSize)}`);
+      for (let i = 0; i < vectorsToUpsert.length; i += batchSize) {
+        const batch = vectorsToUpsert.slice(i, i + batchSize);
+        console.log(`Upserting batch ${Math.floor(i/batchSize) + 1} of ${Math.ceil(vectorsToUpsert.length/batchSize)}`);
 
         try {
           const upsertResponse = await index.upsert(batch);
           console.log('Upsert response:', upsertResponse);
-
-          // Verify the batch upload
-          const fetchResponse = await index.fetch(batch.map((v: Vector) => v.id));
-          console.log('Fetch verification:', {
-            attempted: batch.length,
-            found: Object.keys(fetchResponse.records).length
-          });
         } catch (error) {
           console.error('Error in batch:', error);
           console.error('Problematic batch data:', JSON.stringify(batch, null, 2));
@@ -103,7 +92,7 @@ export async function POST(request: Request) {
       console.log('Index stats after upsert:', describeStats);
 
       // 무작위로 5개 벡터를 선택해서 실제로 존재하는지 확인
-      const sampleIds = sanitizedVectors
+      const sampleIds = vectorsToUpsert
         .map((v: Vector) => v.id)
         .sort(() => 0.5 - Math.random())
         .slice(0, 5);

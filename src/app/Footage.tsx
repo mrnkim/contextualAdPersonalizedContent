@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { useInfiniteQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-import { fetchVideos, fetchTaskDetails, uploadFootage } from '@/hooks/apiHooks';
+import { fetchVideos, fetchTaskDetails, uploadFootage, checkVectorExists, getAndStoreEmbeddings } from '@/hooks/apiHooks';
 import Button from './Button';
 import Video from './Video';
 import FootageSummary from './FootageSummary';
@@ -19,6 +19,9 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 	const [taskDetails, setTaskDetails] = useState<TaskDetails | null>(null);
 	const [playing, setPlaying] = useState(false);
 	const { currentPlayerId, setCurrentPlayerId } = usePlayer();
+	const [processingVideos, setProcessingVideos] = useState(false);
+	const [footageHasProcessed, setFootageHasProcessed] = useState(false);
+	console.log("🚀 > Footage > footageHasProcessed=", footageHasProcessed)
 
 	const handleVideoChange = (newVideoId: string) => {
 		reset();
@@ -82,6 +85,7 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 		setIsRecommendClickedEver(false);
 		setSelectedAd(null);
 		setSelectedChapter(null);
+		setFootageHasProcessed(false);
 	}, [
 		setIsAnalyzeClicked,
 		setShowAnalysis,
@@ -140,9 +144,37 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 		}
 	}, [videosData, footageVideoId, setFootageVideoId]);
 
+	const processFootageVideo = useCallback(async () => {
+		if (!indexId || !footageVideoId) return;
+		setProcessingVideos(true);
+		try {
+			const vectorExists = await checkVectorExists(indexId, footageVideoId);
+			if (!vectorExists) {
+				await getAndStoreEmbeddings(indexId, footageVideoId, "footage");
+			}
+			setFootageHasProcessed(true);
+		} catch (error) {
+			console.error("Error processing video:", error);
+		} finally {
+			setProcessingVideos(false);
+		}
+	}, [indexId, footageVideoId]);
+
+	useEffect(() => {
+		if (indexId && footageVideoId && !footageHasProcessed) {
+			processFootageVideo();
+		}
+	}, [indexId, footageVideoId, footageHasProcessed, processFootageVideo]);
+
 	return (
 		<div className="flex flex-col items-center gap-4 w-full">
 			<h2 className="text-2xl font-bold">Source Footage</h2>
+			{processingVideos && (
+				<div className="flex items-center justify-center gap-2 text-sm text-gray-500">
+					<LoadingSpinner size="sm" color="default" />
+					Processing video embeddings...
+				</div>
+			)}
 			<div className="flex items-center justify-center w-full">
 				<div className="flex-grow mr-4 w-64">
 					<VideosDropDown

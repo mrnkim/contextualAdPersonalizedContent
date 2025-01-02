@@ -42,13 +42,6 @@ const ContextualAds = ({ adsIndexId }: ContextualAdsProps) => {
 
     const customTextsData = useMemo(() => rawCustomTextsData, [rawCustomTextsData]);
 
-    const { data: footageVectorsExist } = useQuery({
-      queryKey: ['footageVectorsExist', footageIndexId, footageVideoId],
-      queryFn: () => checkVectorExists(footageIndexId!, footageVideoId),
-      enabled: !!footageIndexId && !!footageVideoId,
-    });
-    console.log("🚀 > ContextualAds > footageVectorsExist=", footageVectorsExist)
-
     useEffect(() => {
       if (gistData) {
         setHashtags(gistData.split("#").filter(tag => tag.trim() !== ""));
@@ -82,13 +75,6 @@ const ContextualAds = ({ adsIndexId }: ContextualAdsProps) => {
         setEmotions(emotionalTones);
       }
     }, [customTextsData]);
-
-    useEffect(() => {
-      if (footageVideoId && footageIndexId && footageVectorsExist === false) {
-        getAndStoreEmbeddings(footageIndexId, footageVideoId, "footage")
-          .catch(console.error);
-      }
-    }, [footageVideoId, footageIndexId, footageVectorsExist]);
 
   return (
     <div>
