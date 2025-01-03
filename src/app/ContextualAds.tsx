@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react'
-import { generateCustomTexts, checkVectorExists, getAndStoreEmbeddings } from '@/hooks/apiHooks';
+import { generateCustomTexts } from '@/hooks/apiHooks';
 import { RecommendedAdProps, ContextualAdsProps } from '@/app/types';
 import Footage from '@/app/Footage';
 import Ads from '@/app/Ads';

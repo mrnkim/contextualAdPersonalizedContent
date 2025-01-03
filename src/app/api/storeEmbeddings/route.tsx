@@ -37,7 +37,6 @@ export async function POST(request: Request) {
         tl_video_id: videoId,
       },
     }));
-    console.log("🚀 > vectors > vectors=", vectors)
 
 
     try {
@@ -53,14 +52,31 @@ export async function POST(request: Request) {
         id: sanitizeVectorId(vector.id)
       }));
 
-      // 벡저 모든 벡터 ID들이 존재하는지 확인
+      // 모든 벡터 ID들이 존재하는지 확인
       const vectorIds = sanitizedVectors.map((v: Vector) => v.id);
-      console.log('Checking for existing vectors...');
-      const existingVectors = await index.fetch(vectorIds);
+      console.log('Checking for existing vectors in batches...');
+      const fetchBatchSize = 100; // Renamed from batchSize
+      const existingVectorsMap = new Map();
 
-      // 존재하지 않는 벡터만 필터링
+      for (let i = 0; i < vectorIds.length; i += fetchBatchSize) {
+        const batchIds = vectorIds.slice(i, i + fetchBatchSize);
+        console.log(`Fetching batch ${Math.floor(i/fetchBatchSize) + 1} of ${Math.ceil(vectorIds.length/fetchBatchSize)}`);
+
+        try {
+          const batchResponse = await index.fetch(batchIds);
+          // Merge results into our map
+          Object.entries(batchResponse.records).forEach(([id, record]) => {
+            existingVectorsMap.set(id, record);
+          });
+        } catch (error) {
+          console.error('Error fetching batch:', error);
+          throw error;
+        }
+      }
+
+      // Filter vectors using the map
       const vectorsToUpsert = sanitizedVectors.filter(
-        (vector: Vector) => !existingVectors.records[vector.id]
+        (vector: Vector) => !existingVectorsMap.has(vector.id)
       );
 
       if (vectorsToUpsert.length === 0) {
@@ -71,10 +87,10 @@ export async function POST(request: Request) {
       console.log(`Found ${vectorsToUpsert.length} new vectors to upsert`);
 
       // 이후 벡터 검증 및 업서트 로직
-      const batchSize = 5;
-      for (let i = 0; i < vectorsToUpsert.length; i += batchSize) {
-        const batch = vectorsToUpsert.slice(i, i + batchSize);
-        console.log(`Upserting batch ${Math.floor(i/batchSize) + 1} of ${Math.ceil(vectorsToUpsert.length/batchSize)}`);
+      const upsertBatchSize = 5; // Renamed from batchSize
+      for (let i = 0; i < vectorsToUpsert.length; i += upsertBatchSize) {
+        const batch = vectorsToUpsert.slice(i, i + upsertBatchSize);
+        console.log(`Upserting batch ${Math.floor(i/upsertBatchSize) + 1} of ${Math.ceil(vectorsToUpsert.length/upsertBatchSize)}`);
 
         try {
           const upsertResponse = await index.upsert(batch);

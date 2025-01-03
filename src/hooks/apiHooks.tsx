@@ -132,9 +132,9 @@ export const uploadFootage = async (file: File, indexId: string) => {
   }
 };
 
-export const checkVectorExists = async (indexId: string, videoId: string) => {
+export const checkVectorExists = async (videoId: string) => {
   try {
-    const response = await fetch(`/api/fetchVectors?indexId=${indexId}&videoId=${videoId}`);
+    const response = await fetch(`/api/fetchVectors?videoId=${videoId}`);
     const data = await response.json();
     return data.exists;
   } catch (error) {

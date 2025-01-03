@@ -148,7 +148,8 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 		if (!indexId || !footageVideoId) return;
 		setProcessingVideos(true);
 		try {
-			const vectorExists = await checkVectorExists(indexId, footageVideoId);
+			const vectorExists = await checkVectorExists(footageVideoId);
+			console.log("🚀 > processFootageVideo > vectorExists=", vectorExists)
 			if (!vectorExists) {
 				await getAndStoreEmbeddings(indexId, footageVideoId, "footage");
 			}
