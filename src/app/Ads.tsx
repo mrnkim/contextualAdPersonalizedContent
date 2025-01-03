@@ -19,12 +19,11 @@ type VideoType = {
   title: string;
 };
 
-function Ads({ indexId, isIndexIdLoading, selectedFile, isRecommendClicked, setIsRecommendClicked, searchOptionRef, customQueryRef, isAnalysisLoading, setIsRecommendClickedEver, isRecommendClickedEver, setSelectedAd, setSelectedChapter, hashtags}: AdsProps) {
+function Ads({ indexId, isIndexIdLoading, selectedFile, isRecommendClicked, setIsRecommendClicked, searchOptionRef, customQueryRef, isAnalysisLoading, setIsRecommendClickedEver, isRecommendClickedEver, setSelectedAd, setSelectedChapter, hashtags, hasProcessedAds, setHasProcessedAds }: AdsProps) {
   const [page, setPage] = useState(1);
   const [hasSearchOptionChanged, setHasSearchOptionChanged] = useState(false);
   const { currentPlayerId, setCurrentPlayerId } = usePlayer();
   const [processingVideos, setProcessingVideos] = useState(false);
-  const [hasProcessed, setHasProcessed] = useState(false);
 
   const { data: videosData, isLoading } = useQuery({
     queryKey: ["videos", page, indexId],
@@ -50,26 +49,30 @@ function Ads({ indexId, isIndexIdLoading, selectedFile, isRecommendClicked, setI
 
       for (let currentPage = 1; currentPage <= totalPages; currentPage++) {
         const pageData = await fetchVideos(currentPage, indexId);
-        for (const video of pageData.data) {
-          const vectorExists = await checkVectorExists(video._id);
-          if (!vectorExists) {
-            await getAndStoreEmbeddings(indexId, video._id, "ad");
+        if (pageData.data) {
+          for (const video of pageData.data) {
+            const vectorExists = await checkVectorExists(video._id);
+            if (!vectorExists) {
+              await getAndStoreEmbeddings(indexId, video._id, "ad");
+            }
           }
         }
       }
-      setHasProcessed(true);
+      if (typeof setHasProcessedAds === 'function') {
+        setHasProcessedAds(true);
+      }
     } catch (error) {
       console.error("Error processing videos:", error);
     } finally {
       setProcessingVideos(false);
     }
-  }, [indexId]);
+  }, [indexId, setHasProcessedAds]);
 
   useEffect(() => {
-    if (indexId && !hasProcessed) {
+    if (indexId && !hasProcessedAds) {
       fetchAllVideos();
     }
-  }, [indexId, hasProcessed, fetchAllVideos]);
+  }, [indexId, hasProcessedAds, fetchAllVideos]);
 
   return (
     <div className="flex flex-col gap-4">

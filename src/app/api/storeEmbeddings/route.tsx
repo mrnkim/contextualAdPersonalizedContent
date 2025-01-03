@@ -7,9 +7,6 @@ function sanitizeVectorId(str: string) {
     .replace(/[^\x00-\x7F]/g, '') // Remove non-ASCII characters
     .replace(/[^a-zA-Z0-9-_]/g, '_') // Replace other special characters with underscore
     .replace(/_{2,}/g, '_'); // Replace multiple consecutive underscores with single underscore
-
-  console.log('Original vector ID:', str);
-  console.log('Sanitized vector ID:', sanitized);
   return sanitized;
 }
 

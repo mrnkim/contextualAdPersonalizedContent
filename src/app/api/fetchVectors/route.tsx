@@ -27,6 +27,8 @@ export async function GET(request: Request) {
       includeMetadata: true
     });
 
+    console.log("🚀 > fetchVectors > queryResponse=", queryResponse.matches)
+
     return NextResponse.json({
       exists: queryResponse.matches.length > 0
     });

@@ -36,6 +36,8 @@ export interface FootageProps {
   setSelectedChapter: (selectedChapter: number | null) => void;
   isAnalyzeClicked: boolean;
   setIsAnalyzeClicked: (isAnalyzeClicked: boolean) => void;
+  hasProcessedFootage: boolean;
+  setHasProcessedFootage: (hasProcessedFootage: boolean) => void;
 }
 
 export interface AdsProps {
@@ -52,6 +54,8 @@ export interface AdsProps {
   setSelectedAd: (selectedAd: RecommendedAdProps["recommendedAd"] | null) => void;
   setSelectedChapter: (selectedChapter: number | null) => void;
   hashtags: string[];
+  hasProcessedAds: boolean;
+  setHasProcessedAds: (hasProcessedAds: boolean) => void;
 }
 
 export interface FootageSummaryProps {
@@ -372,6 +376,10 @@ export interface ContextualAdsProps {
     userId: string;
   }>;
   setProfiles: React.Dispatch<React.SetStateAction<ContextualAdsProps['profiles']>>;
+  hasProcessedAds: boolean;
+  setHasProcessedAds: (hasProcessedAds: boolean) => void;
+  hasProcessedFootage: boolean;
+  setHasProcessedFootage: (hasProcessedFootage: boolean) => void;
 }
 
 export interface Vector {

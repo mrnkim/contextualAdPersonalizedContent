@@ -13,15 +13,13 @@ import Task from './Task';
 import { FootageProps, TaskDetails, VideosData } from '@/app/types';
 import { usePlayer } from '@/contexts/PlayerContext';
 
-function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVideoId, setFootageVideoId, selectedFile, setSelectedFile, setIsRecommendClicked, gistData, customTextsData, isLoading, error, setIsRecommendClickedEver, setSelectedAd, setSelectedChapter, isAnalyzeClicked, setIsAnalyzeClicked }: FootageProps) {
+function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVideoId, setFootageVideoId, selectedFile, setSelectedFile, setIsRecommendClicked, gistData, customTextsData, isLoading, error, setIsRecommendClickedEver, setSelectedAd, setSelectedChapter, isAnalyzeClicked, setIsAnalyzeClicked, hasProcessedFootage, setHasProcessedFootage }: FootageProps) {
 	const [showAnalysis, setShowAnalysis] = useState(false);
 	const [taskId, setTaskId] = useState<string | null>(null);
 	const [taskDetails, setTaskDetails] = useState<TaskDetails | null>(null);
 	const [playing, setPlaying] = useState(false);
 	const { currentPlayerId, setCurrentPlayerId } = usePlayer();
 	const [processingVideos, setProcessingVideos] = useState(false);
-	const [footageHasProcessed, setFootageHasProcessed] = useState(false);
-	console.log("🚀 > Footage > footageHasProcessed=", footageHasProcessed)
 
 	const handleVideoChange = (newVideoId: string) => {
 		reset();
@@ -85,7 +83,7 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 		setIsRecommendClickedEver(false);
 		setSelectedAd(null);
 		setSelectedChapter(null);
-		setFootageHasProcessed(false);
+		setHasProcessedFootage(false);
 	}, [
 		setIsAnalyzeClicked,
 		setShowAnalysis,
@@ -149,23 +147,24 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 		setProcessingVideos(true);
 		try {
 			const vectorExists = await checkVectorExists(footageVideoId);
-			console.log("🚀 > processFootageVideo > vectorExists=", vectorExists)
 			if (!vectorExists) {
 				await getAndStoreEmbeddings(indexId, footageVideoId, "footage");
 			}
-			setFootageHasProcessed(true);
+			if (typeof setHasProcessedFootage === 'function') {
+				setHasProcessedFootage(true);
+			}
 		} catch (error) {
 			console.error("Error processing video:", error);
 		} finally {
 			setProcessingVideos(false);
 		}
-	}, [indexId, footageVideoId]);
+	}, [indexId, footageVideoId, setHasProcessedFootage]);
 
 	useEffect(() => {
-		if (indexId && footageVideoId && !footageHasProcessed) {
+		if (indexId && footageVideoId && !hasProcessedFootage) {
 			processFootageVideo();
 		}
-	}, [indexId, footageVideoId, footageHasProcessed, processFootageVideo]);
+	}, [indexId, footageVideoId, hasProcessedFootage, processFootageVideo]);
 
 	return (
 		<div className="flex flex-col items-center gap-4 w-full">

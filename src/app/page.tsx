@@ -10,6 +10,8 @@ const adsIndexId = process.env.NEXT_PUBLIC_ADS_INDEX_ID;
 
 export default function Page() {
   const [selectedApp, setSelectedApp] = useState<'contextual' | 'personalized'>('contextual');
+  const [hasProcessedAds, setHasProcessedAds] = useState(false);
+  const [hasProcessedFootage, setHasProcessedFootage] = useState(false);
   const [profiles, setProfiles] = useState([
       {
         profilePic: '/profile1.jpg',
@@ -65,7 +67,15 @@ export default function Page() {
         </div>
 
         {selectedApp === 'contextual' ? (
-          <ContextualAds adsIndexId={adsIndexId || ''} profiles={profiles} setProfiles={setProfiles} />
+          <ContextualAds
+            adsIndexId={adsIndexId || ''}
+            profiles={profiles}
+            setProfiles={setProfiles}
+            hasProcessedAds={hasProcessedAds}
+            setHasProcessedAds={setHasProcessedAds}
+            hasProcessedFootage={hasProcessedFootage}
+            setHasProcessedFootage={setHasProcessedFootage}
+          />
         ) : (
           <PersonalizedContent profiles={profiles} setProfiles={setProfiles} />
         )}
