@@ -10,7 +10,7 @@ const footageIndexId = process.env.NEXT_PUBLIC_FOOTAGE_INDEX_ID;
 const HASHTAGS_PROMPT = "Generate a list of 3 hashtags that best describe the video. Do not include any introductory text or comments."
 const PROMPT = "Summarize the video focusing on the event type, main content, and the emotional tone. Provide the titles (Event Type, Main Content, Emotional Tone) before each summary. Do not include any introductory text or comments. For Emotional Tone, start with three words and a period."
 
-const ContextualAds = ({ adsIndexId, hasProcessedAds, setHasProcessedAds, hasProcessedFootage, setHasProcessedFootage }: ContextualAdsProps) => {
+const ContextualAds = ({ adsIndexId, hasProcessedAds, setHasProcessedAds, hasProcessedFootage, setHasProcessedFootage, useEmbeddings }: ContextualAdsProps) => {
     const [hashtags, setHashtags] = useState<string[]>([]);
     const [emotions, setEmotions] = useState<string[]>([]);
     const [footageVideoId, setFootageVideoId] = useState<string>('');
@@ -104,6 +104,7 @@ const ContextualAds = ({ adsIndexId, hasProcessedAds, setHasProcessedAds, hasPro
                 setIsAnalyzeClicked={setIsAnalyzeClicked}
                 hasProcessedFootage={hasProcessedFootage}
                 setHasProcessedFootage={setHasProcessedFootage}
+                useEmbeddings={useEmbeddings}
               />
             </div>
             <div className="w-1/6"></div>
@@ -124,6 +125,9 @@ const ContextualAds = ({ adsIndexId, hasProcessedAds, setHasProcessedAds, hasPro
                 hashtags={hashtags}
                 hasProcessedAds={hasProcessedAds}
                 setHasProcessedAds={setHasProcessedAds}
+                hasProcessedFootage={hasProcessedFootage}
+                useEmbeddings={useEmbeddings}
+
               />
             </div>
           </div>
@@ -144,6 +148,7 @@ const ContextualAds = ({ adsIndexId, hasProcessedAds, setHasProcessedAds, hasPro
                 setSelectedAd={setSelectedAd}
                 selectedChapter={selectedChapter}
                 setSelectedChapter={setSelectedChapter}
+                useEmbeddings={useEmbeddings}
               />
             </div>
           )}

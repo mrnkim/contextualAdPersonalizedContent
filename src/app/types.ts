@@ -38,6 +38,7 @@ export interface FootageProps {
   setIsAnalyzeClicked: (isAnalyzeClicked: boolean) => void;
   hasProcessedFootage: boolean;
   setHasProcessedFootage: (hasProcessedFootage: boolean) => void;
+  useEmbeddings: boolean;
 }
 
 export interface AdsProps {
@@ -56,6 +57,8 @@ export interface AdsProps {
   hashtags: string[];
   hasProcessedAds: boolean;
   setHasProcessedAds: (hasProcessedAds: boolean) => void;
+  hasProcessedFootage: boolean;
+  useEmbeddings: boolean;
 }
 
 export interface FootageSummaryProps {
@@ -93,17 +96,9 @@ export interface TaskProps {
 export interface RecommendedAdProps {
   recommendedAd: {
     id?: string;
-    clips: Array<{
-      confidence: "high" | "medium" | "low";
-      end: number;
-      score: number;
-      start: number;
-      thumbnail_url: string;
-      video_id: string;
-    }>;
   };
   indexId: string;
-  videoDetails: VideoDetails;
+  videoDetails?: VideoDetails;
 }
 
 export interface RecommendedAdsProps {
@@ -121,6 +116,7 @@ export interface RecommendedAdsProps {
   setSelectedAd: (selectedAd: RecommendedAdProps["recommendedAd"] | null) => void;
   selectedChapter: number | null;
   setSelectedChapter: (selectedChapter: number | null) => void;
+  useEmbeddings: boolean;
 }
 
 export interface RecommendedPlacementsProps {
@@ -250,7 +246,7 @@ export interface ClipData {
 }
 
 export interface VideoDetails {
-  hls: {
+  hls?: {
     video_url: string;
     thumbnail_urls: string[];
     status: string;
@@ -260,14 +256,14 @@ export interface VideoDetails {
 }
 
 export interface VideoMetadata {
-  duration: number;
-  engine_ids: string[];
+  duration?: number;
+  engine_ids?: string[];
   filename: string;
-  fps: number;
-  height: number;
-  size: number;
+  fps?: number;
+  height?: number;
+  size?: number;
   video_title: string;
-  width: number;
+  width?: number;
 }
 
 export interface VideoHLS {
@@ -380,6 +376,7 @@ export interface ContextualAdsProps {
   setHasProcessedAds: (hasProcessedAds: boolean) => void;
   hasProcessedFootage: boolean;
   setHasProcessedFootage: (hasProcessedFootage: boolean) => void;
+  useEmbeddings: boolean;
 }
 
 export interface Vector {

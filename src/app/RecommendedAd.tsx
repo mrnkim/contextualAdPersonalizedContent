@@ -96,7 +96,7 @@ const RecommendedAd: React.FC<RecommendedAdProps> = ({ recommendedAd, indexId, v
           </div>
           <ErrorBoundary FallbackComponent={({ error }) => <ErrorFallback error={error} />}>
             <AdCopy
-              videoDetails={videoDetails}
+              videoDetails={videoDetails || {}}
               isDialogOpen={isDialogOpen}
               setIsDialogOpen={setIsDialogOpen}
               setIsGenerating={setIsGenerating}

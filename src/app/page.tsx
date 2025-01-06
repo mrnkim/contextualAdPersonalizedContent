@@ -11,7 +11,11 @@ const adsIndexId = process.env.NEXT_PUBLIC_ADS_INDEX_ID;
 export default function Page() {
   const [selectedApp, setSelectedApp] = useState<'contextual' | 'personalized'>('contextual');
   const [hasProcessedAds, setHasProcessedAds] = useState(false);
+  console.log("🚀 > Page > hasProcessedAds=", hasProcessedAds)
   const [hasProcessedFootage, setHasProcessedFootage] = useState(false);
+  console.log("🚀 > Page > hasProcessedFootage=", hasProcessedFootage)
+  const [useEmbeddings, setUseEmbeddings] = useState(false);
+  console.log("🚀 > Page > useEmbeddings=", useEmbeddings)
   const [profiles, setProfiles] = useState([
       {
         profilePic: '/profile1.jpg',
@@ -51,19 +55,33 @@ export default function Page() {
   return (
     <PlayerProvider>
       <main className="flex flex-col min-h-screen p-12">
-        <div className="flex gap-4 mb-8 max-w-7xl mx-auto w-full">
-          <Button
-            onClick={() => setSelectedApp('contextual')}
-            appearance={selectedApp === 'contextual' ? 'default' : 'subtle'}
-          >
-            Contextual Ads
-          </Button>
-          <Button
-            onClick={() => setSelectedApp('personalized')}
-            appearance={selectedApp === 'personalized' ? 'default' : 'subtle'}
-          >
-            Personalized Content
-          </Button>
+        <div className="flex justify-between max-w-7xl mx-auto w-full mb-8">
+          <div className="flex gap-4">
+            <Button
+              onClick={() => setSelectedApp('contextual')}
+              appearance={selectedApp === 'contextual' ? 'default' : 'subtle'}
+            >
+              Contextual Ads
+            </Button>
+            <Button
+              onClick={() => setSelectedApp('personalized')}
+              appearance={selectedApp === 'personalized' ? 'default' : 'subtle'}
+            >
+              Personalized Content
+            </Button>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-sm">Use Embeddings</span>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                className="sr-only peer"
+                checked={useEmbeddings}
+                onChange={(e) => setUseEmbeddings(e.target.checked)}
+              />
+              <div className="w-11 h-6 bg-green-600 peer-focus:outline-none peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+            </label>
+          </div>
         </div>
 
         {selectedApp === 'contextual' ? (
@@ -75,11 +93,11 @@ export default function Page() {
             setHasProcessedAds={setHasProcessedAds}
             hasProcessedFootage={hasProcessedFootage}
             setHasProcessedFootage={setHasProcessedFootage}
+            useEmbeddings={useEmbeddings}
           />
         ) : (
           <PersonalizedContent profiles={profiles} setProfiles={setProfiles} />
         )}
-
       </main>
     </PlayerProvider>
   );

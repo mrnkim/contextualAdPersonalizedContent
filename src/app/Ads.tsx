@@ -19,7 +19,7 @@ type VideoType = {
   title: string;
 };
 
-function Ads({ indexId, isIndexIdLoading, selectedFile, isRecommendClicked, setIsRecommendClicked, searchOptionRef, customQueryRef, isAnalysisLoading, setIsRecommendClickedEver, isRecommendClickedEver, setSelectedAd, setSelectedChapter, hashtags, hasProcessedAds, setHasProcessedAds }: AdsProps) {
+function Ads({ indexId, isIndexIdLoading, selectedFile, isRecommendClicked, setIsRecommendClicked, searchOptionRef, customQueryRef, isAnalysisLoading, setIsRecommendClickedEver, isRecommendClickedEver, setSelectedAd, setSelectedChapter, hashtags, hasProcessedAds, setHasProcessedAds, hasProcessedFootage, useEmbeddings }: AdsProps) {
   const [page, setPage] = useState(1);
   const [hasSearchOptionChanged, setHasSearchOptionChanged] = useState(false);
   const { currentPlayerId, setCurrentPlayerId } = usePlayer();
@@ -40,7 +40,7 @@ function Ads({ indexId, isIndexIdLoading, selectedFile, isRecommendClicked, setI
     }
   }, [isRecommendClicked]);
 
-  const fetchAllVideos = useCallback(async () => {
+  const processAdVideos = useCallback(async () => {
     if (!indexId) return;
     setProcessingVideos(true);
     try {
@@ -69,10 +69,17 @@ function Ads({ indexId, isIndexIdLoading, selectedFile, isRecommendClicked, setI
   }, [indexId, setHasProcessedAds]);
 
   useEffect(() => {
-    if (indexId && !hasProcessedAds) {
-      fetchAllVideos();
+    console.log('Ads conditions:', {
+      indexId: !!indexId,
+      hasProcessedAds,
+      useEmbeddings,
+      willProcess: indexId && !hasProcessedAds && useEmbeddings
+    });
+
+    if (indexId && !hasProcessedAds && useEmbeddings) {
+      processAdVideos();
     }
-  }, [indexId, hasProcessedAds, fetchAllVideos]);
+  }, [indexId, hasProcessedAds, processAdVideos, useEmbeddings]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -108,31 +115,60 @@ function Ads({ indexId, isIndexIdLoading, selectedFile, isRecommendClicked, setI
                 <PageNav page={page} setPage={setPage} totalPage={totalPage} />
               </div>
               <div className="flex flex-col items-center gap-4 my-5">
-                <RecommendOptionForm searchOptionRef={searchOptionRef} customQueryRef={customQueryRef} setIsRecommendClicked={setIsRecommendClicked} setHasSearchOptionChanged={setHasSearchOptionChanged}/>
-                <div className="w-fit my-5">
-                  <span className="text-xs font-bold mb-0.5 text-left block">Step 2</span>
-                  <div className="flex gap-2">
-                    <Button
-                      type="button"
-                      size="sm"
-                      appearance="primary"
-                      onClick={() => {
-                        setIsRecommendClicked(true);
-                        setIsRecommendClickedEver(true);
-                        setSelectedAd(null);
-                        setSelectedChapter(null);
-                      }}
-                      disabled={hashtags.length === 0 || !!selectedFile || isRecommendClicked || isAnalysisLoading || (!hasSearchOptionChanged && isRecommendClickedEver)}
-                    >
-                      <img
-                        src={hashtags.length === 0 || !!selectedFile || isRecommendClicked || isAnalysisLoading || (!hasSearchOptionChanged && isRecommendClickedEver) ? "/magicDisabled.svg" : "/magic.svg"}
-                        alt="Magic wand icon"
-                        className="w-4 h-4"
-                      />
-                      Recommend
-                    </Button>
-                  </div>
-                </div>
+                {!useEmbeddings ? (
+                  <>
+                    <RecommendOptionForm
+                      searchOptionRef={searchOptionRef}
+                      customQueryRef={customQueryRef}
+                      setIsRecommendClicked={setIsRecommendClicked}
+                      setHasSearchOptionChanged={setHasSearchOptionChanged}
+                    />
+                    <div className="w-fit my-5">
+                      <span className="text-xs font-bold mb-0.5 text-left block">Step 2</span>
+                      <div className="flex gap-2">
+                        <Button
+                          type="button"
+                          size="sm"
+                          appearance="primary"
+                          onClick={() => {
+                            setIsRecommendClicked(true);
+                            setIsRecommendClickedEver(true);
+                            setSelectedAd(null);
+                            setSelectedChapter(null);
+                          }}
+                          disabled={hashtags.length === 0 || !!selectedFile || isRecommendClicked || isAnalysisLoading || (!hasSearchOptionChanged && isRecommendClickedEver)}
+                        >
+                          <img
+                            src={hashtags.length === 0 || !!selectedFile || isRecommendClicked || isAnalysisLoading || (!hasSearchOptionChanged && isRecommendClickedEver) ? "/magicDisabled.svg" : "/magic.svg"}
+                            alt="Magic wand icon"
+                            className="w-4 h-4"
+                          />
+                          Recommend
+                        </Button>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <Button
+                    type="button"
+                    size="sm"
+                    appearance="primary"
+                    onClick={() => {
+                      setIsRecommendClicked(true);
+                      setIsRecommendClickedEver(true);
+                      setSelectedAd(null);
+                      setSelectedChapter(null);
+                    }}
+                    disabled={!hasProcessedFootage || !hasProcessedAds || !!selectedFile || isRecommendClicked }
+                  >
+                    <img
+                      src={!hasProcessedFootage || !hasProcessedAds || !!selectedFile || isRecommendClicked ? "/magicDisabled.svg" : "/magic.svg"}
+                      alt="Magic wand icon"
+                      className="w-4 h-4"
+                    />
+                    Recommend by Embeddings
+                  </Button>
+                )}
               </div>
             </>
           )}

@@ -16,10 +16,13 @@ export enum SearchOption {
 
 const INITIAL_DISPLAY_COUNT = 3;
 
-const RecommendedAds = ({ hashtags, footageVideoId, adsIndexId, selectedFile, setIsRecommendClicked, searchOptionRef, customQueryRef, emotions, footageIndexId, isRecommendClicked, selectedAd, setSelectedAd, selectedChapter, setSelectedChapter }: RecommendedAdsProps) => {
+const RecommendedAds = ({ hashtags, footageVideoId, adsIndexId, selectedFile, setIsRecommendClicked, searchOptionRef, customQueryRef, emotions, footageIndexId, isRecommendClicked, selectedAd, setSelectedAd, selectedChapter, setSelectedChapter, useEmbeddings }: RecommendedAdsProps) => {
   const [searchOptions, setSearchOptions] = useState<SearchOption[]>([]);
   const [searchQueries, setSearchQueries] = useState<string[]>([]);
   const [displayCount, setDisplayCount] = useState(INITIAL_DISPLAY_COUNT);
+  const [embeddingScores, setEmbeddingScores] = useState<Record<string, number>>({});
+  const [embeddingSearchResults, setEmbeddingSearchResults] = useState<RecommendedAdProps["recommendedAd"][]>([]);
+  console.log("🚀 > RecommendedAds > embeddingSearchResults=", embeddingSearchResults)
 
   useEffect(() => {
     if (!isRecommendClicked) return;
@@ -48,6 +51,49 @@ const RecommendedAds = ({ hashtags, footageVideoId, adsIndexId, selectedFile, se
     }
 
     setSearchOptions(newSearchOptions);
+
+    const handleEmbeddingSearch = async () => {
+      if (useEmbeddings) {
+        try {
+          const response = await fetch('/api/embeddingSearch', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              videoId: footageVideoId
+            })
+          });
+          const data = await response.json();
+
+          // Transform embedding search results to match RecommendedAdProps structure
+          const transformedResults = data.map((item: { id: string; metadata: { tl_video_id: string; start_time: number; end_time: number }; score: number }) => ({
+            id: item.metadata?.tl_video_id,
+            indexId: adsIndexId,
+            videoDetails: {
+              hls: {
+                metadata: {
+                  filename: item.id,
+                  video_title: item.id
+                },
+              }
+            }
+          }));
+
+          setEmbeddingScores(data.reduce((acc: Record<string, number>, item: { id: string; score: number }) => {
+            acc[item.id] = item.score;
+            return acc;
+          }, {}));
+
+          setEmbeddingSearchResults(transformedResults);
+        } catch (error) {
+          console.error('Error fetching embedding search:', error);
+        }
+      }
+    };
+
+    handleEmbeddingSearch();
+
     setIsRecommendClicked(false);
   }, [isRecommendClicked, hashtags, emotions]);
 
@@ -119,18 +165,18 @@ const RecommendedAds = ({ hashtags, footageVideoId, adsIndexId, selectedFile, se
 
           <Suspense fallback={<LoadingSpinner />}>
             <div>
-              {combinedData.length > 0 ? (
+              {useEmbeddings ? (
                 <div id="scrollableDiv" className="h-[calc(100vh-200px)] overflow-y-auto">
                   <InfiniteScroll
-                    dataLength={displayedData.length}
+                    dataLength={embeddingSearchResults.length}
                     next={fetchMoreData}
                     hasMore={hasMore}
                     loader={<LoadingSpinner />}
                     scrollableTarget="scrollableDiv"
                     className="flex flex-col gap-12 p-2"
-                    scrollThreshold={0.8} // Loads new data when the scroll reaches 80% of the screen
+                    scrollThreshold={0.8}
                   >
-                    {displayedData.map((recommendedAd) => (
+                    {embeddingSearchResults.map((recommendedAd) => (
                       <div
                         key={recommendedAd.id}
                         onClick={() => setSelectedAd(recommendedAd)}
@@ -139,14 +185,42 @@ const RecommendedAds = ({ hashtags, footageVideoId, adsIndexId, selectedFile, se
                         <RecommendedAdItem
                           recommendedAd={recommendedAd}
                           adsIndexId={adsIndexId}
-                          score={recommendedAd.clips[0]?.score}
+                          score={useEmbeddings ? embeddingScores[recommendedAd?.id || ''] : recommendedAd.clips?.[0]?.score}
                         />
                       </div>
                     ))}
                   </InfiniteScroll>
                 </div>
               ) : (
-                !isLoading && <div className='flex justify-center items-center h-full my-5'>No search results found 😿 </div>
+                combinedData.length > 0 ? (
+                  <div id="scrollableDiv" className="h-[calc(100vh-200px)] overflow-y-auto">
+                    <InfiniteScroll
+                      dataLength={displayedData.length}
+                      next={fetchMoreData}
+                      hasMore={hasMore}
+                      loader={<LoadingSpinner />}
+                      scrollableTarget="scrollableDiv"
+                      className="flex flex-col gap-12 p-2"
+                      scrollThreshold={0.8}
+                    >
+                      {displayedData.map((recommendedAd) => (
+                        <div
+                          key={recommendedAd.id}
+                          onClick={() => setSelectedAd(recommendedAd)}
+                          className={`cursor-pointer ${selectedAd?.id === recommendedAd.id ? 'ring-2 ring-green-600 rounded-lg' : ''}`}
+                        >
+                          <RecommendedAdItem
+                            recommendedAd={recommendedAd}
+                            adsIndexId={adsIndexId}
+                            score={useEmbeddings ? embeddingScores[recommendedAd?.id || ''] : recommendedAd.clips?.[0]?.score}
+                          />
+                        </div>
+                      ))}
+                    </InfiniteScroll>
+                  </div>
+                ) : (
+                  !isLoading && <div className='flex justify-center items-center h-full my-5'>No search results found 😿 </div>
+                )
               )}
             </div>
           </Suspense>
