@@ -102,6 +102,8 @@ export default function Page() {
             setProfiles={setProfiles}
             selectedIndexId={selectedIndexId}
             setSelectedIndexId={setSelectedIndexId}
+            hasProcessedAds={hasProcessedAds}
+            setHasProcessedAds={setHasProcessedAds}
             useEmbeddings={useEmbeddings}
           />
         )}
