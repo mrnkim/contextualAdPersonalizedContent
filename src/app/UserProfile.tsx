@@ -10,6 +10,7 @@ import { usePlayer } from '@/contexts/PlayerContext';
 interface UserProfileProps extends Profile {
   indexId: string;
   onUpdateProfile: (updatedProfile: Partial<Profile>) => void;
+  useEmbeddings: boolean;
 }
 
 interface VideoItem {
@@ -32,7 +33,8 @@ function UserProfile({
   emotionAffinities: initialEmotionAffinities = [],
   userId,
   indexId,
-  onUpdateProfile
+  onUpdateProfile,
+  useEmbeddings
 }: UserProfileProps) {
   const [newInterest, setNewInterest] = React.useState('');
   const [isSearchClicked, setIsSearchClicked] = React.useState(false);
@@ -597,7 +599,7 @@ function UserProfile({
             }}
           >
             <div className="flex items-center">
-              Search
+              {useEmbeddings ? "Search by Embeddings" : "Search"}
             </div>
           </Button>
         </div>

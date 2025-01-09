@@ -102,6 +102,7 @@ export default function Page() {
             setProfiles={setProfiles}
             selectedIndexId={selectedIndexId}
             setSelectedIndexId={setSelectedIndexId}
+            useEmbeddings={useEmbeddings}
           />
         )}
       </main>

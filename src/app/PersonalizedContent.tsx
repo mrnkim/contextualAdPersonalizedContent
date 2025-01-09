@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useCallback } from 'react'
 import IndexVideos from './IndexVideos';
 import UserProfiles from './UserProfiles';
 import IndexesDropDown from './IndexesDropDown';
@@ -10,12 +10,14 @@ const PersonalizedContent = ({
   profiles,
   setProfiles,
   selectedIndexId,
-  setSelectedIndexId
+  setSelectedIndexId,
+  useEmbeddings
 }: {
   profiles: Profile[];
   setProfiles: (profiles: Profile[]) => void;
   selectedIndexId: string;
   setSelectedIndexId: (id: string) => void;
+  useEmbeddings: boolean;
 }) => {
   const queryClient = useQueryClient();
 
@@ -68,6 +70,7 @@ const PersonalizedContent = ({
       indexId={selectedIndexId}
       profiles={profiles}
       setProfiles={setProfiles}
+      useEmbeddings={useEmbeddings}
     /></>}
 
   </div>

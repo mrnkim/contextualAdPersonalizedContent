@@ -5,11 +5,13 @@ import { Profile } from '@/app/types';
 function UserProfiles({
   indexId,
   profiles,
-  setProfiles
+  setProfiles,
+  useEmbeddings
 }: {
   indexId: string;
   profiles: Profile[];
   setProfiles: (profiles: Profile[]) => void;
+  useEmbeddings: boolean;
 }) {
 
   return (
@@ -19,6 +21,7 @@ function UserProfiles({
           key={profile.userId}
           {...profile}
           indexId={indexId}
+          useEmbeddings={useEmbeddings}
           onUpdateProfile={(updatedProfile) => {
             const newProfiles = [...profiles];
             newProfiles[index] = {
