@@ -14,6 +14,7 @@ const IndexesDropDown: React.FC<IndexesDropDownProps> = ({
   isLoading,
   selectedIndexId
 }) => {
+  console.log("🚀 > selectedIndexId=", selectedIndexId)
   const [loadedIndexes, setLoadedIndexes] = React.useState<IndexData[]>([]);
 
   React.useEffect(() => {
@@ -28,13 +29,12 @@ const IndexesDropDown: React.FC<IndexesDropDownProps> = ({
   }, [indexesData?.pages]);
 
   React.useEffect(() => {
-    if (selectedIndexId && loadedIndexes.length > 0) {
-      const isValidIndex = loadedIndexes.some(index => index._id === selectedIndexId);
-      if (!isValidIndex) {
-        handleIndexChange(loadedIndexes[0]?._id || '');
-      }
+    if (!loadedIndexes.length || selectedIndexId) {
+      return;
     }
-  }, [selectedIndexId, loadedIndexes, handleIndexChange]);
+
+    handleIndexChange(loadedIndexes[0]?._id || '');
+  }, [loadedIndexes, selectedIndexId, handleIndexChange]);
 
   const handleChange = (event: SelectChangeEvent<string>) => {
     const newIndexId = event.target.value;

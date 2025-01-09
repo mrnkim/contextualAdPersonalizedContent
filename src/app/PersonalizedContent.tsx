@@ -8,13 +8,15 @@ import { IndexesData, Profile } from '@/app/types'
 
 const PersonalizedContent = ({
   profiles,
-  setProfiles
+  setProfiles,
+  selectedIndexId,
+  setSelectedIndexId
 }: {
   profiles: Profile[];
   setProfiles: (profiles: Profile[]) => void;
+  selectedIndexId: string;
+  setSelectedIndexId: (id: string) => void;
 }) => {
-  const [indexId, setIndexId] = useState<string | null>(null);
-
   const queryClient = useQueryClient();
 
   const {
@@ -24,7 +26,7 @@ const PersonalizedContent = ({
 		isFetchingNextPage,
 		isLoading: isIndexesLoading,
 	} = useInfiniteQuery({
-		queryKey: ['indexes', indexId],
+		queryKey: ['indexes', selectedIndexId],
 		queryFn: ({ pageParam }) => fetchIndexes(pageParam),
 		initialPageParam: 1,
 		getNextPageParam: (lastPage) => {
@@ -36,18 +38,12 @@ const PersonalizedContent = ({
 	});
 
   const handleIndexChange = useCallback((newIndexId: string) => {
-		setIndexId(newIndexId);
+		setSelectedIndexId(newIndexId);
 		queryClient.invalidateQueries({ queryKey: ['videos'] });
 			queryClient.invalidateQueries({ queryKey: ['search'] });
 			queryClient.invalidateQueries({ queryKey: ['chapters'] });
 			queryClient.invalidateQueries({ queryKey: ['videoDetails'] });
-	}, [queryClient]);
-
-  useEffect(() => {
-    if (!indexId) {
-      handleIndexChange(process.env.NEXT_PUBLIC_ADS_INDEX_ID || '');
-    }
-  }, [handleIndexChange, indexId]);
+	}, [queryClient, setSelectedIndexId]);
 
   return (
     <div className="w-full max-w-7xl mx-auto">
@@ -60,16 +56,16 @@ const PersonalizedContent = ({
       hasNextPage={hasNextPage}
       isFetchingNextPage={isFetchingNextPage}
       isLoading={isIndexesLoading}
-      selectedIndexId={indexId}
+      selectedIndexId={selectedIndexId}
     />
     </div>
 
-   { indexId && <><IndexVideos
-      indexId={indexId}
-      isIndexIdLoading={!indexId}
+   { selectedIndexId && <><IndexVideos
+      indexId={selectedIndexId}
+      isIndexIdLoading={!selectedIndexId}
     />
     <UserProfiles
-      indexId={indexId}
+      indexId={selectedIndexId}
       profiles={profiles}
       setProfiles={setProfiles}
     /></>}

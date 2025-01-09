@@ -10,6 +10,7 @@ const adsIndexId = process.env.NEXT_PUBLIC_ADS_INDEX_ID;
 
 export default function Page() {
   const [selectedApp, setSelectedApp] = useState<'contextual' | 'personalized'>('contextual');
+  const [selectedIndexId, setSelectedIndexId] = useState<string>(process.env.NEXT_PUBLIC_ADS_INDEX_ID || '');
   const [hasProcessedAds, setHasProcessedAds] = useState(false);
   console.log("🚀 > Page > hasProcessedAds=", hasProcessedAds)
   const [hasProcessedFootage, setHasProcessedFootage] = useState(false);
@@ -96,7 +97,12 @@ export default function Page() {
             useEmbeddings={useEmbeddings}
           />
         ) : (
-          <PersonalizedContent profiles={profiles} setProfiles={setProfiles} />
+          <PersonalizedContent
+            profiles={profiles}
+            setProfiles={setProfiles}
+            selectedIndexId={selectedIndexId}
+            setSelectedIndexId={setSelectedIndexId}
+          />
         )}
       </main>
     </PlayerProvider>
