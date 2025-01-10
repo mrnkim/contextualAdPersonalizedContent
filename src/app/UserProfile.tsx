@@ -637,7 +637,6 @@ function UserProfile({
           <div className="w-full">
             <h3 className="font-semibold mb-2 mt-8">
               Search Results for {demographics.name}
-              {useEmbeddings ? " (Using Embeddings)" : " (Using profile Keywords)"}
             </h3>
             {isLoading ? (
               <div className="flex justify-center">
