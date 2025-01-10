@@ -11,6 +11,7 @@ interface UserProfileProps extends Profile {
   indexId: string;
   onUpdateProfile: (updatedProfile: Partial<Profile>) => void;
   useEmbeddings: boolean;
+  processingAdsInPersonalizedContent: boolean;
 }
 
 interface VideoItem {
@@ -34,7 +35,8 @@ function UserProfile({
   userId,
   indexId,
   onUpdateProfile,
-  useEmbeddings
+  useEmbeddings,
+  processingAdsInPersonalizedContent
 }: UserProfileProps) {
   const [newInterest, setNewInterest] = React.useState('');
   const [isSearchClicked, setIsSearchClicked] = React.useState(false);
@@ -133,27 +135,48 @@ function UserProfile({
 
   const searchQueries = useQueries({
     queries: interests.map((interest) => ({
-      queryKey: ["search", interest, userId, isSearchClicked, indexId],
+      queryKey: ["search", interest, userId, isSearchClicked, indexId, useEmbeddings],
       queryFn: async () => {
         if (!isSearchClicked) return null;
         try {
           const results = [];
-          let currentPageToken = null;
 
-          const initialResponse = await textToVideoSearch(indexId, interest, [
-            "visual",
-            "audio",
-          ], 10);
+          if (useEmbeddings) {
+            // Embedding-based search using the new API
+            const response = await fetch('/api/keywordEmbeddingSearch', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                searchTerm: interest,
+              })
+            });
+            const data = await response.json();
 
-          results.push(...(initialResponse.data || []));
-          currentPageToken = initialResponse.page_info?.next_page_token;
+            // Transform embedding search results to match expected format
+            results.push(...data.map((item: { metadata: { tl_video_id: string }, score: number }) => ({
+              id: item.metadata.tl_video_id,
+              clips: [{
+                score: item.score
+              }]
+            })));
+          } else {
+            // Original keyword-based search
+            const initialResponse = await textToVideoSearch(indexId, interest, [
+              "visual",
+              "audio",
+            ], 10);
 
-          while (currentPageToken) {
-            const nextPage = await fetchSearchPage(currentPageToken);
-            results.push(...(nextPage.data || []));
-            currentPageToken = nextPage.page_info?.next_page_token;
+            results.push(...(initialResponse.data || []));
+            let currentPageToken = initialResponse.page_info?.next_page_token;
+
+            while (currentPageToken) {
+              const nextPage = await fetchSearchPage(currentPageToken);
+              results.push(...(nextPage.data || []));
+              currentPageToken = nextPage.page_info?.next_page_token;
+            }
           }
-
           return { data: results, searchTerm: interest };
         } catch (error) {
           console.error(`Search error for "${interest}":`, error);
@@ -174,20 +197,21 @@ function UserProfile({
     const results = new Map();
 
     searchQueries
-      .filter(query => query.data?.data && query.isSuccess)
-      .forEach(query => {
-        if (interests.includes(query.data!.searchTerm)) {
-          query.data!.data.forEach((item: VideoItem) => {
-            if (!results.has(item.id)) {
-              results.set(item.id, item);
-            }
-          });
-        }
-      });
+    .filter(query => query.data?.data && query.isSuccess)
+    .forEach(query => {
+      if (interests.includes(query.data!.searchTerm)) {
+        query.data!.data.forEach((item: VideoItem) => {
+          if (!results.has(item.id)) {
+            results.set(item.id, item);
+          }
+        });
+      }
+    });
 
     return Array.from(results.values());
   }, [searchQueries, interests]);
 
+  console.log("🚀 > allSearchResults > allSearchResults=", allSearchResults)
   const validCurrentVideoIndex = currentVideoIndex < allSearchResults.length ? currentVideoIndex : 0;
 
   return (
@@ -597,6 +621,7 @@ function UserProfile({
             onClick={() => {
               setIsSearchClicked(true);
             }}
+            disabled={useEmbeddings && processingAdsInPersonalizedContent}
           >
             <div className="flex items-center">
               {useEmbeddings ? "Search by Embeddings" : "Search"}

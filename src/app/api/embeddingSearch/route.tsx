@@ -39,7 +39,6 @@ export async function POST(req: Request) {
     //     vector: new Array(1024).fill(0)
     //   })
     ]);
-    console.log("🚀 > POST > originalVideoEmbeddings=", originalVideoEmbeddings)
 
     // Search for similar ads for each scope
     const similarResults = await Promise.all(
@@ -63,7 +62,6 @@ export async function POST(req: Request) {
         });
       })
     );
-    console.log("🚀 > POST > similarResults=", similarResults)
 
     // Merge and organize results
     const allResults = [
@@ -77,7 +75,6 @@ export async function POST(req: Request) {
     //     resultType: 'video'
     //   }))
     ];
-    console.log("🚀 > POST > allResults=", allResults)
 
     // Remove duplicates (keep only the highest score for each tlVideoId)
     const uniqueResults = Object.values(
@@ -91,7 +88,6 @@ export async function POST(req: Request) {
         return acc;
       }, {})
     );
-    console.log("🚀 > POST > uniqueResults=", uniqueResults)
 
     // Sort by score
     const sortedResults = uniqueResults.sort((a, b) => (b.score ?? 0) - (a.score ?? 0));

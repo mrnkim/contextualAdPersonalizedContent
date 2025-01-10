@@ -6,12 +6,14 @@ function UserProfiles({
   indexId,
   profiles,
   setProfiles,
-  useEmbeddings
+  useEmbeddings,
+  processingAdsInPersonalizedContent
 }: {
   indexId: string;
   profiles: Profile[];
   setProfiles: (profiles: Profile[]) => void;
   useEmbeddings: boolean;
+  processingAdsInPersonalizedContent: boolean;
 }) {
 
   return (
@@ -22,6 +24,7 @@ function UserProfiles({
           {...profile}
           indexId={indexId}
           useEmbeddings={useEmbeddings}
+          processingAdsInPersonalizedContent={processingAdsInPersonalizedContent}
           onUpdateProfile={(updatedProfile) => {
             const newProfiles = [...profiles];
             newProfiles[index] = {

@@ -27,6 +27,8 @@ const PersonalizedContent = ({
   setHasProcessedAds: (hasProcessedAds: boolean) => void;
   useEmbeddings: boolean;
 }) => {
+
+
   const [processingAdsInPersonalizedContent, setProcessingAdsInPersonazliedContent] = useState(false);
   const queryClient = useQueryClient();
 
@@ -38,7 +40,10 @@ const PersonalizedContent = ({
 		isLoading: isIndexesLoading,
 	} = useInfiniteQuery({
 		queryKey: ['indexes', selectedIndexId],
-		queryFn: ({ pageParam }) => fetchIndexes(pageParam),
+		queryFn: ({ pageParam }) => {
+			console.log("인덱스 데이터 fetch 시도:", { pageParam });
+			return fetchIndexes(pageParam);
+		},
 		initialPageParam: 1,
 		getNextPageParam: (lastPage) => {
 			if (lastPage.page_info.page < lastPage.page_info.total_page) {
@@ -47,6 +52,13 @@ const PersonalizedContent = ({
 			return undefined;
 		},
 	});
+
+  console.log("PersonalizedContent 렌더링:", {
+    selectedIndexId,
+    hasProcessedAds,
+    useEmbeddings,
+    isIndexesLoading
+  });
 
   const handleIndexChange = useCallback((newIndexId: string) => {
 		setSelectedIndexId(newIndexId);
@@ -57,19 +69,19 @@ const PersonalizedContent = ({
 	}, [queryClient, setSelectedIndexId]);
 
   const processAdVideos = useCallback(async () => {
-    if (!adsIndexId) return;
+    if (!selectedIndexId) return;
     setProcessingAdsInPersonazliedContent(true);
     try {
-      const firstPageData = await fetchVideos(1, adsIndexId);
+      const firstPageData = await fetchVideos(1, selectedIndexId);
       const totalPages = firstPageData.page_info?.total_page || 1;
 
       for (let currentPage = 1; currentPage <= totalPages; currentPage++) {
-        const pageData = await fetchVideos(currentPage, adsIndexId);
+        const pageData = await fetchVideos(currentPage, selectedIndexId);
         if (pageData.data) {
           for (const video of pageData.data) {
             const vectorExists = await checkVectorExists(video._id);
             if (!vectorExists) {
-              await getAndStoreEmbeddings(adsIndexId, video._id, "ad");
+              await getAndStoreEmbeddings(selectedIndexId, video._id, "ad");
             }
           }
         }
@@ -82,20 +94,31 @@ const PersonalizedContent = ({
     } finally {
       setProcessingAdsInPersonazliedContent(false);
     }
-  }, [adsIndexId, setHasProcessedAds]);
+  }, [selectedIndexId, setHasProcessedAds]);
 
   useEffect(() => {
     console.log('Ads conditions:', {
-      indexId: !!adsIndexId,
+      indexId: !!selectedIndexId,
       hasProcessedAds,
       useEmbeddings,
-      willProcess: adsIndexId && !hasProcessedAds && useEmbeddings
+      willProcess: selectedIndexId && !hasProcessedAds && useEmbeddings
     });
 
-    if (adsIndexId && !hasProcessedAds && useEmbeddings) {
+    if (selectedIndexId && !hasProcessedAds && useEmbeddings) {
       processAdVideos();
     }
-  }, [adsIndexId, hasProcessedAds, processAdVideos, useEmbeddings]);
+  }, [selectedIndexId, hasProcessedAds, processAdVideos, useEmbeddings]);
+
+  useEffect(() => {
+    console.log("초기 인덱스 설정 useEffect:", {
+      currentSelectedIndexId: selectedIndexId,
+      adsIndexId,
+      willSet: !selectedIndexId && adsIndexId
+    });
+    if (!selectedIndexId && adsIndexId) {
+      setSelectedIndexId(adsIndexId);
+    }
+  }, []);
 
   return (
     <div className="w-full max-w-7xl mx-auto">
@@ -127,6 +150,7 @@ const PersonalizedContent = ({
       profiles={profiles}
       setProfiles={setProfiles}
       useEmbeddings={useEmbeddings}
+      processingAdsInPersonalizedContent={processingAdsInPersonalizedContent}
     /></>}
 
   </div>
