@@ -65,6 +65,10 @@ function UserProfile({
     setIsSearchClicked(false);
   }, [interests, demographics, emotionAffinities, indexId]);
 
+  React.useEffect(() => {
+    setIsSearchClicked(false);
+  }, [useEmbeddings]);
+
   const handleInterestSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && newInterest.trim()) {
       setIsSearchClicked(false);
@@ -631,7 +635,10 @@ function UserProfile({
 
         {isSearchClicked && (
           <div className="w-full">
-            <h3 className="font-semibold mb-2 mt-8">Search Results for {demographics.name}</h3>
+            <h3 className="font-semibold mb-2 mt-8">
+              Search Results for {demographics.name}
+              {useEmbeddings ? " (Using Embeddings)" : " (Using profile Keywords)"}
+            </h3>
             {isLoading ? (
               <div className="flex justify-center">
                 <LoadingSpinner />
