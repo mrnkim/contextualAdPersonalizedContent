@@ -32,6 +32,8 @@ const RecommendedAd: React.FC<RecommendedAdProps> = ({ recommendedAd, indexId, v
 
   const { currentPlayerId, setCurrentPlayerId } = usePlayer();
 
+  console.log('recommendedAd structure:', JSON.stringify(recommendedAd, null, 2));
+
   return (
     <div className="w-full">
       <ErrorBoundary FallbackComponent={({ error }) => <ErrorFallback error={error} />}>
@@ -96,7 +98,7 @@ const RecommendedAd: React.FC<RecommendedAdProps> = ({ recommendedAd, indexId, v
           </div>
           <ErrorBoundary FallbackComponent={({ error }) => <ErrorFallback error={error} />}>
             <AdCopy
-              videoDetails={videoDetails || {}}
+              videoDetails={videoDetails || { metadata: { filename: '', video_title: '' } }}
               isDialogOpen={isDialogOpen}
               setIsDialogOpen={setIsDialogOpen}
               setIsGenerating={setIsGenerating}

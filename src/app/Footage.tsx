@@ -149,7 +149,7 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 		try {
 			const vectorExists = await checkVectorExists(footageVideoId);
 			if (!vectorExists) {
-				await getAndStoreEmbeddings(indexId, footageVideoId, "footage");
+				await getAndStoreEmbeddings(indexId, footageVideoId);
 			}
 			if (typeof setHasProcessedFootage === 'function') {
 				setHasProcessedFootage(true);

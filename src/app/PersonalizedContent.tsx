@@ -62,11 +62,12 @@ const PersonalizedContent = ({
 
   const handleIndexChange = useCallback((newIndexId: string) => {
 		setSelectedIndexId(newIndexId);
+		setHasProcessedAds(false);
 		queryClient.invalidateQueries({ queryKey: ['videos'] });
-			queryClient.invalidateQueries({ queryKey: ['search'] });
-			queryClient.invalidateQueries({ queryKey: ['chapters'] });
-			queryClient.invalidateQueries({ queryKey: ['videoDetails'] });
-	}, [queryClient, setSelectedIndexId]);
+		queryClient.invalidateQueries({ queryKey: ['search'] });
+		queryClient.invalidateQueries({ queryKey: ['chapters'] });
+		queryClient.invalidateQueries({ queryKey: ['videoDetails'] });
+	}, [queryClient, setSelectedIndexId, setHasProcessedAds]);
 
   const processAdVideos = useCallback(async () => {
     if (!selectedIndexId) return;
@@ -81,7 +82,7 @@ const PersonalizedContent = ({
           for (const video of pageData.data) {
             const vectorExists = await checkVectorExists(video._id);
             if (!vectorExists) {
-              await getAndStoreEmbeddings(selectedIndexId, video._id, "ad");
+              await getAndStoreEmbeddings(selectedIndexId, video._id);
             }
           }
         }

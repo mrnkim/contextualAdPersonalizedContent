@@ -95,7 +95,19 @@ export interface TaskProps {
 
 export interface RecommendedAdProps {
   recommendedAd: {
-    id?: string;
+    id: string;
+    indexId: string;
+    videoDetails: {
+      hls: {
+        metadata: {
+          filename: string;
+          video_title: string;
+        }
+      }
+    };
+    clips: Array<{
+      score: number;
+    }>;
   };
   indexId: string;
   videoDetails?: VideoDetails;

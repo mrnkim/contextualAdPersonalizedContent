@@ -9,7 +9,7 @@ const TWELVELABS_API_BASE_URL = process.env.TWELVELABS_API_BASE_URL;
 
 export async function POST(req: Request) {
   try {
-    const { searchTerm } = await req.json();
+    const { searchTerm, indexId } = await req.json();
 
     if (!PINECONE_API_KEY || !PINECONE_INDEX_NAME) {
       throw new Error('Required environment variables are not defined');
@@ -51,7 +51,8 @@ export async function POST(req: Request) {
     const searchResults = await index.query({
       vector: searchEmbedding,
       filter: {
-        video_type: 'ad',
+        // video_type: 'ad',
+        tl_index_id: indexId,
         scope: 'clip'
       },
       topK: 10,

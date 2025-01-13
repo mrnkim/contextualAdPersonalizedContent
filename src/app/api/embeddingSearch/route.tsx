@@ -6,7 +6,7 @@ const PINECONE_INDEX_NAME = process.env.PINECONE_INDEX;
 
 export async function POST(req: Request) {
   try {
-    const { videoId } = await req.json();
+    const { videoId, indexId } = await req.json();
 
     if (!PINECONE_API_KEY || !PINECONE_INDEX_NAME) {
         throw new Error('PINECONE_API_KEY or PINECONE_INDEX_NAME is not defined');
@@ -48,18 +48,23 @@ export async function POST(req: Request) {
         const match = original.matches[0];
         if (!match) return [];
 
+        console.log("Original match metadata:", match.metadata);
+
         const scope = match.metadata?.scope;
         const vector = match.values;
 
-        return index.query({
+        const queryResult = await index.query({
           vector,
           filter: {
-            video_type: 'ad',
+            tl_index_id: indexId,
             scope: scope
           },
           topK: 5,
           includeMetadata: true,
         });
+
+        console.log("Query result:", queryResult);
+        return queryResult;
       })
     );
 

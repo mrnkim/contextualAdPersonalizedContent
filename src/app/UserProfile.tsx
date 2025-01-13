@@ -154,6 +154,7 @@ function UserProfile({
               },
               body: JSON.stringify({
                 searchTerm: interest,
+                indexId: indexId
               })
             });
             const data = await response.json();
