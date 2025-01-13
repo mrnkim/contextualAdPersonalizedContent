@@ -215,7 +215,6 @@ function UserProfile({
     return Array.from(results.values());
   }, [searchQueries, interests]);
 
-  console.log("🚀 > allSearchResults > allSearchResults=", allSearchResults)
   const validCurrentVideoIndex = currentVideoIndex < allSearchResults.length ? currentVideoIndex : 0;
 
   return (

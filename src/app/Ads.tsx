@@ -69,13 +69,6 @@ function Ads({ indexId, isIndexIdLoading, selectedFile, isRecommendClicked, setI
   }, [indexId, setHasProcessedAds]);
 
   useEffect(() => {
-    console.log('Ads conditions:', {
-      indexId: !!indexId,
-      hasProcessedAds,
-      useEmbeddings,
-      willProcess: indexId && !hasProcessedAds && useEmbeddings
-    });
-
     if (indexId && !hasProcessedAds && useEmbeddings) {
       processAdVideos();
     }

@@ -1,9 +1,7 @@
 import React from 'react';
 import { IndexData, IndexesDropDownProps } from '@/app/types';
-import { MenuItem, Select, Skeleton, SelectChangeEvent } from '@mui/material'
+import { MenuItem, Select, SelectChangeEvent } from '@mui/material'
 import clsx from 'clsx';
-import LoadingSpinner from '@/app/LoadingSpinner';
-
 
 const IndexesDropDown: React.FC<IndexesDropDownProps> = ({
   handleIndexChange,
@@ -14,61 +12,107 @@ const IndexesDropDown: React.FC<IndexesDropDownProps> = ({
   isLoading,
   selectedIndexId
 }) => {
-  console.log("🚀 > selectedIndexId=", selectedIndexId)
   const [loadedIndexes, setLoadedIndexes] = React.useState<IndexData[]>([]);
+  const [localSelectedId, setLocalSelectedId] = React.useState<string>('');
+
+  // 초기 selectedIndexId 설정
+  React.useEffect(() => {
+    if (selectedIndexId) {
+      setLocalSelectedId(selectedIndexId);
+      console.log('초기 selectedIndexId 설정:', selectedIndexId);
+    }
+  }, []); // 컴포넌트 마운트 시에만 실행
 
   React.useEffect(() => {
+    console.log('indexesData 변경:', {
+      pagesCount: indexesData?.pages?.length,
+      totalIndexes: loadedIndexes.length,
+      selectedId: selectedIndexId,
+      localId: localSelectedId
+    });
+
     if (indexesData?.pages) {
       const newIndexes = indexesData.pages.flatMap(page => page.data);
       setLoadedIndexes(prev => {
         const combined = [...prev, ...newIndexes];
-        // Remove duplicates based on _id
-        return Array.from(new Map(combined.map(item => [item._id, item])).values());
+        const uniqueIndexes = Array.from(
+          combined.reduce((map, item) => {
+            if (!map.has(item._id)) map.set(item._id, item);
+            return map;
+          }, new Map()).values()
+        );
+
+        // 선택된 ID가 새로운 데이터에 있는지 확인
+        const hasSelectedId = uniqueIndexes.some(index => index._id === selectedIndexId);
+        console.log('인덱스 데이터 업데이트:', {
+          hasSelectedId,
+          selectedId: selectedIndexId,
+          totalIndexes: uniqueIndexes.length
+        });
+
+        // 선택된 ID가 없고 다음 페이지가 있다면 다음 페이지 로드
+        if (!hasSelectedId && hasNextPage && !isFetchingNextPage) {
+          console.log('선택된 ID를 찾기 위해 다음 페이지 로드');
+          fetchNextPage();
+        }
+
+        // 선택된 ID가 있으면 localSelectedId 업데이트
+        if (hasSelectedId && selectedIndexId) {
+          setLocalSelectedId(selectedIndexId);
+        } else if (!localSelectedId && uniqueIndexes.length > 0) {
+          // 아직 선택된 ID가 없고 첫 로드라면 첫 번째 인덱스 선택
+          setLocalSelectedId(uniqueIndexes[0]._id);
+        }
+
+        return uniqueIndexes;
       });
     }
-  }, [indexesData?.pages]);
+  }, [indexesData?.pages, selectedIndexId, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  React.useEffect(() => {
-    if (!loadedIndexes.length || selectedIndexId) {
-      return;
-    }
+  // 데이터가 로드되기 전에는 렌더링하지 않음
+  if (!loadedIndexes.length) {
+    console.log('인덱스 로딩 중...');
+    return null;
+  }
 
-    handleIndexChange(loadedIndexes[0]?._id || '');
-  }, [loadedIndexes, selectedIndexId, handleIndexChange]);
+  // 현재 선택된 ID가 유효한지 확인
+  const isValidId = loadedIndexes.some(index => index._id === localSelectedId);
+  const effectiveValue = isValidId ? localSelectedId : (loadedIndexes[0]?._id || '');
 
   const handleChange = (event: SelectChangeEvent<string>) => {
     const newIndexId = event.target.value;
+    console.log('드롭다운 선택 변경:', {
+      newIndexId,
+      previousId: localSelectedId,
+      matchingIndex: loadedIndexes.find(index => index._id === newIndexId)?.index_name
+    });
+    setLocalSelectedId(newIndexId);
     handleIndexChange(newIndexId);
   };
 
   const handleScroll = (event: React.UIEvent<HTMLUListElement>) => {
     const { scrollTop, clientHeight, scrollHeight } = event.currentTarget;
-    if (scrollHeight - scrollTop <= clientHeight * 1.5) {
+
+    if (scrollHeight - scrollTop <= clientHeight * 1.2) {
       if (hasNextPage && !isFetchingNextPage) {
         fetchNextPage();
       }
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-full my-5">
-        <LoadingSpinner />
-      </div>
-    );
-  }
-
-  const ITEM_HEIGHT = 48;
-  const MENU_MAX_HEIGHT = 5 * ITEM_HEIGHT;
-
   return (
     <div className="mx-auto flex justify-center">
       <Select
-        value={selectedIndexId || ""}
+        value={effectiveValue}
         onChange={handleChange}
         className={clsx('h-9 w-1/3', 'bg-white', 'pl-[1px]', 'truncate text-ellipsis')}
         renderValue={(value) => {
           const selectedIndex = loadedIndexes.find(index => index._id === value);
+          console.log('Select renderValue:', {
+            value,
+            indexName: selectedIndex?.index_name,
+            totalOptions: loadedIndexes.length
+          });
           return (
             <div className="truncate">
               {selectedIndex?.index_name || "Select an index"}
@@ -77,77 +121,29 @@ const IndexesDropDown: React.FC<IndexesDropDownProps> = ({
         }}
         MenuProps={{
           PaperProps: {
-            sx: {
-              maxHeight: MENU_MAX_HEIGHT,
-              width: 150
-            }
-          },
-          MenuListProps: {
-            sx: {
-              padding: 0,
-              maxHeight: MENU_MAX_HEIGHT,
-              overflowY: 'auto',
-              overflowX: 'hidden'
+            style: {
+              maxHeight: 48 * 4.5,
             },
-            onScroll: handleScroll
-          }
-        }}
-        sx={{
-          '& .MuiOutlinedInput-notchedOutline': {
-            borderColor: '#6BDE11',
-            borderWidth: '1px',
-            borderRadius: '0',
+            onScroll: handleScroll,
           },
-          '&:hover .MuiOutlinedInput-notchedOutline': {
-            borderColor: '#6BDE11',
-            borderWidth: '1px',
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'left',
           },
-          '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-            borderColor: '#6BDE11',
-            borderWidth: '1px',
+          transformOrigin: {
+            vertical: 'top',
+            horizontal: 'left',
           },
-          '& .MuiSelect-select': {
-            padding: '8px 14px',
-            borderRadius: '0',
-          },
-          '& .MuiSelect-icon': {
-            right: '7px',
-          },
-          '& .MuiOutlinedInput-input': {
-            padding: '8px 14px',
-            borderRadius: '0',
-          },
-          '& .MuiInputBase-root': {
-            borderRadius: '0',
-          },
-          '& .MuiSelect-outlined': {
-            borderRadius: '0',
-          },
+          variant: "menu"
         }}
       >
-        {loadedIndexes.map((index: IndexData) => (
-          <MenuItem
-            key={index._id}
-            value={index._id}
-            sx={{
-              paddingX: 1.5,
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              maxWidth: '100%',
-              display: 'block',
-              width: '100%'
-            }}
-          >
-            {index.index_name}
-          </MenuItem>
-        ))}
-        {isFetchingNextPage && (
-          <MenuItem disabled sx={{ alignItems: 'flex-start', flexDirection: 'column', paddingX: 1.5 }}>
-            <Skeleton variant="text" width={60} />
-            <Skeleton variant="text" width={180} sx={{ mt: 0.5 }} />
-          </MenuItem>
-        )}
+        {loadedIndexes.map((index) => {
+          return (
+            <MenuItem key={index._id} value={index._id}>
+              {index.index_name}
+            </MenuItem>
+          );
+        })}
       </Select>
     </div>
   );
