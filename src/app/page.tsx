@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Button from './Button';
 import ContextualAds from './ContextualAds';
 import PersonalizedContent from './PersonalizedContent';
 import { PlayerProvider } from '@/contexts/PlayerContext';
+import Joyride, { Step } from 'react-joyride';
 
 const adsIndexId = process.env.NEXT_PUBLIC_ADS_INDEX_ID;
 
@@ -49,26 +50,80 @@ export default function Page() {
         userId: 'user3'
       }
     ]);
+  const [runTour, setRunTour] = useState(true);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  const steps: Step[] = [
+    {
+      target: '.contextual-ads-btn',
+      content: 'Click here to explore contextual ad matching based on video content analysis',
+      placement: 'bottom',
+    },
+    {
+      target: '.personalized-content-btn',
+      content: 'Switch to personalized content recommendations based on user profiles and preferences',
+      placement: 'bottom',
+    },
+    {
+      target: '.embeddings-toggle',
+      content: 'Toggle this button to enable embedding-based search for more precise results across both apps',
+      placement: 'bottom',
+    },
+  ];
 
   return (
     <PlayerProvider>
+      {isMounted && (
+        <Joyride
+          steps={steps}
+          run={runTour}
+          continuous={true}
+          showSkipButton={true}
+          styles={{
+            options: {
+              primaryColor: '#9AED59',
+            },
+            buttonNext: {
+              color: '#444444',
+              fontWeight: 'normal'
+            },
+            buttonBack: {
+              color: '#444444',
+              fontWeight: 'normal'
+            }
+          }}
+          callback={(data) => {
+            const { status } = data;
+            if (status === 'finished' || status === 'skipped') {
+              setRunTour(false);
+            }
+          }}
+        />
+      )}
+
       <main className="flex flex-col min-h-screen p-12">
         <div className="flex justify-between max-w-7xl mx-auto w-full mb-8">
           <div className="flex gap-4">
             <Button
               onClick={() => setSelectedApp('contextual')}
               appearance={selectedApp === 'contextual' ? 'default' : 'subtle'}
+              className="contextual-ads-btn"
             >
               Contextual Ads
             </Button>
             <Button
               onClick={() => setSelectedApp('personalized')}
               appearance={selectedApp === 'personalized' ? 'default' : 'subtle'}
+              className="personalized-content-btn"
             >
               Personalized Content
             </Button>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 embeddings-toggle">
             <span className="text-sm">Use Embeddings</span>
             <label className="relative inline-flex items-center cursor-pointer">
               <input
