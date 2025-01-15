@@ -6,8 +6,25 @@ import ContextualAds from './ContextualAds';
 import PersonalizedContent from './PersonalizedContent';
 import { PlayerProvider } from '@/contexts/PlayerContext';
 import Joyride, { Step } from 'react-joyride';
+import { ButtonProps } from './types';
+import clsx from 'clsx';
 
 const adsIndexId = process.env.NEXT_PUBLIC_ADS_INDEX_ID;
+
+const AppSelectionButton = ({ className, selected, ...props }: ButtonProps & { selected?: boolean }) => (
+  <Button
+    className={clsx(
+      'transition-colors duration-200',
+      'border border-grey-200',
+      selected
+        ? 'bg-gray-200 text-gray-900 font-medium !important'
+        : 'bg-white text-gray-600 hover:bg-gray-100 !important',
+      className
+    )}
+    appearance="default"
+    {...props}
+  />
+);
 
 export default function Page() {
   const [selectedApp, setSelectedApp] = useState<'contextual' | 'personalized'>('contextual');
@@ -107,21 +124,21 @@ export default function Page() {
 
       <main className="flex flex-col min-h-screen p-12">
         <div className="flex justify-between max-w-7xl mx-auto w-full mb-8">
-          <div className="flex gap-4">
-            <Button
+          <div className="flex">
+            <AppSelectionButton
               onClick={() => setSelectedApp('contextual')}
-              appearance={selectedApp === 'contextual' ? 'default' : 'subtle'}
-              className="contextual-ads-btn"
+              selected={selectedApp === 'contextual'}
+              className="contextual-ads-btn rounded-r-none border-r-0"
             >
               Contextual Ads
-            </Button>
-            <Button
+            </AppSelectionButton>
+            <AppSelectionButton
               onClick={() => setSelectedApp('personalized')}
-              appearance={selectedApp === 'personalized' ? 'default' : 'subtle'}
-              className="personalized-content-btn"
+              selected={selectedApp === 'personalized'}
+              className="personalized-content-btn rounded-l-none"
             >
               Personalized Content
-            </Button>
+            </AppSelectionButton>
           </div>
           <div className="flex items-center gap-2 embeddings-toggle">
             <span className="text-sm">Use Embeddings</span>
