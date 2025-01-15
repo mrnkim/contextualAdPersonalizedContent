@@ -220,7 +220,7 @@ function UserProfile({
 
   return (
     <div className="flex flex-col items-center w-[360px]">
-      <div className="border rounded-lg p-4 w-full space-y-4">
+      <div className="border border-grey-500 rounded-none p-4 w-full space-y-4">
         <div className="flex justify-center mb-4">
           <div className="w-28 h-28 rounded-full overflow-hidden">
             <img
@@ -237,7 +237,7 @@ function UserProfile({
             {interests.map((interest, index) => (
               <span
                 key={index}
-                className="bg-moss_green-200 px-2 py-1 rounded text-sm flex items-center gap-1"
+                className="bg-grey-100 px-2 py-1 rounded text-sm flex items-center gap-1"
               >
                 {capitalize(interest)}
                 <button
@@ -266,7 +266,7 @@ function UserProfile({
             <div className="flex items-center gap-2">
               <span className="w-20 text-sm">Name:</span>
               {demographics.name ? (
-                <span className="bg-moss_green-200 px-2 py-1 rounded text-sm flex items-center gap-1">
+                <span className="bg-grey-100 px-2 py-1 rounded text-sm flex items-center gap-1">
                   {capitalize(demographics.name)}
                   <button
                     onClick={() => removeDemographic('name')}
@@ -305,7 +305,7 @@ function UserProfile({
             <div className="flex items-center gap-2">
               <span className="w-20 text-sm">Age:</span>
               {demographics.age ? (
-                <span className="bg-moss_green-200 px-2 py-1 rounded text-sm flex items-center gap-1">
+                <span className="bg-grey-100 px-2 py-1 rounded text-sm flex items-center gap-1">
                   {capitalize(demographics.age.toString())}
                   <button
                     onClick={() => removeDemographic('age')}
@@ -344,7 +344,7 @@ function UserProfile({
             <div className="flex items-center gap-2">
               <span className="w-20 text-sm">Location:</span>
               {demographics.location ? (
-                <span className="bg-moss_green-200 px-2 py-1 rounded text-sm flex items-center gap-1">
+                <span className="bg-grey-100 px-2 py-1 rounded text-sm flex items-center gap-1">
                   {capitalize(demographics.location)}
                   <button
                     onClick={() => removeDemographic('location')}
@@ -419,7 +419,7 @@ function UserProfile({
                         ) : (
                           <>
                             <span
-                              className="bg-moss_green-200 px-2 py-1 rounded text-sm cursor-pointer flex items-center"
+                              className="bg-grey-100 px-2 py-1 rounded text-sm cursor-pointer flex items-center"
                               onClick={() => {
                                 setEditingKey(key);
                                 setNewKeyInput(key);
@@ -468,12 +468,12 @@ function UserProfile({
                               setEditingValue(null);
                               setNewValueInput('');
                             }}
-                            className="px-2 py-1 text-sm bg-transparent outline-none border-grey-300 focus:border-lime-500 w-40"
+                            className="px-2 py-1 text-sm bg-transparent outline-none w-40"
                             autoFocus
                           />
                         ) : (
                           <span
-                            className="bg-moss_green-200 px-2 py-1 rounded text-sm flex items-center gap-1 cursor-pointer"
+                            className="bg-grey-100 px-2 py-1 rounded text-sm flex items-center gap-1 cursor-pointer"
                             onClick={() => {
                               setEditingValue(key);
                               setNewValueInput(value as string);
@@ -572,7 +572,7 @@ function UserProfile({
                     }
                   }}
                   placeholder="Add value"
-                  className="px-2 py-1 text-sm bg-transparent outline-none border-grey-300 focus:border-lime-500 w-40"
+                  className="px-2 py-1 text-sm bg-transparent outline-none border-grey-300 focus:border-lime-500 w-40 rounded-none"
                 />
               </div>
             ) : (
@@ -594,7 +594,7 @@ function UserProfile({
             {emotionAffinities.map((emotion, index) => (
               <span
                 key={index}
-                className="bg-moss_green-200 px-2 py-1 rounded text-sm flex items-center gap-1"
+                className="bg-grey-100 px-2 py-1 rounded text-sm flex items-center gap-1"
               >
                 {capitalize(emotion)}
                 <button

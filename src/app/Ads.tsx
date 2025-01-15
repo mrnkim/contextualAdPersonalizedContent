@@ -76,13 +76,13 @@ function Ads({ indexId, isIndexIdLoading, selectedFile, isRecommendClicked, setI
 
   return (
     <div className="flex flex-col gap-4">
+      <h2 className="text-2xl font-bold">Ads Library</h2>
       {processingVideos && (
         <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
           <LoadingSpinner size="sm" color="default" />
           Processing video embeddings...
         </div>
       )}
-      <h2 className="text-2xl font-bold">Ads Library</h2>
       <ErrorBoundary FallbackComponent={ErrorFallback}>
         <Suspense fallback={<LoadingSpinner />}>
           {isIndexIdLoading || isLoading ? (
