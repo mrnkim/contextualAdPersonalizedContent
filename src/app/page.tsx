@@ -12,11 +12,8 @@ export default function Page() {
   const [selectedApp, setSelectedApp] = useState<'contextual' | 'personalized'>('contextual');
   const [selectedIndexId, setSelectedIndexId] = useState<string>(process.env.NEXT_PUBLIC_ADS_INDEX_ID || '');
   const [hasProcessedAds, setHasProcessedAds] = useState(false);
-  console.log("🚀 > Page > hasProcessedAds=", hasProcessedAds)
   const [hasProcessedFootage, setHasProcessedFootage] = useState(false);
-  console.log("🚀 > Page > hasProcessedFootage=", hasProcessedFootage)
   const [useEmbeddings, setUseEmbeddings] = useState(false);
-  console.log("🚀 > Page > useEmbeddings=", useEmbeddings)
   const [profiles, setProfiles] = useState([
       {
         profilePic: '/profile1.jpg',
@@ -102,6 +99,9 @@ export default function Page() {
             setProfiles={setProfiles}
             selectedIndexId={selectedIndexId}
             setSelectedIndexId={setSelectedIndexId}
+            hasProcessedAds={hasProcessedAds}
+            setHasProcessedAds={setHasProcessedAds}
+            useEmbeddings={useEmbeddings}
           />
         )}
       </main>

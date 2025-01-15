@@ -10,6 +10,8 @@ import { usePlayer } from '@/contexts/PlayerContext';
 interface UserProfileProps extends Profile {
   indexId: string;
   onUpdateProfile: (updatedProfile: Partial<Profile>) => void;
+  useEmbeddings: boolean;
+  processingAdsInPersonalizedContent: boolean;
 }
 
 interface VideoItem {
@@ -32,7 +34,9 @@ function UserProfile({
   emotionAffinities: initialEmotionAffinities = [],
   userId,
   indexId,
-  onUpdateProfile
+  onUpdateProfile,
+  useEmbeddings,
+  processingAdsInPersonalizedContent
 }: UserProfileProps) {
   const [newInterest, setNewInterest] = React.useState('');
   const [isSearchClicked, setIsSearchClicked] = React.useState(false);
@@ -60,6 +64,10 @@ function UserProfile({
   React.useEffect(() => {
     setIsSearchClicked(false);
   }, [interests, demographics, emotionAffinities, indexId]);
+
+  React.useEffect(() => {
+    setIsSearchClicked(false);
+  }, [useEmbeddings]);
 
   const handleInterestSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && newInterest.trim()) {
@@ -131,27 +139,49 @@ function UserProfile({
 
   const searchQueries = useQueries({
     queries: interests.map((interest) => ({
-      queryKey: ["search", interest, userId, isSearchClicked, indexId],
+      queryKey: ["search", interest, userId, isSearchClicked, indexId, useEmbeddings],
       queryFn: async () => {
         if (!isSearchClicked) return null;
         try {
           const results = [];
-          let currentPageToken = null;
 
-          const initialResponse = await textToVideoSearch(indexId, interest, [
-            "visual",
-            "audio",
-          ], 10);
+          if (useEmbeddings) {
+            // Embedding-based search using the new API
+            const response = await fetch('/api/keywordEmbeddingSearch', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                searchTerm: interest,
+                indexId: indexId
+              })
+            });
+            const data = await response.json();
 
-          results.push(...(initialResponse.data || []));
-          currentPageToken = initialResponse.page_info?.next_page_token;
+            // Transform embedding search results to match expected format
+            results.push(...data.map((item: { metadata: { tl_video_id: string }, score: number }) => ({
+              id: item.metadata.tl_video_id,
+              clips: [{
+                score: item.score
+              }]
+            })));
+          } else {
+            // Original keyword-based search
+            const initialResponse = await textToVideoSearch(indexId, interest, [
+              "visual",
+              "audio",
+            ], 10);
 
-          while (currentPageToken) {
-            const nextPage = await fetchSearchPage(currentPageToken);
-            results.push(...(nextPage.data || []));
-            currentPageToken = nextPage.page_info?.next_page_token;
+            results.push(...(initialResponse.data || []));
+            let currentPageToken = initialResponse.page_info?.next_page_token;
+
+            while (currentPageToken) {
+              const nextPage = await fetchSearchPage(currentPageToken);
+              results.push(...(nextPage.data || []));
+              currentPageToken = nextPage.page_info?.next_page_token;
+            }
           }
-
           return { data: results, searchTerm: interest };
         } catch (error) {
           console.error(`Search error for "${interest}":`, error);
@@ -172,16 +202,16 @@ function UserProfile({
     const results = new Map();
 
     searchQueries
-      .filter(query => query.data?.data && query.isSuccess)
-      .forEach(query => {
-        if (interests.includes(query.data!.searchTerm)) {
-          query.data!.data.forEach((item: VideoItem) => {
-            if (!results.has(item.id)) {
-              results.set(item.id, item);
-            }
-          });
-        }
-      });
+    .filter(query => query.data?.data && query.isSuccess)
+    .forEach(query => {
+      if (interests.includes(query.data!.searchTerm)) {
+        query.data!.data.forEach((item: VideoItem) => {
+          if (!results.has(item.id)) {
+            results.set(item.id, item);
+          }
+        });
+      }
+    });
 
     return Array.from(results.values());
   }, [searchQueries, interests]);
@@ -595,16 +625,19 @@ function UserProfile({
             onClick={() => {
               setIsSearchClicked(true);
             }}
+            disabled={useEmbeddings && processingAdsInPersonalizedContent}
           >
             <div className="flex items-center">
-              Search
+              {useEmbeddings ? "Search by Embeddings" : "Search"}
             </div>
           </Button>
         </div>
 
         {isSearchClicked && (
           <div className="w-full">
-            <h3 className="font-semibold mb-2 mt-8">Search Results for {demographics.name}</h3>
+            <h3 className="font-semibold mb-2 mt-8">
+              Search Results for {demographics.name}
+            </h3>
             {isLoading ? (
               <div className="flex justify-center">
                 <LoadingSpinner />

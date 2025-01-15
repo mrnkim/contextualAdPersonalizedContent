@@ -53,7 +53,7 @@ function Ads({ indexId, isIndexIdLoading, selectedFile, isRecommendClicked, setI
           for (const video of pageData.data) {
             const vectorExists = await checkVectorExists(video._id);
             if (!vectorExists) {
-              await getAndStoreEmbeddings(indexId, video._id, "ad");
+              await getAndStoreEmbeddings(indexId, video._id);
             }
           }
         }
@@ -69,13 +69,6 @@ function Ads({ indexId, isIndexIdLoading, selectedFile, isRecommendClicked, setI
   }, [indexId, setHasProcessedAds]);
 
   useEffect(() => {
-    console.log('Ads conditions:', {
-      indexId: !!indexId,
-      hasProcessedAds,
-      useEmbeddings,
-      willProcess: indexId && !hasProcessedAds && useEmbeddings
-    });
-
     if (indexId && !hasProcessedAds && useEmbeddings) {
       processAdVideos();
     }

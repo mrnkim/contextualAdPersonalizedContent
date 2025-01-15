@@ -12,9 +12,9 @@ function sanitizeVectorId(str: string) {
 
 export async function POST(request: Request) {
   try {
-    const { videoId, videoName, embedding, type } = await request.json();
+    const { videoId, videoName, embedding, indexId } = await request.json();
 
-    if (!videoId || !embedding || !type) {
+    if (!videoId || !embedding) {
       return NextResponse.json(
         { error: 'Missing required parameters' },
         { status: 400 }
@@ -30,8 +30,8 @@ export async function POST(request: Request) {
         start_time: segment.start_offset_sec,
         end_time: segment.end_offset_sec,
         scope: segment.embedding_scope,
-        video_type: type,
         tl_video_id: videoId,
+        tl_index_id: indexId
       },
     }));
 

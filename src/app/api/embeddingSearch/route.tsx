@@ -6,7 +6,7 @@ const PINECONE_INDEX_NAME = process.env.PINECONE_INDEX;
 
 export async function POST(req: Request) {
   try {
-    const { videoId } = await req.json();
+    const { videoId, indexId } = await req.json();
 
     if (!PINECONE_API_KEY || !PINECONE_INDEX_NAME) {
         throw new Error('PINECONE_API_KEY or PINECONE_INDEX_NAME is not defined');
@@ -39,7 +39,6 @@ export async function POST(req: Request) {
     //     vector: new Array(1024).fill(0)
     //   })
     ]);
-    console.log("🚀 > POST > originalVideoEmbeddings=", originalVideoEmbeddings)
 
     // Search for similar ads for each scope
     const similarResults = await Promise.all(
@@ -49,21 +48,25 @@ export async function POST(req: Request) {
         const match = original.matches[0];
         if (!match) return [];
 
+        console.log("Original match metadata:", match.metadata);
+
         const scope = match.metadata?.scope;
         const vector = match.values;
 
-        return index.query({
+        const queryResult = await index.query({
           vector,
           filter: {
-            video_type: 'ad',
+            tl_index_id: indexId,
             scope: scope
           },
           topK: 5,
           includeMetadata: true,
         });
+
+        console.log("Query result:", queryResult);
+        return queryResult;
       })
     );
-    console.log("🚀 > POST > similarResults=", similarResults)
 
     // Merge and organize results
     const allResults = [
@@ -77,7 +80,6 @@ export async function POST(req: Request) {
     //     resultType: 'video'
     //   }))
     ];
-    console.log("🚀 > POST > allResults=", allResults)
 
     // Remove duplicates (keep only the highest score for each tlVideoId)
     const uniqueResults = Object.values(
@@ -91,7 +93,6 @@ export async function POST(req: Request) {
         return acc;
       }, {})
     );
-    console.log("🚀 > POST > uniqueResults=", uniqueResults)
 
     // Sort by score
     const sortedResults = uniqueResults.sort((a, b) => (b.score ?? 0) - (a.score ?? 0));

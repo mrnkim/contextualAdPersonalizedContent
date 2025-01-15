@@ -143,7 +143,7 @@ export const checkVectorExists = async (videoId: string) => {
   }
 };
 
-export const getAndStoreEmbeddings = async (indexId: string, videoId: string, type: string) => {
+export const getAndStoreEmbeddings = async (indexId: string, videoId: string) => {
   try {
     // 1. 먼저 비디오 상세 정보와 임베딩을 가져옴
     const videoDetails = await fetchVideoDetails(videoId, indexId, true);
@@ -165,7 +165,7 @@ export const getAndStoreEmbeddings = async (indexId: string, videoId: string, ty
         videoId,
         videoName: videoDetails.metadata.filename,
         embedding: embedding,
-        type: type,
+        indexId: indexId,
       }),
     });
 

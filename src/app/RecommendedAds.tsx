@@ -61,7 +61,8 @@ const RecommendedAds = ({ hashtags, footageVideoId, adsIndexId, selectedFile, se
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              videoId: footageVideoId
+              videoId: footageVideoId,
+              indexId: adsIndexId
             })
           });
           const data = await response.json();
@@ -185,7 +186,7 @@ const RecommendedAds = ({ hashtags, footageVideoId, adsIndexId, selectedFile, se
                         <RecommendedAdItem
                           recommendedAd={recommendedAd}
                           adsIndexId={adsIndexId}
-                          score={useEmbeddings ? embeddingScores[recommendedAd?.id || ''] : recommendedAd.clips?.[0]?.score}
+                          score={useEmbeddings ? embeddingScores[recommendedAd?.id || ''] : recommendedAd.clips?.[0]?.score ?? 0}
                         />
                       </div>
                     ))}
@@ -212,7 +213,7 @@ const RecommendedAds = ({ hashtags, footageVideoId, adsIndexId, selectedFile, se
                           <RecommendedAdItem
                             recommendedAd={recommendedAd}
                             adsIndexId={adsIndexId}
-                            score={useEmbeddings ? embeddingScores[recommendedAd?.id || ''] : recommendedAd.clips?.[0]?.score}
+                            score={useEmbeddings ? embeddingScores[recommendedAd?.id || ''] : recommendedAd.clips?.[0]?.score ?? 0}
                           />
                         </div>
                       ))}
