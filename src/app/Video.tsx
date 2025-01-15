@@ -62,6 +62,7 @@ const Video: React.FC<VideoProps> = ({ videoId, indexId, showTitle = true, video
                     alt="thumbnail"
                   />
                 }
+                playIcon={<></>}
                 playing={playing}
                 config={{
                   file: {
