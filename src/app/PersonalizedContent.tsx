@@ -123,8 +123,8 @@ const PersonalizedContent = ({
 
   return (
     <div className="w-full max-w-7xl mx-auto">
-    <h1 className="text-3xl font-bold text-center mb-6">Personalized Content</h1>
-    <div className="mb-16 w-2/3 mx-auto">With Personalized Content, you get tailored video recommendations based on your profile and preferences, plus embedding-based searches for more accurate results.</div>
+    <h1 className="text-3xl font-bold mb-6">Personalized Content</h1>
+    <div className="mb-16 mx-auto">With Personalized Content, you get tailored video recommendations based on your profile and preferences, plus embedding-based searches for more accurate results.</div>
     <div className="flex-grow mr-4 mb-6">
     <IndexesDropDown
       handleIndexChange={handleIndexChange}

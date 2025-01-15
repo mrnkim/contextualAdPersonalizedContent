@@ -82,7 +82,7 @@ function Ads({ indexId, isIndexIdLoading, selectedFile, isRecommendClicked, setI
           Processing video embeddings...
         </div>
       )}
-      <h2 className="text-2xl font-bold text-center">Ads Library</h2>
+      <h2 className="text-2xl font-bold">Ads Library</h2>
       <ErrorBoundary FallbackComponent={ErrorFallback}>
         <Suspense fallback={<LoadingSpinner />}>
           {isIndexIdLoading || isLoading ? (

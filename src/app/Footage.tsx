@@ -176,8 +176,8 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 	}, [indexId, footageVideoId, hasProcessedFootage, processFootageVideo, useEmbeddings]);
 
 	return (
-		<div className="flex flex-col items-center gap-4 w-full">
-			<h2 className="text-2xl font-bold">Source Footage</h2>
+		<div className="flex flex-col gap-4 w-full">
+			<h2 className="text-2xl font-bold text-left">Source Footage</h2>
 			{processingVideos && (
 				<div className="flex items-center justify-center gap-2 text-sm text-gray-500">
 					<LoadingSpinner size="sm" color="default" />
@@ -223,51 +223,51 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 					) : !hasVideoData ? (
 						<div>No videos available</div>
 					) : (
-						<>
+						<div className="flex flex-col items-center">
 							<Video
 								videoId={footageVideoId || ''}
 								indexId={indexId || ''}
 								playing={currentPlayerId === `footage-${footageVideoId}`}
 								onPlay={() => setCurrentPlayerId(`footage-${footageVideoId}`)}
 							/>
-								<div className="w-fit">
-									{!useEmbeddings && (
-										<span className="text-xs font-bold mb-0.5 text-left block">Step 1</span>
-									)}
-									<div className="flex gap-2">
+							<div className="w-fit">
+								{!useEmbeddings && (
+									<span className="text-xs font-bold mb-0.5 mt-3 text-left block">Step 1</span>
+								)}
+								<div className="flex gap-2">
+									<Button
+										type="button"
+										size="sm"
+										appearance="primary"
+										onClick={() => setIsAnalyzeClicked(true)}
+										disabled={isAnalyzeClicked || hashtags.length > 0 || customTextsData?.length > 0}
+									>
+										<div className="flex items-center">
+											<img
+												src={isAnalyzeClicked || hashtags.length > 0 || customTextsData?.length > 0 ? "/analyzeDisabled.svg" : "/analyze.svg"}
+												alt="magic stick icon"
+												className="w-4 h-4 mr-1"
+											/>
+											Analyze
+										</div>
+									</Button>
+									{(isAnalyzeClicked || hashtags.length > 0 || customTextsData?.length > 0) && (
 										<Button
 											type="button"
 											size="sm"
-											appearance="primary"
-											onClick={() => setIsAnalyzeClicked(true)}
-											disabled={isAnalyzeClicked || hashtags.length > 0 || customTextsData?.length > 0}
+											appearance="secondary"
+											onClick={() => {
+												if (isAnalyzeClicked || (hashtags.length > 0 || customTextsData?.length > 0)) {
+													setShowAnalysis(!showAnalysis);
+												}
+											}}
 										>
-											<div className="flex items-center">
-												<img
-													src={isAnalyzeClicked || hashtags.length > 0 || customTextsData?.length > 0 ? "/analyzeDisabled.svg" : "/analyze.svg"}
-													alt="magic stick icon"
-													className="w-4 h-4 mr-1"
-												/>
-												Analyze
-											</div>
+											{isAnalyzeClicked && isLoading ? <LoadingSpinner /> : 'View Analysis'}
 										</Button>
-										{(isAnalyzeClicked || hashtags.length > 0 || customTextsData?.length > 0) && (
-											<Button
-												type="button"
-												size="sm"
-												appearance="secondary"
-												onClick={() => {
-													if (isAnalyzeClicked || (hashtags.length > 0 || customTextsData?.length > 0)) {
-														setShowAnalysis(!showAnalysis);
-													}
-												}}
-											>
-												{isAnalyzeClicked && isLoading ? <LoadingSpinner /> : 'View Analysis'}
-											</Button>
-										)}
-									</div>
+									)}
 								</div>
-						</>
+							</div>
+						</div>
 					)}
 				</>
 			)}
