@@ -56,10 +56,9 @@ const VideosDropDown: React.FC<VideosDropDownProps> = ({
         )}
         MenuProps={{
           PaperProps: {
-            sx: {
+            style: {
               maxHeight: MENU_MAX_HEIGHT,
-              width: 200
-            }
+            },
           },
           MenuListProps: {
             sx: {
@@ -69,39 +68,16 @@ const VideosDropDown: React.FC<VideosDropDownProps> = ({
               overflowX: 'hidden'
             },
             onScroll: handleScroll
-          }
-        }}
-        sx={{
-          '& .MuiOutlinedInput-notchedOutline': {
-            borderColor: '#6BDE11',
-            borderWidth: '1px',
-            borderRadius: '0',
           },
-          '&:hover .MuiOutlinedInput-notchedOutline': {
-            borderColor: '#6BDE11',
-            borderWidth: '1px',
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'left',
           },
-          '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-            borderColor: '#6BDE11',
-            borderWidth: '1px',
+          transformOrigin: {
+            vertical: 'top',
+            horizontal: 'left',
           },
-          '& .MuiSelect-select': {
-            padding: '8px 14px',
-            borderRadius: '0',
-          },
-          '& .MuiSelect-icon': {
-            right: '7px',
-          },
-          '& .MuiOutlinedInput-input': {
-            padding: '8px 14px',
-            borderRadius: '0',
-          },
-          '& .MuiInputBase-root': {
-            borderRadius: '0',
-          },
-          '& .MuiSelect-outlined': {
-            borderRadius: '0',
-          },
+          variant: "menu"
         }}
       >
         {videosData?.pages.flatMap((page, pageIndex) =>
