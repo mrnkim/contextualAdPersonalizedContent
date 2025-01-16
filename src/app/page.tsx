@@ -16,6 +16,7 @@ const AppSelectionButton = ({ className, selected, ...props }: ButtonProps & { s
     className={clsx(
       'transition-colors duration-200',
       'border border-grey-200',
+      'flex items-center gap-2',
       selected
         ? 'bg-gray-200 text-gray-900 font-medium !important'
         : 'bg-white text-gray-600 hover:bg-gray-100 !important',
@@ -130,6 +131,7 @@ export default function Page() {
               selected={selectedApp === 'contextual'}
               className="contextual-ads-btn rounded-r-none border-r-0"
             >
+              <img src="/media.svg" alt="Contextual Ads icon" className="w-4 h-4" />
               Contextual Ads
             </AppSelectionButton>
             <AppSelectionButton
@@ -137,6 +139,7 @@ export default function Page() {
               selected={selectedApp === 'personalized'}
               className="personalized-content-btn rounded-l-none"
             >
+              <img src="/focus.svg" alt="Personalized Content icon" className="w-4 h-4" />
               Personalized Content
             </AppSelectionButton>
           </div>
