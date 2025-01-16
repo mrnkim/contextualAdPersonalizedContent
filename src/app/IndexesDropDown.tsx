@@ -2,6 +2,7 @@ import React from 'react';
 import { IndexData, IndexesDropDownProps } from '@/app/types';
 import { MenuItem, Select, SelectChangeEvent } from '@mui/material'
 import clsx from 'clsx';
+import LoadingSpinner from './LoadingSpinner';
 
 const IndexesDropDown: React.FC<IndexesDropDownProps> = ({
   handleIndexChange,
@@ -9,7 +10,6 @@ const IndexesDropDown: React.FC<IndexesDropDownProps> = ({
   fetchNextPage,
   hasNextPage,
   isFetchingNextPage,
-  isLoading,
   selectedIndexId
 }) => {
   const [loadedIndexes, setLoadedIndexes] = React.useState<IndexData[]>([]);
@@ -69,9 +69,7 @@ const IndexesDropDown: React.FC<IndexesDropDownProps> = ({
     }
   }, [indexesData?.pages, selectedIndexId, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  // 데이터가 로드되기 전에는 렌더링하지 않음
   if (!loadedIndexes.length) {
-    console.log('인덱스 로딩 중...');
     return null;
   }
 

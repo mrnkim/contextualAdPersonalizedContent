@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { Pinecone } from '@pinecone-database/pinecone';
 import { Segment, Vector } from '@/app/types';
+import { getPineconeIndex } from '@/utils/pinecone';
 
 function sanitizeVectorId(str: string) {
   const sanitized = str
@@ -38,10 +38,7 @@ export async function POST(request: Request) {
 
     try {
       console.log('Initializing Pinecone client...');
-      const pc = new Pinecone({
-        apiKey: process.env.PINECONE_API_KEY!
-      });
-      const index = pc.index(process.env.PINECONE_INDEX!);
+      const index = getPineconeIndex();
 
       // Sanitize vector IDs first
       const sanitizedVectors = vectors.map((vector: Vector) => ({

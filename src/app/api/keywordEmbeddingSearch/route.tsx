@@ -1,22 +1,14 @@
 import { NextResponse } from 'next/server';
-import { Pinecone } from '@pinecone-database/pinecone';
+import { getPineconeIndex } from '@/utils/pinecone';
 import axios from 'axios';
 
-const PINECONE_API_KEY = process.env.PINECONE_API_KEY;
-const PINECONE_INDEX_NAME = process.env.PINECONE_INDEX;
 const API_KEY = process.env.TWELVELABS_API_KEY;
 const TWELVELABS_API_BASE_URL = process.env.TWELVELABS_API_BASE_URL;
 
 export async function POST(req: Request) {
   try {
     const { searchTerm, indexId } = await req.json();
-
-    if (!PINECONE_API_KEY || !PINECONE_INDEX_NAME) {
-      throw new Error('Required environment variables are not defined');
-    }
-
-    // Initialize Pinecone
-    const pinecone = new Pinecone({ apiKey: PINECONE_API_KEY });
+    const index = getPineconeIndex();
 
     const url = `${TWELVELABS_API_BASE_URL}/embed`;
 
@@ -46,8 +38,6 @@ export async function POST(req: Request) {
     }
 
     // Get index and search
-    const index = pinecone.Index(PINECONE_INDEX_NAME);
-
     const searchResults = await index.query({
       vector: searchEmbedding,
       filter: {

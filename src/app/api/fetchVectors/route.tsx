@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { Pinecone } from '@pinecone-database/pinecone';
+import { getPineconeIndex } from '@/utils/pinecone';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -10,10 +10,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    const pc = new Pinecone({
-      apiKey: process.env.PINECONE_API_KEY!
-    });
-    const index = pc.index(process.env.PINECONE_INDEX!);
+    const index = getPineconeIndex();
 
     // Add debug logging for the videoId
 

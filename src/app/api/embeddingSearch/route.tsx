@@ -1,18 +1,10 @@
 import { NextResponse } from 'next/server';
-import { Pinecone } from '@pinecone-database/pinecone';
-
-const PINECONE_API_KEY = process.env.PINECONE_API_KEY;
-const PINECONE_INDEX_NAME = process.env.PINECONE_INDEX;
+import { getPineconeIndex } from '@/utils/pinecone';
 
 export async function POST(req: Request) {
   try {
     const { videoId, indexId } = await req.json();
-
-    if (!PINECONE_API_KEY || !PINECONE_INDEX_NAME) {
-        throw new Error('PINECONE_API_KEY or PINECONE_INDEX_NAME is not defined');
-    }
-    const pinecone = new Pinecone({ apiKey: PINECONE_API_KEY });
-    const index = pinecone.Index(PINECONE_INDEX_NAME);
+    const index = getPineconeIndex();
 
     // Retrieve clip and video embeddings of the original video
     const originalVideoEmbeddings = await Promise.all([
