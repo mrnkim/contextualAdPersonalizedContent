@@ -78,17 +78,17 @@ export default function Page() {
   const steps: Step[] = [
     {
       target: '.contextual-ads-btn',
-      content: 'Click here to explore contextual ad matching based on video content analysis',
+      content: 'Explore video-based contextual ad matching',
       placement: 'bottom',
     },
     {
       target: '.personalized-content-btn',
-      content: 'Switch to personalized content recommendations based on user profiles and preferences',
+      content: 'Switch to personalized content recommendations',
       placement: 'bottom',
     },
     {
       target: '.embeddings-toggle',
-      content: 'Toggle this button to enable embedding-based search for more precise results across both apps',
+      content: 'Enable embedding-based search across both apps',
       placement: 'bottom',
     },
   ];
@@ -104,14 +104,36 @@ export default function Page() {
           styles={{
             options: {
               primaryColor: '#9AED59',
+              arrowColor: '#fff',
+              backgroundColor: '#fff',
             },
             buttonNext: {
               color: '#444444',
-              fontWeight: 'normal'
+              fontWeight: 'normal',
+              fontSize: '14px'
             },
             buttonBack: {
               color: '#444444',
-              fontWeight: 'normal'
+              fontWeight: 'normal',
+              fontSize: '14px'
+            },
+            buttonSkip: {
+              color: '#444444',
+              fontWeight: 'normal',
+              fontSize: '14px'
+            },
+            tooltip: {
+              textAlign: 'left',
+              backgroundColor: '#fff',
+              fontSize: '14px'
+            },
+            tooltipContainer: {
+              textAlign: 'left'
+            },
+            tooltipContent: {
+              textAlign: 'left',
+              padding: '20px',
+              fontSize: '14px'
             }
           }}
           callback={(data) => {
