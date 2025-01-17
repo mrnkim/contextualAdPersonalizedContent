@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react'
 import { generateCustomTexts } from '@/hooks/apiHooks';
 import { RecommendedAdProps, ContextualAdsProps } from '@/app/types';
-import Footage from '@/app/Footage';
-import Ads from '@/app/Ads';
-import RecommendedAds from '@/app/RecommendedAds';
+import Footage from '@/app/components/Footage';
+import Ads from '@/app/components/Ads';
+import RecommendedAds from '@/app/components/RecommendedAds';
 import { useQuery } from '@tanstack/react-query';
 
 const footageIndexId = process.env.NEXT_PUBLIC_FOOTAGE_INDEX_ID;

@@ -5,8 +5,8 @@ import { ErrorBoundary } from 'react-error-boundary';
 import LoadingSpinner from './LoadingSpinner';
 import ErrorFallback from './ErrorFallback';
 import { RecommendedAdsProps, RecommendedAdProps } from '@/app/types';
-import RecommendedPlacements from '@/app/RecommendedPlacements';
-import RecommendedAdItem from '@/app/RecommendedAdItem';
+import RecommendedPlacements from '@/app/components/RecommendedPlacements';
+import RecommendedAdItem from '@/app/components/RecommendedAdItem';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
 export enum SearchOption {

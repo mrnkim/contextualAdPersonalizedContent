@@ -3,7 +3,7 @@ import LoadingSpinner from './LoadingSpinner';
 import ReactPlayer from "react-player";
 import clsx from "clsx";
 import { TaskProps } from '@/app/types';
-import VideoSkeleton from '@/app/VideoSkeleton';
+import VideoSkeleton from '@/app/components/VideoSkeleton';
 
 const Task = ({ taskDetails, playing, setPlaying }: TaskProps): JSX.Element => {
   return (

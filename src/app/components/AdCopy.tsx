@@ -8,7 +8,7 @@ import {
   import CloseIcon from '@mui/icons-material/Close';
   import LoadingSpinner from './LoadingSpinner';
   import { ErrorBoundary } from 'react-error-boundary'
-  import ErrorFallback from '@/app/ErrorFallback';
+  import ErrorFallback from '@/app/components/ErrorFallback';
   import { AdCopyProps } from '@/app/types';
 
   const AdCopy = ({ videoDetails, isDialogOpen, setIsDialogOpen, setIsGenerating, adCopyData }: AdCopyProps) => {

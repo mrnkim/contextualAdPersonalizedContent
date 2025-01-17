@@ -11,7 +11,7 @@ import clsx from 'clsx'
 import { checkVectorExists, fetchVideos, getAndStoreEmbeddings } from '@/hooks/apiHooks';
 import { ErrorBoundary } from 'react-error-boundary';
 import { AdsProps } from '@/app/types';
-import RecommendOptionForm from '@/app/RecommendOptionForm';
+import RecommendOptionForm from '@/app/components/RecommendOptionForm';
 import { usePlayer } from '@/contexts/PlayerContext';
 
 type VideoType = {

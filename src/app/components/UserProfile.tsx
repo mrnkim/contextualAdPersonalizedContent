@@ -3,7 +3,7 @@ import Button from './Button'
 import { useQueries } from "@tanstack/react-query";
 import { fetchSearchPage, textToVideoSearch } from '@/hooks/apiHooks';
 import LoadingSpinner from './LoadingSpinner';
-import Video from './Video';
+import Video from './Video'
 import { Clip, Profile } from '@/app/types';
 import { usePlayer } from '@/contexts/PlayerContext';
 
