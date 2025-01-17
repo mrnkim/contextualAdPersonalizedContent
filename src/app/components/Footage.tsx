@@ -230,7 +230,7 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 								{!useEmbeddings && (
 									<span className="text-xs font-bold mb-0.5 mt-3 text-left block">Step 1</span>
 								)}
-								<div className="flex gap-2">
+								<div className={`flex gap-2 ${!useEmbeddings ? '' : 'mt-6'}`}>
 									<Button
 										type="button"
 										size="sm"
