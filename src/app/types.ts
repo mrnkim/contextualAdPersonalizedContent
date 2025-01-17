@@ -310,10 +310,6 @@ export interface TaskDetails {
   }
 }
 
-export interface SearchResult {
-  id: string;
-  clips?: object[];
-}
 
 export interface SearchData {
   data: SearchResult[];
@@ -356,11 +352,56 @@ export interface RecommendedAdItemProps {
   score?: number;
 }
 
-interface Demographics {
+export interface Demographics {
   name: string;
   age: number;
   location: string;
   [key: string]: string | number;
+}
+
+export interface DemographicsSectionProps {
+  demographics: Demographics;
+  onUpdateProfile: (updatedProfile: Partial<Profile>) => void;
+  profileData: Partial<Profile>;
+  setIsSearchClicked: (value: boolean) => void;
+}
+
+export interface EmotionAffinitiesSectionProps {
+  emotionAffinities: string[];
+  onUpdateProfile: (updatedProfile: Partial<Profile>) => void;
+  profileData: Partial<Profile>;
+  setIsSearchClicked: (value: boolean) => void;
+}
+
+export interface InterestsSectionProps {
+  interests: string[];
+  onUpdateProfile: (updatedProfile: Partial<Profile>) => void;
+  profileData: Partial<Profile>;
+  setIsSearchClicked: (value: boolean) => void;
+}
+
+interface SearchResult {
+  id: string;
+}
+
+export interface SearchResultsProps {
+  isLoading: boolean;
+  searchResults: SearchResult[];
+  demographics: Demographics;
+  userId: string;
+  indexId: string;
+}
+
+export interface UserProfileProps extends Profile {
+  indexId: string;
+  onUpdateProfile: (updatedProfile: Partial<Profile>) => void;
+  useEmbeddings: boolean;
+  processingAdsInPersonalizedContent: boolean;
+}
+
+export interface VideoItem {
+  id: string;
+  clips: Clip[];
 }
 
 export interface Profile {

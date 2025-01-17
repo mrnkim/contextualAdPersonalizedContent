@@ -26,6 +26,10 @@ function IndexVideos({ indexId, isIndexIdLoading}: IndexVideosProps) {
   const [page, setPage] = useState(1);
   const { currentPlayerId, setCurrentPlayerId } = usePlayer();
 
+  useEffect(() => {
+    setPage(1);
+  }, [indexId]);
+
   const { data: videosData, isLoading } = useQuery({
     queryKey: ["videos", page, indexId],
     queryFn: () => fetchVideos(page, indexId!, PAGE_LIMIT ),
@@ -44,10 +48,6 @@ function IndexVideos({ indexId, isIndexIdLoading}: IndexVideosProps) {
       return <div className="text-center py-8">There are no videos in this index</div>;
     }
 
-    useEffect(() => {
-      setPage(1);
-    }, [indexId]);
-    
     return (
       <>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 justify-items-center w-full max-w-6xl">
