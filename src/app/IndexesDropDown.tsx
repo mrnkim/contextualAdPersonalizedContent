@@ -18,7 +18,6 @@ const IndexesDropDown: React.FC<IndexesDropDownProps> = ({
   useEffect(() => {
     if (selectedIndexId) {
       setLocalSelectedId(selectedIndexId);
-      console.log('Initial selectedIndexId:', selectedIndexId);
     }
   }, []); // Only run on component mount
 
@@ -36,15 +35,9 @@ const IndexesDropDown: React.FC<IndexesDropDownProps> = ({
 
         // Check if the selected ID is in the new data
         const hasSelectedId = uniqueIndexes.some(index => index._id === selectedIndexId);
-        console.log('Index data updated:', {
-          hasSelectedId,
-          selectedId: selectedIndexId,
-          totalIndexes: uniqueIndexes.length
-        });
 
         // If the selected ID is not found and there is a next page, load the next page
         if (!hasSelectedId && hasNextPage && !isFetchingNextPage) {
-          console.log('Loading next page to find selected ID');
           fetchNextPage();
         }
 
@@ -93,11 +86,7 @@ const IndexesDropDown: React.FC<IndexesDropDownProps> = ({
         className={clsx('h-9 w-1/3', 'bg-white', 'pl-[1px]', 'truncate text-ellipsis')}
         renderValue={(value) => {
           const selectedIndex = loadedIndexes.find(index => index._id === value);
-          console.log('Select renderValue:', {
-            value,
-            indexName: selectedIndex?.index_name,
-            totalOptions: loadedIndexes.length
-          });
+          
           return (
             <div className="truncate">
               {selectedIndex?.index_name || "Select an index"}

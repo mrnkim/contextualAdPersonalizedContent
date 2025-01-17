@@ -40,8 +40,6 @@ export async function POST(req: Request) {
         const match = original.matches[0];
         if (!match) return [];
 
-        console.log("Original match metadata:", match.metadata);
-
         const scope = match.metadata?.scope;
         const vector = match.values;
 
@@ -55,7 +53,6 @@ export async function POST(req: Request) {
           includeMetadata: true,
         });
 
-        console.log("Query result:", queryResult);
         return queryResult;
       })
     );
@@ -88,7 +85,6 @@ export async function POST(req: Request) {
 
     // Sort by score
     const sortedResults = uniqueResults.sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
-    console.log("🚀 > POST > sortedResults=", sortedResults)
 
     return NextResponse.json(sortedResults);
 

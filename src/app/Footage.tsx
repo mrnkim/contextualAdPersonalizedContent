@@ -162,14 +162,6 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 	}, [videosData, footageVideoId, setFootageVideoId]);
 
 	useEffect(() => {
-		console.log('Footage conditions:', {
-			indexId: !!indexId,
-			footageVideoId: !!footageVideoId,
-			hasProcessedFootage,
-			useEmbeddings,
-			willProcess: indexId && footageVideoId && !hasProcessedFootage && useEmbeddings
-		});
-
 		if (indexId && footageVideoId && !hasProcessedFootage && useEmbeddings) {
 			processFootageVideo();
 		}

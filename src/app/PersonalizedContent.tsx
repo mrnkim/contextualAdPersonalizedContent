@@ -38,7 +38,6 @@ const PersonalizedContent = ({
 	} = useInfiniteQuery({
 		queryKey: ['indexes', selectedIndexId],
 		queryFn: ({ pageParam }) => {
-			console.log("인덱스 데이터 fetch 시도:", { pageParam });
 			return fetchIndexes(pageParam);
 		},
 		initialPageParam: 1,
@@ -49,13 +48,6 @@ const PersonalizedContent = ({
 			return undefined;
 		},
 	});
-
-  console.log("PersonalizedContent 렌더링:", {
-    selectedIndexId,
-    hasProcessedAds,
-    useEmbeddings,
-    isIndexesLoading
-  });
 
   const handleIndexChange = useCallback((newIndexId: string) => {
 		setSelectedIndexId(newIndexId);
@@ -95,24 +87,12 @@ const PersonalizedContent = ({
   }, [selectedIndexId, setHasProcessedAds]);
 
   useEffect(() => {
-    console.log('Ads conditions:', {
-      indexId: !!selectedIndexId,
-      hasProcessedAds,
-      useEmbeddings,
-      willProcess: selectedIndexId && !hasProcessedAds && useEmbeddings
-    });
-
     if (selectedIndexId && !hasProcessedAds && useEmbeddings) {
       processAdVideos();
     }
   }, [selectedIndexId, hasProcessedAds, processAdVideos, useEmbeddings]);
 
   useEffect(() => {
-    console.log("초기 인덱스 설정 useEffect:", {
-      currentSelectedIndexId: selectedIndexId,
-      adsIndexId,
-      willSet: !selectedIndexId && adsIndexId
-    });
     if (!selectedIndexId && adsIndexId) {
       setSelectedIndexId(adsIndexId);
     }

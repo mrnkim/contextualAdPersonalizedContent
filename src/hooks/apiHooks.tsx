@@ -153,7 +153,6 @@ export const getAndStoreEmbeddings = async (indexId: string, videoId: string) =>
     }
 
     const embedding = videoDetails.embedding;
-    console.log("🚀 > getAndStoreEmbeddings > embedding=", embedding)
 
     // 2. Store embeddings in Pinecone
     const response = await fetch('/api/storeEmbeddings', {
