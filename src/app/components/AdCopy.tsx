@@ -79,7 +79,7 @@ import {
   >
     <DialogTitle className="pr-12 flex justify-between items-center">
       <div className="flex-grow text-center">
-        Ad Content Generation for {videoDetails?.metadata.filename}
+        Ad Content Generation for {videoDetails?.metadata.filename.replace(/\.mp4$/, '')}
       </div>
       <IconButton
         aria-label="close"
@@ -105,11 +105,6 @@ import {
                   />
                 </button>
                 <div className="flex-1 px-8">
-                  <div className="text-center">
-                    <span className="text-sm text-gray-500">
-                      {currentSuggestionIndex + 1} / {parsedAdCopy.length}
-                    </span>
-                  </div>
                   <div className="mt-4">
                     <p className="mb-2"><strong>Headline:</strong></p>
                     <h2 className="mb-4">{parsedAdCopy[currentSuggestionIndex].headline}</h2>
@@ -129,6 +124,11 @@ import {
                     alt="Next"
                   />
                 </button>
+              </div>
+              <div className="text-center mt-4">
+                <span className="text-sm text-gray-500">
+                  {currentSuggestionIndex + 1} / {parsedAdCopy.length}
+                </span>
               </div>
             </div>
           )}
