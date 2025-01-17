@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import Button from './Button';
 import { UploadFormProps } from '@/app/types';
 
-function UploadForm({ selectedFile, taskId, onFileUpload}: UploadFormProps) {
+function UploadForm({ selectedFile, taskId, onFileUpload, isLoading, isAnalyzeClicked}: UploadFormProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleUploadClick = () => {
@@ -24,10 +24,10 @@ function UploadForm({ selectedFile, taskId, onFileUpload}: UploadFormProps) {
           size="sm"
           appearance="default"
           onClick={handleUploadClick}
-          disabled={!!selectedFile || !!taskId}
+          disabled={!!selectedFile || !!taskId || (isAnalyzeClicked && isLoading)}
         >
           <img
-            src={!!selectedFile || !!taskId ? "/uploadDisabled.svg" : "/upload.svg"}
+            src={!!selectedFile || !!taskId || (isAnalyzeClicked && isLoading) ? "/uploadDisabled.svg" : "/upload.svg"}
             alt="upload icon"
             className="w-4 h-4"
           />

@@ -204,6 +204,8 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 						selectedFile={selectedFile}
 						taskId={taskId}
 						onFileUpload={handleFileUpload}
+						isLoading={isLoading}
+						isAnalyzeClicked={isAnalyzeClicked}
 					/>
 				</div>
 			</div>

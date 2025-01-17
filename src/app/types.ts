@@ -151,6 +151,8 @@ export interface UploadFormProps {
   selectedFile: File | null;
   taskId: string | null;
   onFileUpload: (file: File) => void;
+  isLoading: boolean;
+  isAnalyzeClicked: boolean;
 }
 
 export interface IndexData {
