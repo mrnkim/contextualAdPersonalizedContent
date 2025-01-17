@@ -46,7 +46,7 @@ export async function POST(request: Request) {
         id: sanitizeVectorId(vector.id)
       }));
 
-      // 모든 벡터 ID들이 존재하는지 확인
+      // Check if the vectors already exist in pinecone
       const vectorIds = sanitizedVectors.map((v: Vector) => v.id);
       console.log('Checking for existing vectors in batches...');
       const fetchBatchSize = 100; // Renamed from batchSize
@@ -80,7 +80,7 @@ export async function POST(request: Request) {
 
       console.log(`Found ${vectorsToUpsert.length} new vectors to upsert`);
 
-      // 이후 벡터 검증 및 업서트 로직
+      // Upsert the vectors to pinecone
       const upsertBatchSize = 5; // Renamed from batchSize
       for (let i = 0; i < vectorsToUpsert.length; i += upsertBatchSize) {
         const batch = vectorsToUpsert.slice(i, i + upsertBatchSize);
@@ -96,12 +96,12 @@ export async function POST(request: Request) {
         }
       }
 
-      // 최종 확인
+      // Final verification
       console.log('Verifying upsert...');
       const describeStats = await index.describeIndexStats();
       console.log('Index stats after upsert:', describeStats);
 
-      // 무작위로 5개 벡터를 선택해서 실제로 존재하는지 확인
+      // Randomly select 5 vectors to verify if they exist
       const sampleIds = vectorsToUpsert
         .map((v: Vector) => v.id)
         .sort(() => 0.5 - Math.random())

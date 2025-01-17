@@ -17,6 +17,8 @@ const RecommendedAd: React.FC<RecommendedAdProps> = ({ recommendedAd, indexId, v
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
 
+  const { currentPlayerId, setCurrentPlayerId } = usePlayer();
+
   const { data: rawAdCopyData } = useQuery({
     queryKey: ["adCopy", recommendedAd.id],
     queryFn: () => generateCustomTexts(recommendedAd.id!, AD_COPY_PROMPT),
@@ -29,10 +31,6 @@ const RecommendedAd: React.FC<RecommendedAdProps> = ({ recommendedAd, indexId, v
     setIsGenerating(true);
     setIsAdCopyClicked(true);
   };
-
-  const { currentPlayerId, setCurrentPlayerId } = usePlayer();
-
-  console.log('recommendedAd structure:', JSON.stringify(recommendedAd, null, 2));
 
   return (
     <div className="w-full">
@@ -110,7 +108,5 @@ const RecommendedAd: React.FC<RecommendedAdProps> = ({ recommendedAd, indexId, v
     </div>
   )
 }
-
-
 
 export default RecommendedAd

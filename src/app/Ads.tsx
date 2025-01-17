@@ -22,9 +22,8 @@ type VideoType = {
 function Ads({ indexId, isIndexIdLoading, selectedFile, isRecommendClicked, setIsRecommendClicked, searchOptionRef, customQueryRef, isAnalysisLoading, setIsRecommendClickedEver, isRecommendClickedEver, setSelectedAd, setSelectedChapter, hashtags, hasProcessedAds, setHasProcessedAds, hasProcessedFootage, useEmbeddings }: AdsProps) {
   const [page, setPage] = useState(1);
   const [hasSearchOptionChanged, setHasSearchOptionChanged] = useState(false);
-  const { currentPlayerId, setCurrentPlayerId } = usePlayer();
   const [processingVideos, setProcessingVideos] = useState(false);
-
+  const { currentPlayerId, setCurrentPlayerId } = usePlayer();
   const { data: videosData, isLoading } = useQuery({
     queryKey: ["videos", page, indexId],
     queryFn: () => fetchVideos(page, indexId!),
@@ -33,12 +32,6 @@ function Ads({ indexId, isIndexIdLoading, selectedFile, isRecommendClicked, setI
 
   const totalPage = videosData?.page_info?.total_page || 1;
   const hasVideoData = videosData && videosData.data && videosData.data.length > 0;
-
-  useEffect(() => {
-    if (isRecommendClicked) {
-      setHasSearchOptionChanged(false);
-    }
-  }, [isRecommendClicked]);
 
   const processAdVideos = useCallback(async () => {
     if (!indexId) return;
@@ -67,6 +60,12 @@ function Ads({ indexId, isIndexIdLoading, selectedFile, isRecommendClicked, setI
       setProcessingVideos(false);
     }
   }, [indexId, setHasProcessedAds]);
+
+  useEffect(() => {
+    if (isRecommendClicked) {
+      setHasSearchOptionChanged(false);
+    }
+  }, [isRecommendClicked]);
 
   useEffect(() => {
     if (indexId && !hasProcessedAds && useEmbeddings) {

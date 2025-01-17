@@ -9,7 +9,6 @@ import LoadingSpinner from './LoadingSpinner';
 
 const adsIndexId = process.env.NEXT_PUBLIC_ADS_INDEX_ID;
 
-
 const PersonalizedContent = ({
   profiles,
   setProfiles,
@@ -27,8 +26,6 @@ const PersonalizedContent = ({
   setHasProcessedAds: (hasProcessedAds: boolean) => void;
   useEmbeddings: boolean;
 }) => {
-
-
   const [processingAdsInPersonalizedContent, setProcessingAdsInPersonazliedContent] = useState(false);
   const queryClient = useQueryClient();
 

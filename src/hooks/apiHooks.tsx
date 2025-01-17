@@ -145,7 +145,7 @@ export const checkVectorExists = async (videoId: string) => {
 
 export const getAndStoreEmbeddings = async (indexId: string, videoId: string) => {
   try {
-    // 1. 먼저 비디오 상세 정보와 임베딩을 가져옴
+    // 1.Get video details and embeddings
     const videoDetails = await fetchVideoDetails(videoId, indexId, true);
 
     if (!videoDetails.embedding) {
@@ -155,7 +155,7 @@ export const getAndStoreEmbeddings = async (indexId: string, videoId: string) =>
     const embedding = videoDetails.embedding;
     console.log("🚀 > getAndStoreEmbeddings > embedding=", embedding)
 
-    // 2. 임베딩을 Pinecone에 저장
+    // 2. Store embeddings in Pinecone
     const response = await fetch('/api/storeEmbeddings', {
       method: 'POST',
       headers: {

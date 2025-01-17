@@ -25,136 +25,130 @@ const ContextualAds = ({ adsIndexId, hasProcessedAds, setHasProcessedAds, hasPro
     const customQueryRef = useRef<HTMLInputElement>(null);
 
     const { data:gistData, isLoading: isGistLoading, error: gistDataError } = useQuery<string, Error>({
-      queryKey: ["hashtags", footageVideoId],
-      queryFn: () => generateCustomTexts(footageVideoId, HASHTAGS_PROMPT),
-      enabled: !!footageVideoId && !!isAnalyzeClicked,
-      refetchOnWindowFocus: false,
-      staleTime: Infinity,
+        queryKey: ["hashtags", footageVideoId],
+        queryFn: () => generateCustomTexts(footageVideoId, HASHTAGS_PROMPT),
+        enabled: !!footageVideoId && !!isAnalyzeClicked,
+        refetchOnWindowFocus: false,
+        staleTime: Infinity,
     });
 
     const { data: rawCustomTextsData, isLoading: isCustomTextsLoading, error: customTextsError } = useQuery<string, Error>({
-      queryKey: ["summary", footageVideoId],
-      queryFn: () => generateCustomTexts(footageVideoId, PROMPT),
-      enabled: !!footageVideoId && !!isAnalyzeClicked,
-      refetchOnWindowFocus: false,
-      staleTime: Infinity,
+        queryKey: ["summary", footageVideoId],
+        queryFn: () => generateCustomTexts(footageVideoId, PROMPT),
+        enabled: !!footageVideoId && !!isAnalyzeClicked,
+        refetchOnWindowFocus: false,
+        staleTime: Infinity,
     });
 
     const customTextsData = useMemo(() => rawCustomTextsData, [rawCustomTextsData]);
 
     useEffect(() => {
-      if (gistData) {
-        setHashtags(gistData.split("#").filter(tag => tag.trim() !== ""));
-      }
+        if (gistData) {
+            setHashtags(gistData.split("#").filter(tag => tag.trim() !== ""));
+        }
     }, [gistData]);
 
     useEffect(() => {
-      if (customTextsData) {
-        const emotionalTones: string[] = [];
-        const matches = customTextsData.match(/Emotional Tone[:\s]*([^]+)/);
+        if (customTextsData) {
+            const emotionalTones: string[] = [];
+            const matches = customTextsData.match(/Emotional Tone[:\s]*([^]+)/);
 
-        if (matches && matches[1]) {
-          // Split by commas, periods, or spaces and clean up each word
-          const words = matches[1]
-            .trim()
-            .split(/[,.\s]+/)
-            .filter(word => {
-              // 영문자로만 구성된 단어만 허용 (대소문자 모두)
-              return (
-                word &&
-                word !== 'and' &&
-                word !== ':' &&
-                /^[a-zA-Z]+$/.test(word)
-              );
-            });
-
-          // Take only the first three words
-          emotionalTones.push(...words.slice(0, 3));
+            if (matches && matches[1]) {
+                const words = matches[1]
+                    .trim()
+                    .split(/[,.\s]+/)
+                    .filter(word => {
+                        return (
+                            word &&
+                            word !== 'and' &&
+                            word !== ':' &&
+                            /^[a-zA-Z]+$/.test(word)
+                        );
+                    });
+                emotionalTones.push(...words.slice(0, 3));
+            }
+            setEmotions(emotionalTones);
         }
-
-        setEmotions(emotionalTones);
-      }
     }, [customTextsData]);
 
-  return (
-    <div>
-        <h1 className="text-3xl font-bold mx-auto mb-6">Contextual Ads</h1>
-        <div className="mb-16 mx-auto">Contextual Ad is a tool for analyzing source footage, summarizing content, and recommending ads based on the footage’s context and emotional tone. It also supports embedding-based searches and suggests optimal ad placements, letting you preview how the footage and ads fit together. Additionally, it generates ad copies, headlines, and hashtags for each ad!</div>
-          <div className="flex w-full max-w-7xl mx-auto">
-            <div className="w-2/3 pr-4">
-              <Footage
-                hashtags={hashtags}
-                setHashtags={setHashtags}
-                indexId={footageIndexId ?? ''}
-                isIndexIdLoading={!footageIndexId}
-                footageVideoId ={footageVideoId}
-                setFootageVideoId={setFootageVideoId}
-                selectedFile={selectedFile}
-                setSelectedFile={setSelectedFile}
-                setIsRecommendClicked={setIsRecommendClicked}
-                emotions={emotions}
-                setEmotions={setEmotions}
-                gistData={gistData ?? ""}
-                customTextsData={customTextsData ?? ""}
-                isLoading={isGistLoading || isCustomTextsLoading}
-                error={gistDataError || customTextsError}
-                setIsRecommendClickedEver={setIsRecommendClickedEver}
-                setSelectedAd={setSelectedAd}
-                setSelectedChapter={setSelectedChapter}
-                isAnalyzeClicked={isAnalyzeClicked}
-                setIsAnalyzeClicked={setIsAnalyzeClicked}
-                hasProcessedFootage={hasProcessedFootage}
-                setHasProcessedFootage={setHasProcessedFootage}
-                useEmbeddings={useEmbeddings}
-              />
+    return (
+        <div>
+            <h1 className="text-3xl font-bold mx-auto mb-6">Contextual Ads</h1>
+            <div className="mb-16 mx-auto">Contextual Ad is a tool for analyzing source footage, summarizing content, and recommending ads based on the footage’s context and emotional tone. It also supports embedding-based searches and suggests optimal ad placements, letting you preview how the footage and ads fit together. Additionally, it generates ad copies, headlines, and hashtags for each ad!</div>
+            <div className="flex w-full max-w-7xl mx-auto">
+                <div className="w-2/3 pr-4">
+                    <Footage
+                        hashtags={hashtags}
+                        setHashtags={setHashtags}
+                        indexId={footageIndexId ?? ''}
+                        isIndexIdLoading={!footageIndexId}
+                        footageVideoId ={footageVideoId}
+                        setFootageVideoId={setFootageVideoId}
+                        selectedFile={selectedFile}
+                        setSelectedFile={setSelectedFile}
+                        setIsRecommendClicked={setIsRecommendClicked}
+                        emotions={emotions}
+                        setEmotions={setEmotions}
+                        gistData={gistData ?? ""}
+                        customTextsData={customTextsData ?? ""}
+                        isLoading={isGistLoading || isCustomTextsLoading}
+                        error={gistDataError || customTextsError}
+                        setIsRecommendClickedEver={setIsRecommendClickedEver}
+                        setSelectedAd={setSelectedAd}
+                        setSelectedChapter={setSelectedChapter}
+                        isAnalyzeClicked={isAnalyzeClicked}
+                        setIsAnalyzeClicked={setIsAnalyzeClicked}
+                        hasProcessedFootage={hasProcessedFootage}
+                        setHasProcessedFootage={setHasProcessedFootage}
+                        useEmbeddings={useEmbeddings}
+                    />
+                </div>
+                <div className="w-1/6"></div>
+                <div className="w-2/3 pl-4">
+                    <Ads
+                        indexId={adsIndexId ?? ''}
+                        isIndexIdLoading={!adsIndexId}
+                        selectedFile={selectedFile}
+                        isRecommendClicked={isRecommendClicked}
+                        setIsRecommendClicked={setIsRecommendClicked}
+                        searchOptionRef={searchOptionRef}
+                        customQueryRef={customQueryRef}
+                        isAnalysisLoading={isGistLoading || isCustomTextsLoading}
+                        setIsRecommendClickedEver={setIsRecommendClickedEver}
+                        isRecommendClickedEver={isRecommendClickedEver}
+                        setSelectedAd={setSelectedAd}
+                        setSelectedChapter={setSelectedChapter}
+                        hashtags={hashtags}
+                        hasProcessedAds={hasProcessedAds}
+                        setHasProcessedAds={setHasProcessedAds}
+                        hasProcessedFootage={hasProcessedFootage}
+                        useEmbeddings={useEmbeddings}
+                    />
+                </div>
             </div>
-            <div className="w-1/6"></div>
-            <div className="w-2/3 pl-4">
-              <Ads
-                indexId={adsIndexId ?? ''}
-                isIndexIdLoading={!adsIndexId}
-                selectedFile={selectedFile}
-                isRecommendClicked={isRecommendClicked}
-                setIsRecommendClicked={setIsRecommendClicked}
-                searchOptionRef={searchOptionRef}
-                customQueryRef={customQueryRef}
-                isAnalysisLoading={isGistLoading || isCustomTextsLoading}
-                setIsRecommendClickedEver={setIsRecommendClickedEver}
-                isRecommendClickedEver={isRecommendClickedEver}
-                setSelectedAd={setSelectedAd}
-                setSelectedChapter={setSelectedChapter}
-                hashtags={hashtags}
-                hasProcessedAds={hasProcessedAds}
-                setHasProcessedAds={setHasProcessedAds}
-                hasProcessedFootage={hasProcessedFootage}
-                useEmbeddings={useEmbeddings}
-
-              />
-            </div>
-          </div>
-          {isRecommendClickedEver && !selectedFile && (
-            <div className="w-3/4 mx-auto">
-              <RecommendedAds
-                hashtags={hashtags}
-                footageVideoId={footageVideoId}
-                footageIndexId={footageIndexId ?? ''}
-                adsIndexId={adsIndexId ?? ''}
-                selectedFile={selectedFile}
-                isRecommendClicked={isRecommendClicked}
-                setIsRecommendClicked={setIsRecommendClicked}
-                searchOptionRef={searchOptionRef}
-                customQueryRef={customQueryRef}
-                emotions={emotions}
-                selectedAd={selectedAd}
-                setSelectedAd={setSelectedAd}
-                selectedChapter={selectedChapter}
-                setSelectedChapter={setSelectedChapter}
-                useEmbeddings={useEmbeddings}
-              />
-            </div>
-          )}
-    </div>
-  )
+            {isRecommendClickedEver && !selectedFile && (
+                <div className="w-3/4 mx-auto">
+                    <RecommendedAds
+                        hashtags={hashtags}
+                        footageVideoId={footageVideoId}
+                        footageIndexId={footageIndexId ?? ''}
+                        adsIndexId={adsIndexId ?? ''}
+                        selectedFile={selectedFile}
+                        isRecommendClicked={isRecommendClicked}
+                        setIsRecommendClicked={setIsRecommendClicked}
+                        searchOptionRef={searchOptionRef}
+                        customQueryRef={customQueryRef}
+                        emotions={emotions}
+                        selectedAd={selectedAd}
+                        setSelectedAd={setSelectedAd}
+                        selectedChapter={selectedChapter}
+                        setSelectedChapter={setSelectedChapter}
+                        useEmbeddings={useEmbeddings}
+                    />
+                </div>
+            )}
+        </div>
+    )
 }
 
 export default ContextualAds

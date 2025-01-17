@@ -17,8 +17,6 @@ export async function POST(req: Request) {
     formData.append('text_truncate', 'end');
     formData.append('model_name', 'Marengo-retrieval-2.7');
 
-    console.log("🚀 > POST > formData=", formData)
-
     const { data: embedData } = await axios.post(url, formData, {
       headers: {
         'accept': 'application/json',
@@ -26,12 +24,9 @@ export async function POST(req: Request) {
         'x-api-key': API_KEY,
       },
     });
-    console.log("🚀 > POST > embedData=", embedData);
-    console.log("🚀 > Segments length:", embedData.text_embedding.segments.length);
 
     // text_embedding 객체에서 embedding 벡터 추출
     const searchEmbedding = embedData.text_embedding.segments[0].float;
-    console.log("🚀 > POST > searchEmbedding =", searchEmbedding )
 
     if (!searchEmbedding) {
       throw new Error('Failed to generate embedding');

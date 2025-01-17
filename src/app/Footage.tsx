@@ -18,17 +18,10 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 	const [taskId, setTaskId] = useState<string | null>(null);
 	const [taskDetails, setTaskDetails] = useState<TaskDetails | null>(null);
 	const [playing, setPlaying] = useState(false);
-	const { currentPlayerId, setCurrentPlayerId } = usePlayer();
 	const [processingVideos, setProcessingVideos] = useState(false);
 
-	const handleVideoChange = (newVideoId: string) => {
-		reset();
-		setFootageVideoId(newVideoId);
-		queryClient.invalidateQueries({ queryKey: ['videos'] });
-		queryClient.invalidateQueries({ queryKey: ['search'] });
-		queryClient.invalidateQueries({ queryKey: ['chapters'] });
-		queryClient.invalidateQueries({ queryKey: ['videoDetails'] });
-	};
+	const { currentPlayerId, setCurrentPlayerId } = usePlayer();
+	const queryClient = useQueryClient();
 
 	const {
 		data: videosData,
@@ -49,9 +42,6 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 		enabled: !!indexId && !isIndexIdLoading,
 	});
 
-	const queryClient = useQueryClient();
-	const hasVideoData = videosData?.pages[0]?.data && videosData.pages[0].data.length > 0;
-
 	const uploadMutation = useMutation({
 		mutationFn: (file: File) => {
 			return uploadFootage(file, indexId);
@@ -66,6 +56,17 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 			});
 		},
 	});
+
+	const hasVideoData = videosData?.pages[0]?.data && videosData.pages[0].data.length > 0;
+
+	const handleVideoChange = (newVideoId: string) => {
+		reset();
+		setFootageVideoId(newVideoId);
+		queryClient.invalidateQueries({ queryKey: ['videos'] });
+		queryClient.invalidateQueries({ queryKey: ['search'] });
+		queryClient.invalidateQueries({ queryKey: ['chapters'] });
+		queryClient.invalidateQueries({ queryKey: ['videoDetails'] });
+	};
 
 	const handleFileUpload = (file: File) => {
 		setSelectedFile(file);
@@ -98,11 +99,28 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 		setHasProcessedFootage,
 	]);
 
+	const processFootageVideo = useCallback(async () => {
+		if (!indexId || !footageVideoId) return;
+		setProcessingVideos(true);
+		try {
+			const vectorExists = await checkVectorExists(footageVideoId);
+			if (!vectorExists) {
+				await getAndStoreEmbeddings(indexId, footageVideoId);
+			}
+			if (typeof setHasProcessedFootage === 'function') {
+				setHasProcessedFootage(true);
+			}
+		} catch (error) {
+			console.error("Error processing video:", error);
+		} finally {
+			setProcessingVideos(false);
+		}
+	}, [indexId, footageVideoId, setHasProcessedFootage]);
+
 	useEffect(() => {
 		let intervalId: NodeJS.Timeout | null = null;
 
 		if (taskId) {
-
 			const fetchTask = async () => {
 				try {
 					const details = await fetchTaskDetails(taskId);
@@ -142,24 +160,6 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 			}
 		}
 	}, [videosData, footageVideoId, setFootageVideoId]);
-
-	const processFootageVideo = useCallback(async () => {
-		if (!indexId || !footageVideoId) return;
-		setProcessingVideos(true);
-		try {
-			const vectorExists = await checkVectorExists(footageVideoId);
-			if (!vectorExists) {
-				await getAndStoreEmbeddings(indexId, footageVideoId);
-			}
-			if (typeof setHasProcessedFootage === 'function') {
-				setHasProcessedFootage(true);
-			}
-		} catch (error) {
-			console.error("Error processing video:", error);
-		} finally {
-			setProcessingVideos(false);
-		}
-	}, [indexId, footageVideoId, setHasProcessedFootage]);
 
 	useEffect(() => {
 		console.log('Footage conditions:', {
@@ -208,13 +208,15 @@ function Footage({ hashtags, setHashtags, indexId, isIndexIdLoading, footageVide
 				</div>
 			</div>
 			{uploadMutation.isPending && !taskId && (
-    			<div className="flex flex-col w-full max-w-sm gap-4 items-center">
-				<div className="text-center">Starting up the indexing engine...</div>
-				<LoadingSpinner />
+				<div className="flex flex-col w-full max-w-sm gap-4 items-center mx-auto">
+					<div className="text-center">Starting up the indexing engine...</div>
+					<LoadingSpinner />
 				</div>
 			)}
 			{taskDetails && (
-				<Task taskDetails={taskDetails} playing={playing} setPlaying={setPlaying} />
+				<div className="flex justify-center w-full">
+					<Task taskDetails={taskDetails} playing={playing} setPlaying={setPlaying} />
+				</div>
 			)}
 			{!selectedFile && (
 				<>

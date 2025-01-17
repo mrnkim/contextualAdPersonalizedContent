@@ -12,6 +12,17 @@ import { VideoProps, VideoDetails } from "@/app/types";
 
 const Video: React.FC<VideoProps> = ({ videoId, indexId, showTitle = true, videoDetails: providedVideoDetails, playing = false, onPlay }) => {
 
+  const { data: videoDetails } = useQuery<VideoDetails, Error>({
+    queryKey: ["videoDetails", videoId],
+    queryFn: () => {
+      if (!videoId) {
+        throw new Error("Video ID is missing");
+      }
+      return fetchVideoDetails((videoId)!, indexId);
+    },
+    enabled: !!indexId && (!!videoId) && !providedVideoDetails,
+  });
+
   const formatDuration = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
@@ -23,17 +34,6 @@ const Video: React.FC<VideoProps> = ({ videoId, indexId, showTitle = true, video
       secs.toString().padStart(2, "0"),
     ].join(":");
   };
-
-  const { data: videoDetails } = useQuery<VideoDetails, Error>({
-    queryKey: ["videoDetails", videoId],
-    queryFn: () => {
-      if (!videoId) {
-        throw new Error("Video ID is missing");
-      }
-      return fetchVideoDetails((videoId)!, indexId);
-    },
-    enabled: !!indexId && (!!videoId) && !providedVideoDetails,
-  });
 
   const finalVideoDetails = providedVideoDetails || videoDetails;
 

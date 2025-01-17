@@ -14,12 +14,6 @@ import {
   const AdCopy = ({ videoDetails, isDialogOpen, setIsDialogOpen, setIsGenerating, adCopyData }: AdCopyProps) => {
     const [currentSuggestionIndex, setCurrentSuggestionIndex] = useState(0);
 
-    useEffect(() => {
-      if (adCopyData) {
-        setIsGenerating(false);
-      }
-    }, [adCopyData, setIsGenerating]);
-
       const handlePreviousSuggestion = () => {
         setCurrentSuggestionIndex((prevIndex: number) => (prevIndex - 1 + parsedAdCopy.length) % parsedAdCopy.length);
       };
@@ -67,6 +61,12 @@ import {
       }
 
     const parsedAdCopy = adCopyData ? parseAdCopy(adCopyData) : [];
+
+    useEffect(() => {
+      if (adCopyData) {
+        setIsGenerating(false);
+      }
+    }, [adCopyData, setIsGenerating]);
 
   return (
     <ErrorBoundary FallbackComponent={({ error }) => <ErrorFallback error={error} />}>

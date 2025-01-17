@@ -12,8 +12,6 @@ export async function GET(request: Request) {
   try {
     const index = getPineconeIndex();
 
-    // Add debug logging for the videoId
-
     // Fetch vectors using metadata filter instead of direct ID
     const queryResponse = await index.query({
       vector: new Array(1024).fill(0),
@@ -23,8 +21,6 @@ export async function GET(request: Request) {
       topK: 1,
       includeMetadata: true
     });
-
-    console.log("🚀 > fetchVectors > queryResponse=", queryResponse.matches)
 
     return NextResponse.json({
       exists: queryResponse.matches.length > 0

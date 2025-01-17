@@ -329,7 +329,6 @@ export interface Chapter {
   chapter_summary: string;
 }
 
-// Types
 export type Size = 'sm' | 'md' | 'lg';
 export type Color = 'default' | 'primary';
 

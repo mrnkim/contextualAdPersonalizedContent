@@ -22,7 +22,38 @@ const RecommendedAds = ({ hashtags, footageVideoId, adsIndexId, selectedFile, se
   const [displayCount, setDisplayCount] = useState(INITIAL_DISPLAY_COUNT);
   const [embeddingScores, setEmbeddingScores] = useState<Record<string, number>>({});
   const [embeddingSearchResults, setEmbeddingSearchResults] = useState<RecommendedAdProps["recommendedAd"][]>([]);
-  console.log("🚀 > RecommendedAds > embeddingSearchResults=", embeddingSearchResults)
+
+  const searchResults = useQueries({
+    queries: searchQueries.map(query => ({
+      queryKey: ["search", adsIndexId, query, searchOptions],
+      queryFn: () => textToVideoSearch(adsIndexId, query, searchOptions),
+      enabled: query.length > 0 && searchOptions.length > 0 && !selectedFile,
+    }))
+  });
+
+  const combinedData = searchResults.reduce((acc, result) => {
+    if (result.data?.data) {
+      result.data.data.forEach((item: RecommendedAdProps["recommendedAd"]) => {
+        if (!acc.some(existing => existing.id === item.id)) {
+          acc.push(item);
+        }
+      });
+    }
+    return acc;
+  }, [] as RecommendedAdProps["recommendedAd"][]);
+
+  const displayedData = useMemo(() => {
+    return combinedData.slice(0, displayCount);
+  }, [combinedData, displayCount]);
+
+  const isLoading = searchResults.some(result => result.isLoading);
+  const isError = searchResults.some(result => result.isError);
+  const hasMore = displayCount < combinedData.length;
+
+  const fetchMoreData = () => {
+    if (displayCount >= combinedData.length) return;
+    setDisplayCount(prev => Math.min(prev + INITIAL_DISPLAY_COUNT, combinedData.length));
+  };
 
   useEffect(() => {
     if (!isRecommendClicked) return;
@@ -94,44 +125,8 @@ const RecommendedAds = ({ hashtags, footageVideoId, adsIndexId, selectedFile, se
     };
 
     handleEmbeddingSearch();
-
     setIsRecommendClicked(false);
   }, [isRecommendClicked, hashtags, emotions]);
-
-  const searchResults = useQueries({
-    queries: searchQueries.map(query => ({
-      queryKey: ["search", adsIndexId, query, searchOptions],
-      queryFn: () => textToVideoSearch(adsIndexId, query, searchOptions),
-      enabled: query.length > 0 && searchOptions.length > 0 && !selectedFile,
-    }))
-  });
-
-  const isLoading = searchResults.some(result => result.isLoading);
-  const isError = searchResults.some(result => result.isError);
-
-  // Combine all results and remove duplicates
-  const combinedData = searchResults.reduce((acc, result) => {
-    if (result.data?.data) {
-      result.data.data.forEach((item: RecommendedAdProps["recommendedAd"]) => {
-        if (!acc.some(existing => existing.id === item.id)) {
-          acc.push(item);
-        }
-      });
-    }
-    return acc;
-  }, [] as RecommendedAdProps["recommendedAd"][]);
-
-  const displayedData = useMemo(() => {
-    return combinedData.slice(0, displayCount);
-  }, [combinedData, displayCount]);
-
-  const hasMore = displayCount < combinedData.length;
-
-  const fetchMoreData = () => {
-    if (displayCount >= combinedData.length) return;
-
-    setDisplayCount(prev => Math.min(prev + INITIAL_DISPLAY_COUNT, combinedData.length));
-  };
 
   if (isError) return <ErrorFallback error={new Error("Search failed")} />;
 

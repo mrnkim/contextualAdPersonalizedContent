@@ -1,8 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { IndexData, IndexesDropDownProps } from '@/app/types';
 import { MenuItem, Select, SelectChangeEvent } from '@mui/material'
 import clsx from 'clsx';
-import LoadingSpinner from './LoadingSpinner';
 
 const IndexesDropDown: React.FC<IndexesDropDownProps> = ({
   handleIndexChange,
@@ -15,22 +14,15 @@ const IndexesDropDown: React.FC<IndexesDropDownProps> = ({
   const [loadedIndexes, setLoadedIndexes] = React.useState<IndexData[]>([]);
   const [localSelectedId, setLocalSelectedId] = React.useState<string>('');
 
-  // 초기 selectedIndexId 설정
-  React.useEffect(() => {
+  // Set initial selectedIndexId
+  useEffect(() => {
     if (selectedIndexId) {
       setLocalSelectedId(selectedIndexId);
-      console.log('초기 selectedIndexId 설정:', selectedIndexId);
+      console.log('Initial selectedIndexId:', selectedIndexId);
     }
-  }, []); // 컴포넌트 마운트 시에만 실행
+  }, []); // Only run on component mount
 
-  React.useEffect(() => {
-    console.log('indexesData 변경:', {
-      pagesCount: indexesData?.pages?.length,
-      totalIndexes: loadedIndexes.length,
-      selectedId: selectedIndexId,
-      localId: localSelectedId
-    });
-
+  useEffect(() => {
     if (indexesData?.pages) {
       const newIndexes = indexesData.pages.flatMap(page => page.data);
       setLoadedIndexes(prev => {
@@ -42,25 +34,25 @@ const IndexesDropDown: React.FC<IndexesDropDownProps> = ({
           }, new Map()).values()
         );
 
-        // 선택된 ID가 새로운 데이터에 있는지 확인
+        // Check if the selected ID is in the new data
         const hasSelectedId = uniqueIndexes.some(index => index._id === selectedIndexId);
-        console.log('인덱스 데이터 업데이트:', {
+        console.log('Index data updated:', {
           hasSelectedId,
           selectedId: selectedIndexId,
           totalIndexes: uniqueIndexes.length
         });
 
-        // 선택된 ID가 없고 다음 페이지가 있다면 다음 페이지 로드
+        // If the selected ID is not found and there is a next page, load the next page
         if (!hasSelectedId && hasNextPage && !isFetchingNextPage) {
-          console.log('선택된 ID를 찾기 위해 다음 페이지 로드');
+          console.log('Loading next page to find selected ID');
           fetchNextPage();
         }
 
-        // 선택된 ID가 있으면 localSelectedId 업데이트
+        // If the selected ID is found, update localSelectedId
         if (hasSelectedId && selectedIndexId) {
           setLocalSelectedId(selectedIndexId);
         } else if (!localSelectedId && uniqueIndexes.length > 0) {
-          // 아직 선택된 ID가 없고 첫 로드라면 첫 번째 인덱스 선택
+          // If no selected ID and it's the first load, select the first index
           setLocalSelectedId(uniqueIndexes[0]._id);
         }
 
@@ -73,17 +65,12 @@ const IndexesDropDown: React.FC<IndexesDropDownProps> = ({
     return null;
   }
 
-  // 현재 선택된 ID가 유효한지 확인
+  // Check if the current selected ID is valid
   const isValidId = loadedIndexes.some(index => index._id === localSelectedId);
   const effectiveValue = isValidId ? localSelectedId : (loadedIndexes[0]?._id || '');
 
   const handleChange = (event: SelectChangeEvent<string>) => {
     const newIndexId = event.target.value;
-    console.log('드롭다운 선택 변경:', {
-      newIndexId,
-      previousId: localSelectedId,
-      matchingIndex: loadedIndexes.find(index => index._id === newIndexId)?.index_name
-    });
     setLocalSelectedId(newIndexId);
     handleIndexChange(newIndexId);
   };

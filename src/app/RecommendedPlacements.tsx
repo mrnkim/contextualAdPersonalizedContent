@@ -159,7 +159,7 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId, selectedAd, ads
                 <div className="w-full aspect-video relative mb-8">
                     {playbackSequence === 'ad' && adVideoDetail ? (
                         <ReactPlayer
-                            url={adVideoDetail.hls.video_url}
+                            url={adVideoDetail?.hls?.video_url}
                             controls
                             width="100%"
                             height="100%"
@@ -172,7 +172,7 @@ const RecommendedPlacements = ({ footageVideoId, footageIndexId, selectedAd, ads
                         footageVideoDetail && (
                             <ReactPlayer
                                 ref={playerRef}
-                                url={footageVideoDetail.hls.video_url}
+                                url={footageVideoDetail?.hls?.video_url}
                                 controls
                                 width="100%"
                                 height="100%"

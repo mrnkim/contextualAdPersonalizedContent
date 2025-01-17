@@ -20,13 +20,6 @@ function FootageSummary({
   setShowAnalysis
 }: FootageSummaryProps) {
 
-  useEffect(() => {
-    if (gistData && typeof gistData === 'string') {
-      const extractedHashtags = gistData.split(/\s+/).filter(tag => tag.startsWith('#')).map(tag => tag.slice(1));
-      setHashtags(extractedHashtags);
-    }
-  }, [gistData, setHashtags]);
-
   const renderGistData = () => {
     if (!gistData) return null;
 
@@ -80,6 +73,13 @@ function FootageSummary({
       </div>
     ));
   };
+
+  useEffect(() => {
+    if (gistData && typeof gistData === 'string') {
+      const extractedHashtags = gistData.split(/\s+/).filter(tag => tag.startsWith('#')).map(tag => tag.slice(1));
+      setHashtags(extractedHashtags);
+    }
+  }, [gistData, setHashtags]);
 
   return (
     <Dialog

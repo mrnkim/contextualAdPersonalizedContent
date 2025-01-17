@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Button from './Button'
 import { useQueries } from "@tanstack/react-query";
 import { fetchSearchPage, textToVideoSearch } from '@/hooks/apiHooks';
@@ -38,105 +38,36 @@ function UserProfile({
   useEmbeddings,
   processingAdsInPersonalizedContent
 }: UserProfileProps) {
-  const [newInterest, setNewInterest] = React.useState('');
-  const [isSearchClicked, setIsSearchClicked] = React.useState(false);
-  const [currentVideoIndex, setCurrentVideoIndex] = React.useState(0);
-  const [newDemographicKey, setNewDemographicKey] = React.useState('');
-  const [newDemographicValue, setNewDemographicValue] = React.useState('');
-  const [nameInput, setNameInput] = React.useState('');
-  const [ageInput, setAgeInput] = React.useState('');
-  const [locationInput, setLocationInput] = React.useState('');
-  const [editingKey, setEditingKey] = React.useState<string | null>(null);
-  const [editingValue, setEditingValue] = React.useState<string | null>(null);
-  const [newKeyInput, setNewKeyInput] = React.useState('');
-  const [newValueInput, setNewValueInput] = React.useState('');
-  const [newEmotion, setNewEmotion] = React.useState('');
-  const [showAddField, setShowAddField] = React.useState(false);
-  const [isPlaying, setIsPlaying] = React.useState(false);
-
-
+  // Core state
   const interests = initialInterests;
   const demographics = initialDemographics;
   const emotionAffinities = initialEmotionAffinities;
-
   const { currentPlayerId, setCurrentPlayerId } = usePlayer();
 
-  React.useEffect(() => {
-    setIsSearchClicked(false);
-  }, [interests, demographics, emotionAffinities, indexId]);
+  // UI State
+  const [isSearchClicked, setIsSearchClicked] = useState(false);
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [showAddField, setShowAddField] = useState(false);
 
-  React.useEffect(() => {
-    setIsSearchClicked(false);
-  }, [useEmbeddings]);
+  // Interest related state
+  const [newInterest, setNewInterest] = useState('');
 
-  const handleInterestSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && newInterest.trim()) {
-      setIsSearchClicked(false);
-      onUpdateProfile({
-        ...demographics,
-        profilePic,
-        userId,
-        interests: [...interests, newInterest.trim()],
-        demographics,
-        emotionAffinities
-      });
-      setNewInterest('');
-    }
-  };
+  // Demographics related state
+  const [nameInput, setNameInput] = useState('');
+  const [ageInput, setAgeInput] = useState('');
+  const [locationInput, setLocationInput] = useState('');
+  const [newDemographicKey, setNewDemographicKey] = useState('');
+  const [newDemographicValue, setNewDemographicValue] = useState('');
+  const [editingKey, setEditingKey] = useState<string | null>(null);
+  const [editingValue, setEditingValue] = useState<string | null>(null);
+  const [newKeyInput, setNewKeyInput] = useState('');
+  const [newValueInput, setNewValueInput] = useState('');
 
-  const removeInterest = (indexToRemove: number) => {
-    setIsSearchClicked(false);
-    onUpdateProfile({
-      ...demographics,
-      profilePic,
-      userId,
-      interests: interests.filter((_, index) => index !== indexToRemove),
-      demographics,
-      emotionAffinities
-    });
-  };
+  // Emotion related state
+  const [newEmotion, setNewEmotion] = useState('');
 
-  const removeDemographic = (key: string) => {
-    setIsSearchClicked(false);
-    const newDemographics = { ...demographics };
-    delete newDemographics[key];
-    onUpdateProfile({
-      ...demographics,
-      profilePic,
-      userId,
-      interests,
-      demographics: newDemographics,
-      emotionAffinities
-    });
-  };
-
-  const handleEmotionSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && newEmotion.trim()) {
-      setIsSearchClicked(false);
-      onUpdateProfile({
-        ...demographics,
-        profilePic,
-        userId,
-        interests,
-        demographics,
-        emotionAffinities: [...emotionAffinities, newEmotion.trim()]
-      });
-      setNewEmotion('');
-    }
-  };
-
-  const removeEmotion = (indexToRemove: number) => {
-    setIsSearchClicked(false);
-    onUpdateProfile({
-      ...demographics,
-      profilePic,
-      userId,
-      interests,
-      demographics,
-      emotionAffinities: emotionAffinities.filter((_, index) => index !== indexToRemove)
-    });
-  };
-
+  // Search queries setup
   const searchQueries = useQueries({
     queries: interests.map((interest) => ({
       queryKey: ["search", interest, userId, isSearchClicked, indexId, useEmbeddings],
@@ -215,6 +146,84 @@ function UserProfile({
 
     return Array.from(results.values());
   }, [searchQueries, interests]);
+
+  // Effects
+  useEffect(() => {
+    setIsSearchClicked(false);
+  }, [interests, demographics, emotionAffinities, indexId]);
+
+  useEffect(() => {
+    setIsSearchClicked(false);
+  }, [useEmbeddings]);
+
+  // Event handlers
+  const handleInterestSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && newInterest.trim()) {
+      setIsSearchClicked(false);
+      onUpdateProfile({
+        ...demographics,
+        profilePic,
+        userId,
+        interests: [...interests, newInterest.trim()],
+        demographics,
+        emotionAffinities
+      });
+      setNewInterest('');
+    }
+  };
+
+  const removeInterest = (indexToRemove: number) => {
+    setIsSearchClicked(false);
+    onUpdateProfile({
+      ...demographics,
+      profilePic,
+      userId,
+      interests: interests.filter((_, index) => index !== indexToRemove),
+      demographics,
+      emotionAffinities
+    });
+  };
+
+  const handleEmotionSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && newEmotion.trim()) {
+      setIsSearchClicked(false);
+      onUpdateProfile({
+        ...demographics,
+        profilePic,
+        userId,
+        interests,
+        demographics,
+        emotionAffinities: [...emotionAffinities, newEmotion.trim()]
+      });
+      setNewEmotion('');
+    }
+  };
+
+  const removeEmotion = (indexToRemove: number) => {
+    setIsSearchClicked(false);
+    onUpdateProfile({
+      ...demographics,
+      profilePic,
+      userId,
+      interests,
+      demographics,
+      emotionAffinities: emotionAffinities.filter((_, index) => index !== indexToRemove)
+    });
+  };
+
+  const removeDemographic = (key: string) => {
+    setIsSearchClicked(false);
+    const newDemographics = { ...demographics };
+    delete newDemographics[key];
+    onUpdateProfile({
+      ...demographics,
+      profilePic,
+      userId,
+      interests,
+      demographics: newDemographics,
+      emotionAffinities
+    });
+  };
 
   const validCurrentVideoIndex = currentVideoIndex < allSearchResults.length ? currentVideoIndex : 0;
 

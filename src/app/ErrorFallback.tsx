@@ -1,12 +1,12 @@
 import React from "react";
 import { Alert } from "@mui/material";
 import clsx from "clsx";
-// import Button from "./Button";
+import Button from "./Button";
 
 function ErrorFallback({ error }: { error: Error }) {
-  // const handleRefresh = () => {
-  //   window.location.reload();
-  // };
+  const handleRefresh = () => {
+    window.location.reload();
+  };
 
   return (
     <div
@@ -32,9 +32,9 @@ function ErrorFallback({ error }: { error: Error }) {
       </Alert>
 
       {/*TODO: Decide whether to keep this button*/}
-      {/* <Button type="button" size="sm" onClick={handleRefresh}>
+      <Button type="button" size="sm" onClick={handleRefresh}>
         Back to Home
-      </Button> */}
+      </Button>
     </div>
   );
 }

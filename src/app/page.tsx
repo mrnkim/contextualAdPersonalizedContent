@@ -33,6 +33,8 @@ export default function Page() {
   const [hasProcessedAds, setHasProcessedAds] = useState(false);
   const [hasProcessedFootage, setHasProcessedFootage] = useState(false);
   const [useEmbeddings, setUseEmbeddings] = useState(false);
+  const [runTour, setRunTour] = useState(true);
+  const [isMounted, setIsMounted] = useState(false);
   const [profiles, setProfiles] = useState([
       {
         profilePic: '/profile1.jpg',
@@ -68,12 +70,7 @@ export default function Page() {
         userId: 'user3'
       }
     ]);
-  const [runTour, setRunTour] = useState(true);
-  const [isMounted, setIsMounted] = useState(false);
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
 
   const steps: Step[] = [
     {
@@ -92,6 +89,10 @@ export default function Page() {
       placement: 'bottom',
     },
   ];
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   return (
     <PlayerProvider>

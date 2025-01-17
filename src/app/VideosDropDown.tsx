@@ -16,6 +16,8 @@ const VideosDropDown: React.FC<VideosDropDownProps> = ({
   taskId,
   footageVideoId
 }) => {
+  const ITEM_HEIGHT = 48;
+  const MENU_MAX_HEIGHT = 5 * ITEM_HEIGHT;
 
   const handleChange = (event: SelectChangeEvent<string>) => {
     const newVideoId = event.target.value;
@@ -38,9 +40,6 @@ const VideosDropDown: React.FC<VideosDropDownProps> = ({
       </div>
     );
   }
-
-  const ITEM_HEIGHT = 48;
-  const MENU_MAX_HEIGHT = 5 * ITEM_HEIGHT;
 
   return (
     <div className="relative">
