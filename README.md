@@ -1,16 +1,19 @@
 ## 👋 Introduction
 
-**Contextual Ad** is a tool that allows you to analyze your source footage, generate a summary, and receive ad recommendations based on the content and emotional tone of the footage. It also suggests optimal ad placements, enabling you to preview how the footage and ads work together. Additionally, you can generate ad copies, headlines, and hashtags for each ad!
+**Contextual Ad** is a tool for analyzing source footage, summarizing content, and recommending ads based on the footage’s context and emotional tone. It also supports embedding-based searches and suggests optimal ad placements, letting you preview how the footage and ads fit together. Additionally, it generates ad copies, headlines, and hashtags for each ad!
 
 https://www.loom.com/share/007d81ff04c2430ab265d5a28b99c0ef?sid=9202c205-16fd-4bf0-9444-bd286014e7d4
 
-**Personalized Content** is an app that delivers tailored, relevant video recommendations by leveraging detailed user profiles and preferences.
+With **Personalized Content**, you get tailored video recommendations based on user profiles and preferences, plus embedding-based searches for more accurate results.
 
 https://www.loom.com/share/f2a5d19b507d4a3fb69a2f002a98510a?sid=0ca85931-a6cb-4057-9f01-d6f85cacdbe6
 
 ## 🧱 Components
- ![alt text](image-1.png)
+![alt text](image-2.png)
 
+## ➡️ Process Maps
+![alt text](image-3.png)
+![alt text](image-4.png)
 ## 🚀 Prerequisites
 
 ### 1. Twelve Labs API Key
