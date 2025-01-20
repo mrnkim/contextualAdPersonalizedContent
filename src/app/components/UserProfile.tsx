@@ -159,11 +159,16 @@ function UserProfile({
             onClick={() => {
               setIsSearchClicked(true);
             }}
-            disabled={(useEmbeddings && processingAdsInPersonalizedContent) || interests.length === 0}
-          >
-            <div className="flex items-center">
-              {useEmbeddings ? "Search by Embeddings" : "Search"}
-            </div>
+            disabled={isLoading || (useEmbeddings && processingAdsInPersonalizedContent) || isSearchClicked || interests.length === 0}
+            >
+              <img
+                src={isLoading || (useEmbeddings && processingAdsInPersonalizedContent) || isSearchClicked || interests.length === 0 ? "/magicDisabled.svg" : "/magic.svg"}
+                alt="Magic wand icon"
+                className="w-4 h-4"
+              />
+              <div className="flex items-center">
+                {useEmbeddings ? "Recommend by Embeddings" : "Recommend"}
+              </div>
           </Button>
         </div>
 
