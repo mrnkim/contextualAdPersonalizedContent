@@ -26,15 +26,15 @@ export async function POST(req: Request) {
     });
 
     // text_embedding 객체에서 embedding 벡터 추출
-    const searchEmbedding = embedData.text_embedding.segments[0].float;
+    const textEmbedding = embedData.text_embedding.segments[0].float;
 
-    if (!searchEmbedding) {
+    if (!textEmbedding) {
       throw new Error('Failed to generate embedding');
     }
 
     // Get index and search
     const searchResults = await index.query({
-      vector: searchEmbedding,
+      vector: textEmbedding,
       filter: {
         // video_type: 'ad',
         tl_index_id: indexId,
