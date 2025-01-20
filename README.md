@@ -9,8 +9,7 @@ With **Personalized Content**, you get tailored video recommendations based on u
 https://www.loom.com/share/f2a5d19b507d4a3fb69a2f002a98510a?sid=0ca85931-a6cb-4057-9f01-d6f85cacdbe6
 
 ## 🧱 Components
-![alt text](image-2.png)
-
+![alt text](image-5.png)
 ## ➡️ Process Maps
 ![alt text](image-3.png)
 ![alt text](image-4.png)
