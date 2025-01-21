@@ -25,7 +25,7 @@ export async function POST(req: Request) {
       },
     });
 
-    // text_embedding 객체에서 embedding 벡터 추출
+    // extract embedding vector from text_embedding object
     const textEmbedding = embedData.text_embedding.segments[0].float;
 
     if (!textEmbedding) {

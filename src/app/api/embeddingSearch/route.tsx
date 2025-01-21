@@ -18,18 +18,7 @@ export async function POST(req: Request) {
         includeMetadata: true,
         includeValues: true,
         vector: new Array(1024).fill(0)
-      }),
-      // Search in video scope
-    //   index.query({
-    //     filter: {
-    //       tlVideoId: videoId,
-    //       scope: 'video'
-    //     },
-    //     topK: 1,
-    //     includeMetadata: true,
-    //     includeValues: true,
-    //     vector: new Array(1024).fill(0)
-    //   })
+      })
     ]);
 
     // Search for similar ads for each scope
@@ -63,11 +52,6 @@ export async function POST(req: Request) {
         ...result,
         resultType: 'clip'
       }))
-    //   ,
-    //   ...(('matches' in similarResults[1] ? similarResults[1].matches : []) || []).map(result => ({
-    //     ...result,
-    //     resultType: 'video'
-    //   }))
     ];
 
     // Remove duplicates (keep only the highest score for each tlVideoId)
