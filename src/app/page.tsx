@@ -38,7 +38,7 @@ export default function Page() {
   const [profiles, setProfiles] = useState([
       {
         profilePic: '/profile1.jpg',
-        interests: ['Music', 'Travel', 'Beauty'],
+        interests: ['Jazz', 'Travel', 'Beauty'],
         demographics: {
           name: 'Emily',
           age: 19,
@@ -49,7 +49,7 @@ export default function Page() {
       },
       {
         profilePic: '/profile2.jpg',
-        interests: ['Sports', 'Reading', 'Cooking'],
+        interests: ['Sports', 'Books', 'Food'],
         demographics: {
           name: 'David',
           age: 37,

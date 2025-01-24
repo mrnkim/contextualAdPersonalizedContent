@@ -81,7 +81,7 @@ const ContextualAds = ({ adsIndexId, hasProcessedAds, setHasProcessedAds, hasPro
     return (
         <div>
             <h1 className="text-3xl font-bold mx-auto mb-6">Contextual Ads</h1>
-            <div className="mb-16 mx-auto">Contextual Ad is a tool for analyzing source footage, summarizing content, and recommending ads based on the footage's context and emotional tone. It also supports embedding-based searches and suggests optimal ad placements, letting you preview how the footage and ads fit together. Additionally, it generates ad copies, headlines, and hashtags for each ad!</div>
+            <div className="mb-16 mx-auto">Contextual Ad is a tool for analyzing source footage, summarizing content, and recommending ads based on the footage&apos;s context and emotional tone. It also supports embedding-based searches and suggests optimal ad placements, letting you preview how the footage and ads fit together. Additionally, it generates ad copies, headlines, and hashtags for each ad!</div>
             <div className="flex w-full max-w-7xl mx-auto">
                 <div className="w-2/3 pr-4">
                     <Footage
