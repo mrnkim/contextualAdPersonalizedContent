@@ -11,6 +11,8 @@ export async function GET(req: Request) {
     const query = searchParams.get("query");
     const searchOptionsString = searchParams.get("searchOptions");
     const pageLimit = searchParams.get("pageLimit");
+    const confidenceLevel = searchParams.get("confidenceLevel")
+
     const searchOptions = searchOptionsString ? searchOptionsString.split(',') : [];
 
     if (!indexId) {
@@ -37,6 +39,7 @@ export async function GET(req: Request) {
       formData.append('group_by', 'video');
       formData.append('page_limit', pageLimit ?? '4');
       formData.append('threshold', 'high');
+      formData.append('adjust_confidence_level', confidenceLevel ?? '0.5');
 
       const options = {
           method: "POST",

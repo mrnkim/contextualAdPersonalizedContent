@@ -16,8 +16,8 @@ export const generateCustomTexts = async (videoId: string, prompt: string) => {
     return data;
   };
 
-export const textToVideoSearch = async (indexId: string, query: string, searchOptions: string[], pageLimit: number=4) => {
-    const response = await fetch(`/api/search?indexId=${indexId}&query=${query}&searchOptions=${searchOptions}&pageLimit=${pageLimit}`);
+export const textToVideoSearch = async (indexId: string, query: string, searchOptions: string[], pageLimit: number=4, confidenceLevel: number=0.5) => {
+    const response = await fetch(`/api/search?indexId=${indexId}&query=${query}&searchOptions=${searchOptions}&pageLimit=${pageLimit}&confidenceLevel=${confidenceLevel}`);
     if (!response.ok) {
       throw new Error("Failed to search videos");
     }

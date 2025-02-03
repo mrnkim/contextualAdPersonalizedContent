@@ -43,41 +43,32 @@ function UserProfile({
           const results = [];
 
           if (useEmbeddings) {
-            // Embedding-based search using the new API
             const response = await fetch('/api/keywordEmbeddingSearch', {
               method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                searchTerm: interest,
-                indexId: indexId
-              })
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ searchTerm: interest, indexId })
             });
             const data = await response.json();
-
-            results.push(...data.map((item: { metadata: { tl_video_id: string }, score: number }) => ({
-              id: item.metadata.tl_video_id,
-              clips: [{
-                score: item.score
-              }]
-            })));
-          } else {
-            // Original keyword-based search
-            const initialResponse = await textToVideoSearch(indexId, interest, [
-              "visual",
-              "audio",
-            ], 10);
-
-            results.push(...(initialResponse.data || []));
-            let currentPageToken = initialResponse.page_info?.next_page_token;
-
-            while (currentPageToken) {
-              const nextPage = await fetchSearchPage(currentPageToken);
-              results.push(...(nextPage.data || []));
-              currentPageToken = nextPage.page_info?.next_page_token;
-            }
+            return {
+              data: data.map((item: { metadata: { tl_video_id: string }, score: number }) => ({
+                id: item.metadata.tl_video_id,
+                clips: [{ score: item.score }]
+              })),
+              searchTerm: interest
+            };
           }
+
+          // Original keyword-based search
+          const initialResponse = await textToVideoSearch(indexId, interest, ["visual", "audio"], 10, 0.6);
+          results.push(...(initialResponse.data || []));
+
+          let currentPageToken = initialResponse.page_info?.next_page_token;
+          while (currentPageToken) {
+            const nextPage = await fetchSearchPage(currentPageToken);
+            results.push(...(nextPage.data || []));
+            currentPageToken = nextPage.page_info?.next_page_token;
+          }
+
           return { data: results, searchTerm: interest };
         } catch (error) {
           console.error(`Search error for "${interest}":`, error);
