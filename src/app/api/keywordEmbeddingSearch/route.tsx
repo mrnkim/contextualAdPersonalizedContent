@@ -45,23 +45,28 @@ export async function POST(req: Request) {
     });
 
     // Remove duplicates (keep only the highest score for each video)
+    interface SearchResult {
+      metadata?: Record<string, string | number | boolean | string[]>;
+      score: number;  // score를 필수 필드로 지정
+    }
+
     const uniqueResults = Object.values(
-      searchResults.matches.reduce((acc: Record<string, {
-        metadata?: Record<string, string | number | boolean | string[]>;
-        score?: number;
-      }>, current) => {
+      searchResults.matches.reduce((acc: Record<string, SearchResult>, current) => {
         const videoId = current.metadata?.tl_video_id as string;
         if (!videoId) return acc;
 
-        if (!acc[videoId] || (acc[videoId].score ?? 0) < (current.score ?? 0)) {
-          acc[videoId] = current;
+        if (!acc[videoId] || acc[videoId].score < (current.score || 0)) {
+          acc[videoId] = {
+            metadata: current.metadata,
+            score: current.score || 0
+          };
         }
         return acc;
       }, {})
     );
 
     // Sort by score
-    const sortedResults = uniqueResults.sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
+    const sortedResults = uniqueResults.sort((a, b) => b.score - a.score);
 
     return NextResponse.json(sortedResults);
 

@@ -6,45 +6,34 @@ export async function POST(req: Request) {
     const { videoId, indexId } = await req.json();
     const index = getPineconeIndex();
 
-    // Retrieve clip and video embeddings of the original video
-    const originalVideoEmbeddings = await Promise.all([
-      // Search in clip scope
-      index.query({
-        filter: {
-          tl_video_id: videoId,
-          scope: 'clip'
-        },
-        topK: 100,
-        includeMetadata: true,
-        includeValues: true,
-        vector: new Array(1024).fill(0)
-      })
-    ]);
+    // First, get the original video's clip embedding
+    const originalClipQuery = await index.query({
+      filter: {
+        tl_video_id: videoId,
+        scope: 'clip'
+      },
+      topK: 100,
+      includeMetadata: true,
+      includeValues: true,
+      vector: new Array(1024).fill(0)
+    });
 
-    // Search for similar ads for each scope
-    const similarResults = await Promise.all(
-      originalVideoEmbeddings.map(async (original) => {
-        if (!original.matches.length) return [];
-
-        const match = original.matches[0];
-        if (!match) return [];
-
-        const scope = match.metadata?.scope;
-        const vector = match.values;
-
+    // If we found matching clips, search for similar ads for each match
+    const similarResults = [];
+    if (originalClipQuery.matches.length > 0) {
+      for (const originalClip of originalClipQuery.matches) {
         const queryResult = await index.query({
-          vector,
+          vector: originalClip.values,
           filter: {
             tl_index_id: indexId,
-            scope: scope
+            scope: 'clip'
           },
           topK: 5,
           includeMetadata: true,
         });
-
-        return queryResult;
-      })
-    );
+        similarResults.push(queryResult);
+      }
+    }
 
     // Merge and organize results
     const allResults = [
