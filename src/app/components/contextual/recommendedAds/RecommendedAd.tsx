@@ -1,10 +1,10 @@
 import React, {useState, Suspense, useMemo} from 'react'
-import Video from './Video'
-import Button from './Button'
-import AdCopy from './AdCopy';
+import Video from '../../common/Video'
+import Button from '../../common/Button'
+import AdCopy from './AdCopy'
 import { ErrorBoundary } from 'react-error-boundary'
-import ErrorFallback from './ErrorFallback'
-import LoadingSpinner from './LoadingSpinner';
+import ErrorFallback from '../../common/ErrorFallback'
+import LoadingSpinner from '../../common/LoadingSpinner';
 import { RecommendedAdProps } from '@/app/types';
 import { useQuery } from "@tanstack/react-query"
 import { generateCustomTexts } from "@/hooks/apiHooks";

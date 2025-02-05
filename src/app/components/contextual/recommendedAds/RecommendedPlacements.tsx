@@ -4,8 +4,8 @@ import { generateChapters, fetchVideoDetails } from '@/hooks/apiHooks';
 import React, { useState, useRef, useEffect } from 'react'
 import ReactPlayer from 'react-player';
 import { ErrorBoundary } from 'react-error-boundary'
-import ErrorFallback from './ErrorFallback'
-import LoadingSpinner from './LoadingSpinner';
+import ErrorFallback from '../../common/ErrorFallback';
+import LoadingSpinner from '../../common/LoadingSpinner';
 import { Toaster, toast } from 'react-hot-toast';
 import { usePlayer } from '@/contexts/PlayerContext';
 

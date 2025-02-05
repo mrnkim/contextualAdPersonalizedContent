@@ -1,11 +1,10 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react'
 import { generateCustomTexts } from '@/hooks/apiHooks';
 import { RecommendedAdProps, ContextualAdsProps } from '@/app/types';
-import Footage from '@/app/components/Footage';
-import Ads from '@/app/components/Ads';
-import RecommendedAds from '@/app/components/RecommendedAds';
+import Footage from '@/app/components/contextual/footage/Footage';
+import Ads from '@/app/components/contextual/ads/Ads';
 import { useQuery } from '@tanstack/react-query';
-
+import RecommendedAds from '@/app/components/contextual/recommendedAds/RecommendedAds';
 const footageIndexId = process.env.NEXT_PUBLIC_FOOTAGE_INDEX_ID;
 const HASHTAGS_PROMPT = "Generate a list of 3 hashtags that best describe the video. Do not include any introductory text or comments."
 const PROMPT = "Summarize the video focusing on the event type, main content, and the emotional tone. Provide the titles (Event Type, Main Content, Emotional Tone) before each summary. Do not include any introductory text or comments. For Emotional Tone, start with three words and a period."

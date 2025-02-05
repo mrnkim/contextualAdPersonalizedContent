@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import Button from './Button';
+import Button from '../../common/Button';
 import { UploadFormProps } from '@/app/types';
 
 function UploadForm({ selectedFile, taskId, onFileUpload, isLoading, isAnalyzeClicked}: UploadFormProps) {

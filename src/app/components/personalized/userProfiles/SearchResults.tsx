@@ -1,6 +1,6 @@
 import React from 'react';
-import Video from './Video';
-import LoadingSpinner from './LoadingSpinner';
+import Video from '../../common/Video';
+import LoadingSpinner from '../../common/LoadingSpinner';
 import { usePlayer } from '@/contexts/PlayerContext';
 import { SearchResultsProps } from '@/app/types';
 

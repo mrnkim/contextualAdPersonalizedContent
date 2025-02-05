@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import Button from './Button'
+import Button from '../../common/Button';
 import { useQueries } from "@tanstack/react-query";
 import { fetchSearchPage, textToVideoSearch } from '@/hooks/apiHooks';
 import { UserProfileProps, VideoItem } from '@/app/types';

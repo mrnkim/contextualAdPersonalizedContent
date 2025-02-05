@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-import LoadingSpinner from './LoadingSpinner';
-import ErrorFallback from './ErrorFallback';
+import LoadingSpinner from '../../common/LoadingSpinner';
+import ErrorFallback from '../../common/ErrorFallback';
 import { FootageSummaryProps } from '@/app/types';
 import {
   Dialog,

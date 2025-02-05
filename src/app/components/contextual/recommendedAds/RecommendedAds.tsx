@@ -2,11 +2,11 @@ import React, { Suspense, useEffect, useState, useMemo } from 'react'
 import { useQueries } from "@tanstack/react-query";
 import { textToVideoSearch } from '@/hooks/apiHooks';
 import { ErrorBoundary } from 'react-error-boundary';
-import LoadingSpinner from './LoadingSpinner';
-import ErrorFallback from './ErrorFallback';
+import LoadingSpinner from '../../common/LoadingSpinner';
+import ErrorFallback from '../../common/ErrorFallback';
 import { RecommendedAdsProps, RecommendedAdProps } from '@/app/types';
-import RecommendedPlacements from '@/app/components/RecommendedPlacements';
-import RecommendedAdItem from '@/app/components/RecommendedAdItem';
+import RecommendedPlacements from './RecommendedPlacements';
+import RecommendedAdItem from './RecommendedAdItem';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
 export enum SearchOption {
@@ -22,6 +22,7 @@ const RecommendedAds = ({ hashtags, footageVideoId, adsIndexId, selectedFile, se
   const [displayCount, setDisplayCount] = useState(INITIAL_DISPLAY_COUNT);
   const [embeddingScores, setEmbeddingScores] = useState<Record<string, number>>({});
   const [embeddingSearchResults, setEmbeddingSearchResults] = useState<RecommendedAdProps["recommendedAd"][]>([]);
+  const [isEmbeddingLoading, setIsEmbeddingLoading] = useState(false);
 
   const searchResults = useQueries({
     queries: searchQueries.map(query => ({
@@ -85,6 +86,7 @@ const RecommendedAds = ({ hashtags, footageVideoId, adsIndexId, selectedFile, se
 
     const handleEmbeddingSearch = async () => {
       if (useEmbeddings) {
+        setIsEmbeddingLoading(true);
         try {
           const response = await fetch('/api/embeddingSearch', {
             method: 'POST',
@@ -97,6 +99,7 @@ const RecommendedAds = ({ hashtags, footageVideoId, adsIndexId, selectedFile, se
             })
           });
           const data = await response.json();
+          console.log("🚀 > handleEmbeddingSearch > data=", data)
 
           // Transform embedding search results to match RecommendedAdProps structure
           const transformedResults = data.map((item: { id: string; metadata: { tl_video_id: string; start_time: number; end_time: number }; score: number }) => ({
@@ -120,6 +123,8 @@ const RecommendedAds = ({ hashtags, footageVideoId, adsIndexId, selectedFile, se
           setEmbeddingSearchResults(transformedResults);
         } catch (error) {
           console.error('Error fetching embedding search:', error);
+        } finally {
+          setIsEmbeddingLoading(false);
         }
       }
     };
@@ -149,7 +154,7 @@ const RecommendedAds = ({ hashtags, footageVideoId, adsIndexId, selectedFile, se
         <div className="flex flex-col w-1/3">
           <h2 className="text-center text-2xl font-bold my-10">Recommended Ads</h2>
 
-          {isLoading && (
+          {(isLoading || isEmbeddingLoading) && (
             <div className="flex justify-center items-center h-full my-5">
               <LoadingSpinner />
             </div>

@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import Button from './components/Button';
-import ContextualAds from './components/ContextualAds';
-import PersonalizedContent from './components/PersonalizedContent';
+import Button from './components/common/Button';
+import ContextualAds from './components/contextual/ContextualAds';
+import PersonalizedContent from './components/personalized/PersonalizedContent';
 import { PlayerProvider } from '@/contexts/PlayerContext';
 import Joyride, { Step } from 'react-joyride';
 import { ButtonProps } from './types';

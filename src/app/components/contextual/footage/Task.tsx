@@ -1,9 +1,9 @@
 import React, { JSX } from 'react'
-import LoadingSpinner from './LoadingSpinner';
+import LoadingSpinner from '../../common/LoadingSpinner';
 import ReactPlayer from "react-player";
 import clsx from "clsx";
 import { TaskProps } from '@/app/types';
-import VideoSkeleton from '@/app/components/VideoSkeleton';
+import VideoSkeleton from '@/app/components/personalized/userProfiles/VideoSkeleton';
 
 const Task = ({ taskDetails, playing, setPlaying }: TaskProps): JSX.Element => {
   return (

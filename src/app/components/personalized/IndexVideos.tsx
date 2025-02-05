@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useState, Suspense, useEffect } from 'react'
-import Video from './Video';
-import LoadingSpinner from './LoadingSpinner';
-import ErrorFallback from './ErrorFallback';
+import Video from '../common/Video';
+import LoadingSpinner from '../common/LoadingSpinner';
+import ErrorFallback from '../common/ErrorFallback';
 import { useQuery } from "@tanstack/react-query";
-import PageNav from './PageNav';
+import PageNav from '../contextual/ads/PageNav';
 import { fetchVideos } from '@/hooks/apiHooks';
 import { ErrorBoundary } from 'react-error-boundary';
 import { usePlayer } from '@/contexts/PlayerContext';

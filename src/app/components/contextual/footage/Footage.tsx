@@ -3,10 +3,10 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useInfiniteQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { fetchVideos, fetchTaskDetails, uploadFootage, checkVectorExists, getAndStoreEmbeddings } from '@/hooks/apiHooks';
-import Button from './Button';
-import Video from './Video';
+import Button from '../../common/Button';
+import Video from '../../common/Video';
 import FootageSummary from './FootageSummary';
-import LoadingSpinner from './LoadingSpinner';
+import LoadingSpinner from '../../common/LoadingSpinner';
 import VideosDropDown from './VideosDropDown';
 import UploadForm from './UploadForm';
 import Task from './Task';

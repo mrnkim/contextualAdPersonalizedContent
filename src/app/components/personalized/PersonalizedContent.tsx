@@ -1,11 +1,11 @@
 import React, { useCallback, useState, useEffect } from 'react'
 import IndexVideos from './IndexVideos';
-import UserProfiles from './UserProfiles';
+import UserProfiles from './userProfiles/UserProfiles';
 import IndexesDropDown from './IndexesDropDown';
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { checkVectorExists, fetchVideos, fetchIndexes, getAndStoreEmbeddings } from '@/hooks/apiHooks';
 import { IndexesData, Profile } from '@/app/types'
-import LoadingSpinner from './LoadingSpinner';
+import LoadingSpinner from '../common/LoadingSpinner';
 
 const adsIndexId = process.env.NEXT_PUBLIC_ADS_INDEX_ID;
 

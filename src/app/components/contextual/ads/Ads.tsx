@@ -1,17 +1,17 @@
 "use client";
 
 import React, { useState, Suspense, useEffect, useCallback } from 'react'
-import Video from './Video';
-import LoadingSpinner from './LoadingSpinner';
-import ErrorFallback from './ErrorFallback';
+import Video from '../../common/Video';
+import LoadingSpinner from '../../common/LoadingSpinner';
+import ErrorFallback from '../../common/ErrorFallback';
 import { useQuery } from "@tanstack/react-query";
-import Button from './Button'
+import Button from '../../common/Button';
 import PageNav from './PageNav';
 import clsx from 'clsx'
 import { checkVectorExists, fetchVideos, getAndStoreEmbeddings } from '@/hooks/apiHooks';
 import { ErrorBoundary } from 'react-error-boundary';
 import { AdsProps } from '@/app/types';
-import RecommendOptionForm from '@/app/components/RecommendOptionForm';
+import RecommendOptionForm from '@/app/components/contextual/ads/RecommendOptionForm';
 import { usePlayer } from '@/contexts/PlayerContext';
 
 type VideoType = {
