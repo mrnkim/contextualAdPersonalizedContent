@@ -99,7 +99,6 @@ const RecommendedAds = ({ hashtags, footageVideoId, adsIndexId, selectedFile, se
             })
           });
           const data = await response.json();
-          console.log("🚀 > handleEmbeddingSearch > data=", data)
 
           // Transform embedding search results to match RecommendedAdProps structure
           const transformedResults = data.map((item: { id: string; metadata: { tl_video_id: string; start_time: number; end_time: number }; score: number }) => ({
