@@ -52,11 +52,17 @@ export const fetchIndexes = async (page: number, pageLimit: number=9) => {
 };
 
 export const fetchVideoDetails = async (videoId: string, indexId: string, embed: boolean = false) => {
-    const response = await fetch(`/api/getVideo?videoId=${videoId}&indexId=${indexId}&embed=${embed}`);
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
+    try {
+      const response = await fetch(`/api/getVideo?videoId=${videoId}&indexId=${indexId}&embed=${embed}`);
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Network response was not ok: ${errorText}`);
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      throw error;
     }
-    return response.json();
   };
 
 export const fetchSearchPage = async (pageToken: string) => {
@@ -145,11 +151,11 @@ export const checkVectorExists = async (videoId: string) => {
 
 export const getAndStoreEmbeddings = async (indexId: string, videoId: string) => {
   try {
-    // 1.Get video details and embeddings
     const videoDetails = await fetchVideoDetails(videoId, indexId, true);
 
-    if (!videoDetails.embedding) {
-      throw new Error('No embeddings found for video');
+    // Check specifically if the embedding property exists and is not null/undefined
+    if (!videoDetails || !videoDetails.embedding) {
+        throw new Error('No embeddings found for video');
     }
 
     const embedding = videoDetails.embedding;
@@ -174,7 +180,6 @@ export const getAndStoreEmbeddings = async (indexId: string, videoId: string) =>
 
     return await response.json();
   } catch (error) {
-    console.error('Error in getAndStoreEmbeddings:', error);
     throw error;
   }
 };
