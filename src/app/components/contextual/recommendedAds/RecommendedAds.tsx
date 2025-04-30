@@ -1,6 +1,6 @@
 import React, { Suspense, useEffect, useState, useMemo } from 'react'
 import { useQueries } from "@tanstack/react-query";
-import { textToVideoSearch } from '@/hooks/apiHooks';
+import { textToVideoSearch, useEmbeddingSearch } from '@/hooks/apiHooks';
 import { ErrorBoundary } from 'react-error-boundary';
 import LoadingSpinner from '../../common/LoadingSpinner';
 import ErrorFallback from '../../common/ErrorFallback';
@@ -22,7 +22,14 @@ const RecommendedAds = ({ hashtags, footageVideoId, adsIndexId, selectedFile, se
   const [displayCount, setDisplayCount] = useState(INITIAL_DISPLAY_COUNT);
   const [embeddingScores, setEmbeddingScores] = useState<Record<string, number>>({});
   const [embeddingSearchResults, setEmbeddingSearchResults] = useState<RecommendedAdProps["recommendedAd"][]>([]);
-  const [isEmbeddingLoading, setIsEmbeddingLoading] = useState(false);
+
+  const {
+    data: embeddingData,
+    isLoading: isEmbeddingLoading,
+    refetch: refetchEmbedding
+  } = useEmbeddingSearch(footageVideoId, adsIndexId, {
+    enabled: false,
+  });
 
   const searchResults = useQueries({
     queries: searchQueries.map(query => ({
@@ -84,53 +91,36 @@ const RecommendedAds = ({ hashtags, footageVideoId, adsIndexId, selectedFile, se
 
     setSearchOptions(newSearchOptions);
 
-    const handleEmbeddingSearch = async () => {
-      if (useEmbeddings) {
-        setIsEmbeddingLoading(true);
-        try {
-          const response = await fetch('/api/embeddingSearch', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              videoId: footageVideoId,
-              indexId: adsIndexId
-            })
-          });
-          const data = await response.json();
+    if (useEmbeddings) {
+      refetchEmbedding();
+    }
 
-          // Transform embedding search results to match RecommendedAdProps structure
-          const transformedResults = data.map((item: { id: string; metadata: { tl_video_id: string; start_time: number; end_time: number }; score: number }) => ({
-            id: item.metadata?.tl_video_id,
-            indexId: adsIndexId,
-            videoDetails: {
-              hls: {
-                metadata: {
-                  filename: item.id,
-                  video_title: item.id
-                },
-              }
-            }
-          }));
-
-          setEmbeddingScores(data.reduce((acc: Record<string, number>, item: { id: string; score: number }) => {
-            acc[item.id] = item.score;
-            return acc;
-          }, {}));
-
-          setEmbeddingSearchResults(transformedResults);
-        } catch (error) {
-          console.error('Error fetching embedding search:', error);
-        } finally {
-          setIsEmbeddingLoading(false);
-        }
-      }
-    };
-
-    handleEmbeddingSearch();
     setIsRecommendClicked(false);
-  }, [isRecommendClicked, hashtags, emotions]);
+  }, [isRecommendClicked, hashtags, emotions, refetchEmbedding, useEmbeddings]);
+
+  useEffect(() => {
+    if (embeddingData && useEmbeddings) {
+      const transformedResults = embeddingData.map((item: { id: string; metadata: { tl_video_id: string; start_time: number; end_time: number }; score: number }) => ({
+        id: item.metadata?.tl_video_id,
+        indexId: adsIndexId,
+        videoDetails: {
+          hls: {
+            metadata: {
+              filename: item.id,
+              video_title: item.id
+            },
+          }
+        }
+      }));
+
+      setEmbeddingScores(embeddingData.reduce((acc: Record<string, number>, item: { id: string; score: number }) => {
+        acc[item.id] = item.score;
+        return acc;
+      }, {}));
+
+      setEmbeddingSearchResults(transformedResults);
+    }
+  }, [embeddingData, adsIndexId, useEmbeddings]);
 
   if (isError) return <ErrorFallback error={new Error("Search failed")} />;
 

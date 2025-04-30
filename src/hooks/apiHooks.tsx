@@ -184,4 +184,83 @@ export const getAndStoreEmbeddings = async (indexId: string, videoId: string) =>
   }
 };
 
+/**
+ * Function to perform embedding-based search
+ * @param videoId The ID of the video to use as the search basis
+ * @param indexId The index ID to search in
+ * @returns The search results
+ */
+export const embeddingSearch = async (videoId: string, indexId: string) => {
+  try {
+    const response = await fetch('/api/embeddingSearch', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        videoId,
+        indexId,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to perform embedding search');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Embedding search error:', error);
+    throw error;
+  }
+};
+
+/**
+ * React Query hooks for API requests
+ */
+
+import { useQuery } from '@tanstack/react-query';
+
+/**
+ * React Query hook for caching embedding search results
+ * @param videoId The ID of the video to use as the search basis
+ * @param indexId The index ID to search in
+ * @param options Additional React Query options
+ * @returns Cached embedding search results
+ */
+export const useEmbeddingSearch = (
+  videoId: string,
+  indexId: string,
+  options = {}
+) => {
+  return useQuery({
+    queryKey: ['embeddingSearch', videoId, indexId],
+    queryFn: () => embeddingSearch(videoId, indexId),
+    staleTime: 1000 * 60 * 30, // Cache remains fresh for 30 minutes
+    gcTime: 1000 * 60 * 60 * 24, // Cache stored for 24 hours
+    ...options,
+  });
+};
+
+/**
+ * React Query hook for caching video details
+ * @param videoId The video ID
+ * @param indexId The index ID
+ * @param embed Whether to include embedding data
+ * @param options Additional React Query options
+ * @returns Cached video details
+ */
+export const useVideoDetails = (
+  videoId: string,
+  indexId: string,
+  embed: boolean = false,
+  options = {}
+) => {
+  return useQuery({
+    queryKey: ['videoDetails', videoId, indexId, embed],
+    queryFn: () => fetchVideoDetails(videoId, indexId, embed),
+    staleTime: 1000 * 60 * 30, // Cache remains fresh for 30 minutes
+    ...options,
+  });
+};
+
 
