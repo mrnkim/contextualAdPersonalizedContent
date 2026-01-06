@@ -12,7 +12,7 @@ import { VideoProps, VideoDetails } from "@/app/types";
 
 const Video: React.FC<VideoProps> = ({ videoId, indexId, showTitle = true, videoDetails: providedVideoDetails, playing = false, onPlay }) => {
 
-  const { data: videoDetails } = useQuery<VideoDetails, Error>({
+  const { data: videoDetails, isError } = useQuery<VideoDetails, Error>({
     queryKey: ["videoDetails", videoId],
     queryFn: () => {
       if (!videoId) {
@@ -21,6 +21,7 @@ const Video: React.FC<VideoProps> = ({ videoId, indexId, showTitle = true, video
       return fetchVideoDetails((videoId)!, indexId);
     },
     enabled: !!indexId && (!!videoId) && !providedVideoDetails,
+    retry: false,
   });
 
   const formatDuration = (seconds: number): string => {
@@ -36,6 +37,11 @@ const Video: React.FC<VideoProps> = ({ videoId, indexId, showTitle = true, video
   };
 
   const finalVideoDetails = providedVideoDetails || videoDetails;
+
+  // Don't render anything if the video failed to load
+  if (isError && !providedVideoDetails) {
+    return null;
+  }
 
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
