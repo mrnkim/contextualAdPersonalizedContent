@@ -17,7 +17,7 @@ export async function GET(req: Request) {
       );
     }
 
-      const url = `${TWELVELABS_API_BASE_URL}/generate`;
+      const url = `${TWELVELABS_API_BASE_URL}/analyze`;
       const options = {
           method: "POST",
           headers: {
